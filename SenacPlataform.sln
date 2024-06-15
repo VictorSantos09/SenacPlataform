@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BancoTalentos.API", "BancoTalentos.API\BancoTalentos.API.csproj", "{2BA744E6-08C9-4ABE-9074-0C18037E0C9D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BancoTalentos", "BancoTalentos", "{584FEC1C-CD2F-46B4-916A-E4A0B2166DA1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{65C6B008-131C-404D-B667-3D7CCEC45424}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BancoTalentos.Domain", "BancoTalentos.Domain\BancoTalentos.Domain.csproj", "{FA02BAEF-885C-462E-A957-DE7ADA773532}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{84C68AAC-EA68-4FAF-BF8C-2F084C2BE7E2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SenacPlataform.Shared", "SenacPlataform.Shared\SenacPlataform.Shared.csproj", "{78EE5350-EC8A-4F33-856A-4375A2732871}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2BA744E6-08C9-4ABE-9074-0C18037E0C9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BA744E6-08C9-4ABE-9074-0C18037E0C9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BA744E6-08C9-4ABE-9074-0C18037E0C9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BA744E6-08C9-4ABE-9074-0C18037E0C9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA02BAEF-885C-462E-A957-DE7ADA773532}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA02BAEF-885C-462E-A957-DE7ADA773532}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA02BAEF-885C-462E-A957-DE7ADA773532}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA02BAEF-885C-462E-A957-DE7ADA773532}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78EE5350-EC8A-4F33-856A-4375A2732871}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78EE5350-EC8A-4F33-856A-4375A2732871}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78EE5350-EC8A-4F33-856A-4375A2732871}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78EE5350-EC8A-4F33-856A-4375A2732871}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2BA744E6-08C9-4ABE-9074-0C18037E0C9D} = {584FEC1C-CD2F-46B4-916A-E4A0B2166DA1}
+		{584FEC1C-CD2F-46B4-916A-E4A0B2166DA1} = {65C6B008-131C-404D-B667-3D7CCEC45424}
+		{FA02BAEF-885C-462E-A957-DE7ADA773532} = {584FEC1C-CD2F-46B4-916A-E4A0B2166DA1}
+		{84C68AAC-EA68-4FAF-BF8C-2F084C2BE7E2} = {65C6B008-131C-404D-B667-3D7CCEC45424}
+		{78EE5350-EC8A-4F33-856A-4375A2732871} = {84C68AAC-EA68-4FAF-BF8C-2F084C2BE7E2}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9964781D-8314-4615-AD00-0F3581A08E63}
+	EndGlobalSection
+EndGlobal

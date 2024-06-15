@@ -1,0 +1,6 @@
+@BancoTalentos.API_HostAddress = http://localhost:5250
+
+GET {{BancoTalentos.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
