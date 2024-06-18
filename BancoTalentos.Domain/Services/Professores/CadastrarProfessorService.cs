@@ -104,6 +104,12 @@ public class CadastrarProfessorService : ICadastrarProfessorService
                 return new Result<bool>(false);
             }
 
+            else if (await _pessoas_contatos_repository.HasContatoCadadastrado(c.Contato, idProfessor, cancellationToken))
+            {
+                _pessoas_repository.Rollback();
+                return new Result<bool>(false);
+            }
+
             entity.CONTATO = c.Contato;
             entity.ID_TIPO_CONTATO = c.IdTipo;
             rowsAffected = await _pessoas_contatos_repository.InsertAsync(entity, cancellationToken);
@@ -129,6 +135,12 @@ public class CadastrarProfessorService : ICadastrarProfessorService
         foreach (var i in dto.IdsDisciplinas)
         {
             if (!await _disciplinas_repository.ExistsAsync("DISCIPLINAS", i, cancellationToken))
+            {
+                _pessoas_repository.Rollback();
+                return new Result<bool>(false);
+            }
+
+            if (await _pessoas_habilidades_disciplinas_repository.HasHabilidadeCadastrada(i, idProfessor, cancellationToken))
             {
                 _pessoas_repository.Rollback();
                 return new Result<bool>(false);

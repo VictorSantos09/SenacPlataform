@@ -11,4 +11,17 @@ public class PESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY
     public PESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY(IDbConnection _connectionection) : base(_connectionection)
     {
     }
+
+    public async Task<bool> HasHabilidadeCadastrada(int idDisciplina, int idPessoa, CancellationToken cancellationToken = default)
+    {
+        var sql = @"PESSOAS_HABILIDADES_DISCIPLINAS
+                    WHERE ID_PESSOA = @idPessoa
+                    AND ID_DISCIPLINA = @idDisciplina";
+
+        return await IfAsync(sql, new
+        {
+            idPessoa,
+            idDisciplina
+        }, cancellationToken);
+    }
 }

@@ -71,4 +71,13 @@ public abstract class Repository : IRepository
 
         return await _connection.ExecuteScalarAsync<bool>(command);
     }
+
+    public async Task<bool> IfAsync(string sql, object args, CancellationToken cancellationToken)
+    {
+        var innerSql = @$"SELECT IF((SELECT COUNT(1) FROM {sql}), true, false) AS RESULT";
+
+        CommandDefinition command = new(innerSql, args, cancellationToken: cancellationToken);
+
+        return await _connection.ExecuteScalarAsync<bool>(command);
+    }
 }

@@ -5,4 +5,6 @@ namespace BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 
 public interface IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY
     : IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY_BASE
-{ }
+{
+    Task<bool> HasHabilidadeCadastrada(int idDisciplina, int idPessoa, CancellationToken cancellationToken = default);
+}
