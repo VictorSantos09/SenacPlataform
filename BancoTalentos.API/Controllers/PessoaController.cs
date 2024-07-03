@@ -13,6 +13,7 @@ namespace BancoTalentos.API.Controllers;
 public class PessoaController : ControllerBase
 {
     private readonly ICadastrarProfessorService _cadastrarProfessorService;
+    private readonly IConsultaProfessorService _consultaProfessorService;
 
     public PessoaController(IDbConnection conn)
     {
@@ -22,12 +23,21 @@ public class PessoaController : ControllerBase
                                                                    new ProfessorValidator(),
                                                                    new PESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY(conn),
                                                                    new DISCIPLINAS_REPOSITORY(conn));
+
+        _consultaProfessorService = new ConsultaProfessorService(new PESSOAS_REPOSITORY(conn));
     }
 
     [HttpPost]
     public async Task<IActionResult> CadastrarProfessorAsync(ProfessorDto dto, CancellationToken cancellationToken = default)
     {
         var result = await _cadastrarProfessorService.CadastrarAsync(dto, cancellationToken);
-        return Ok();
+        return Ok(result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
+    {
+        var result = await _consultaProfessorService.GetAllAsync(cancellationToken);
+        return Ok(result);
     }
 }

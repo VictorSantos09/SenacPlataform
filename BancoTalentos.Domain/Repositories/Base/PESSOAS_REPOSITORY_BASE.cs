@@ -1,3 +1,4 @@
+using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Entity.Base;
 using BancoTalentos.Domain.Repositories.Base.Shared;
 using BancoTalentos.Domain.Repositories.Contracts.Base.Interfaces;
@@ -78,7 +79,7 @@ WHERE ID = @idParam
         }
     }
 
-    public async Task<IEnumerable<PESSOAS_BASE>> GetAllAsync(
+    public async Task<IEnumerable<PESSOAS>> GetAllAsync(
         CancellationToken cancellationToken = default
     )
     {
@@ -87,7 +88,7 @@ WHERE ID = @idParam
             var sql = @"SELECT * FROM pessoas";
             using var _connection = Open();
             CommandDefinition command = new(sql, cancellationToken: cancellationToken);
-            return await _connection.QueryAsync<PESSOAS_BASE>(command);
+            return await _connection.QueryAsync<PESSOAS>(command);
         }
         catch (Exception)
         {

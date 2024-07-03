@@ -5,9 +5,9 @@ namespace SenacPlataform.Shared.Extensions;
 
 public static class ResultExtensions
 {
-    public static Result<string> FailValidation(string message = "Dados inválidos fornecidos")
+    public static Result FailValidation(string message = "Dados inválidos fornecidos")
     {
-        return result.fail
+        return Result.Fail(message);
     }
 }
 

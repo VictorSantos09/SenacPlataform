@@ -1,3 +1,4 @@
+using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Entity.Base;
 using BancoTalentos.Domain.Repositories.Contracts.Shared;
 using Dapper;
@@ -6,7 +7,7 @@ namespace BancoTalentos.Domain.Repositories.Contracts.Base.Interfaces;
 
 public interface IPESSOAS_REPOSITORY_BASE : IRepository
 {
-    public Task<IEnumerable<PESSOAS_BASE>> GetAllAsync(
+    public Task<IEnumerable<PESSOAS>> GetAllAsync(
         CancellationToken cancellationToken = default
     );
     public Task<PESSOAS_BASE?> GetByIdAsync(
