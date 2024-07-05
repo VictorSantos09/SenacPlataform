@@ -1,3 +1,4 @@
+using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Entity.Base;
 using BancoTalentos.Domain.Repositories.Contracts.Shared;
 using Dapper;
@@ -9,7 +10,7 @@ public interface IPESSOAS_CONTATOS_REPOSITORY_BASE : IRepository
     public Task<IEnumerable<PESSOAS_CONTATOS_BASE>> GetAllAsync(
         CancellationToken cancellationToken = default
     );
-    public Task<PESSOAS_CONTATOS_BASE?> GetByIdAsync(
+    public Task<PESSOAS_CONTATOS?> GetByIdAsync(
         object id,
         CancellationToken cancellationToken = default
     );

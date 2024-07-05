@@ -1,5 +1,6 @@
 ﻿using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
+using BancoTalentos.Domain.Services.Professores.Interfaces;
 
 namespace BancoTalentos.Domain.Services.Professores;
 

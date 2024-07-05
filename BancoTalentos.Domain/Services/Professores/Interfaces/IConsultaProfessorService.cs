@@ -1,6 +1,6 @@
 ﻿using BancoTalentos.Domain.Entity;
 
-namespace BancoTalentos.Domain.Services.Professores;
+namespace BancoTalentos.Domain.Services.Professores.Interfaces;
 
 public interface IConsultaProfessorService
 {

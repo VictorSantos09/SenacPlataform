@@ -1,3 +1,4 @@
+using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Entity.Base;
 using Dapper;
 
@@ -8,7 +9,7 @@ public interface IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY_BASE
     public Task<IEnumerable<PESSOAS_HABILIDADES_DISCIPLINAS_BASE>> GetAllAsync(
         CancellationToken cancellationToken = default
     );
-    public Task<PESSOAS_HABILIDADES_DISCIPLINAS_BASE?> GetByIdAsync(
+    public Task<PESSOAS_HABILIDADES_DISCIPLINAS?> GetByIdAsync(
         object id,
         CancellationToken cancellationToken = default
     );

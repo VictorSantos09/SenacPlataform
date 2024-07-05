@@ -10,8 +10,8 @@ public interface IPESSOAS_REPOSITORY_BASE : IRepository
     public Task<IEnumerable<PESSOAS>> GetAllAsync(
         CancellationToken cancellationToken = default
     );
-    public Task<PESSOAS_BASE?> GetByIdAsync(
-        object id,
+    public Task<PESSOAS?> GetByIdAsync(
+        int id,
         CancellationToken cancellationToken = default
     );
     public Task<int> InsertAsync(

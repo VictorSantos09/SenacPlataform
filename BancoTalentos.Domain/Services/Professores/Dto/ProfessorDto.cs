@@ -10,19 +10,5 @@ public sealed record ProfessorDto
     public int CargaHoraria { get; set; }
     public IEnumerable<int> IdsDisciplinas { get; set; }
     public IEnumerable<ContatoDto> Contatos { get; set; }
-
-    public ProfessorDto(string nome,
-                        CARGO cargo,
-                        int cargaHoraria,
-                        IEnumerable<int> idsDisciplinas,
-                        IEnumerable<ContatoDto> contatos,
-                        byte[]? foto = null)
-    {
-        Nome = nome;
-        Foto = foto;
-        Cargo = cargo;
-        CargaHoraria = cargaHoraria;
-        IdsDisciplinas = idsDisciplinas;
-        Contatos = contatos;
-    }
+    public int Id { get; set; }
 }
