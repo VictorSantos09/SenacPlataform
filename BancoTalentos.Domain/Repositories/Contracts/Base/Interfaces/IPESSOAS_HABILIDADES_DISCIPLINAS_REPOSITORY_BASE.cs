@@ -6,7 +6,7 @@ namespace BancoTalentos.Domain.Repositories.Contracts.Base.Interfaces;
 
 public interface IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY_BASE
 {
-    public Task<IEnumerable<PESSOAS_HABILIDADES_DISCIPLINAS_BASE>> GetAllAsync(
+    public Task<IEnumerable<PESSOAS_HABILIDADES_DISCIPLINAS>> GetAllAsync(
         CancellationToken cancellationToken = default
     );
     public Task<PESSOAS_HABILIDADES_DISCIPLINAS?> GetByIdAsync(
@@ -14,15 +14,15 @@ public interface IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY_BASE
         CancellationToken cancellationToken = default
     );
     public Task<int> InsertAsync(
-        PESSOAS_HABILIDADES_DISCIPLINAS_BASE entity,
+        PESSOAS_HABILIDADES_DISCIPLINAS entity,
         CancellationToken cancellationToken = default
     );
     public Task<int> UpdateAsync(
-        PESSOAS_HABILIDADES_DISCIPLINAS_BASE entity,
+        PESSOAS_HABILIDADES_DISCIPLINAS entity,
         CancellationToken cancellationToken = default
     );
     public Task<int> DeleteAsync(
-        PESSOAS_HABILIDADES_DISCIPLINAS_BASE entity,
+        PESSOAS_HABILIDADES_DISCIPLINAS entity,
         CancellationToken cancellationToken = default
     );
 }

@@ -1,3 +1,4 @@
+using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Entity.Base;
 using BancoTalentos.Domain.Repositories.Base.Shared;
 using BancoTalentos.Domain.Repositories.Contracts.Base.Interfaces;
@@ -16,7 +17,7 @@ public class PESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY_BASE
     }
 
     public async Task<int> DeleteAsync(
-        PESSOAS_HABILIDADES_DISCIPLINAS_BASE pessoas_habilidades_disciplinas,
+        PESSOAS_HABILIDADES_DISCIPLINAS pessoas_habilidades_disciplinas,
         CancellationToken cancellationToken = default
     )
     {
@@ -40,7 +41,7 @@ WHERE ID = @idParam
     }
 
     public async Task<int> InsertAsync(
-        PESSOAS_HABILIDADES_DISCIPLINAS_BASE pessoas_habilidades_disciplinas,
+        PESSOAS_HABILIDADES_DISCIPLINAS pessoas_habilidades_disciplinas,
         CancellationToken cancellationToken = default
     )
     {
@@ -77,7 +78,7 @@ WHERE ID = @idParam
         }
     }
 
-    public async Task<IEnumerable<PESSOAS_HABILIDADES_DISCIPLINAS_BASE>> GetAllAsync(
+    public async Task<IEnumerable<PESSOAS_HABILIDADES_DISCIPLINAS>> GetAllAsync(
         CancellationToken cancellationToken = default
     )
     {
@@ -86,7 +87,7 @@ WHERE ID = @idParam
             var sql = @"SELECT * FROM pessoas_habilidades_disciplinas";
             using var _connection = Open();
             CommandDefinition command = new(sql, cancellationToken: cancellationToken);
-            return await _connection.QueryAsync<PESSOAS_HABILIDADES_DISCIPLINAS_BASE>(command);
+            return await _connection.QueryAsync<PESSOAS_HABILIDADES_DISCIPLINAS>(command);
         }
         catch (Exception)
         {
@@ -94,7 +95,7 @@ WHERE ID = @idParam
         }
     }
 
-    public async Task<PESSOAS_HABILIDADES_DISCIPLINAS_BASE?> GetByIdAsync(
+    public async Task<PESSOAS_HABILIDADES_DISCIPLINAS?> GetByIdAsync(
         object id,
         CancellationToken cancellationToken = default
     )
@@ -105,7 +106,7 @@ WHERE ID = @idParam
             var sql = @"SELECT * FROM pessoas_habilidades_disciplinas WHERE ID = @idParam";
             using var _connection = Open();
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
-            return await _connection.QuerySingleOrDefaultAsync<PESSOAS_HABILIDADES_DISCIPLINAS_BASE>(
+            return await _connection.QuerySingleOrDefaultAsync<PESSOAS_HABILIDADES_DISCIPLINAS>(
                 command
             );
         }
@@ -116,7 +117,7 @@ WHERE ID = @idParam
     }
 
     public async Task<int> UpdateAsync(
-        PESSOAS_HABILIDADES_DISCIPLINAS_BASE pessoas_habilidades_disciplinas,
+        PESSOAS_HABILIDADES_DISCIPLINAS pessoas_habilidades_disciplinas,
         CancellationToken cancellationToken = default
     )
     {

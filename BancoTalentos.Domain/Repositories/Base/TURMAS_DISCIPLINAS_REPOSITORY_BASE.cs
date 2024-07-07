@@ -1,3 +1,4 @@
+using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Entity.Base;
 using BancoTalentos.Domain.Repositories.Base.Shared;
 using BancoTalentos.Domain.Repositories.Contracts.Base.Interfaces;
@@ -14,7 +15,7 @@ public class TURMAS_DISCIPLINAS_REPOSITORY_BASE : Repository, ITURMAS_DISCIPLINA
     }
 
     public async Task<int> DeleteAsync(
-        TURMAS_DISCIPLINAS_BASE turmas_disciplinas,
+        TURMAS_DISCIPLINAS turmas_disciplinas,
         CancellationToken cancellationToken = default
     )
     {
@@ -38,7 +39,7 @@ WHERE ID = @idParam
     }
 
     public async Task<int> InsertAsync(
-        TURMAS_DISCIPLINAS_BASE turmas_disciplinas,
+        TURMAS_DISCIPLINAS turmas_disciplinas,
         CancellationToken cancellationToken = default
     )
     {
@@ -82,7 +83,7 @@ WHERE ID = @idParam
         }
     }
 
-    public async Task<IEnumerable<TURMAS_DISCIPLINAS_BASE>> GetAllAsync(
+    public async Task<IEnumerable<TURMAS_DISCIPLINAS>> GetAllAsync(
         CancellationToken cancellationToken = default
     )
     {
@@ -91,7 +92,7 @@ WHERE ID = @idParam
             var sql = @"SELECT * FROM turmas_disciplinas";
             using var _connection = Open();
             CommandDefinition command = new(sql, cancellationToken: cancellationToken);
-            return await _connection.QueryAsync<TURMAS_DISCIPLINAS_BASE>(command);
+            return await _connection.QueryAsync<TURMAS_DISCIPLINAS>(command);
         }
         catch (Exception)
         {
@@ -99,7 +100,7 @@ WHERE ID = @idParam
         }
     }
 
-    public async Task<TURMAS_DISCIPLINAS_BASE?> GetByIdAsync(
+    public async Task<TURMAS_DISCIPLINAS?> GetByIdAsync(
         object id,
         CancellationToken cancellationToken = default
     )
@@ -110,7 +111,7 @@ WHERE ID = @idParam
             var sql = @"SELECT * FROM turmas_disciplinas WHERE ID = @idParam";
             using var _connection = Open();
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
-            return await _connection.QuerySingleOrDefaultAsync<TURMAS_DISCIPLINAS_BASE>(command);
+            return await _connection.QuerySingleOrDefaultAsync<TURMAS_DISCIPLINAS>(command);
         }
         catch (Exception)
         {
@@ -119,7 +120,7 @@ WHERE ID = @idParam
     }
 
     public async Task<int> UpdateAsync(
-        TURMAS_DISCIPLINAS_BASE turmas_disciplinas,
+        TURMAS_DISCIPLINAS turmas_disciplinas,
         CancellationToken cancellationToken = default
     )
     {

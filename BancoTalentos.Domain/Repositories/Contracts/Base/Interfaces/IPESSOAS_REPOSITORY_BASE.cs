@@ -15,15 +15,15 @@ public interface IPESSOAS_REPOSITORY_BASE : IRepository
         CancellationToken cancellationToken = default
     );
     public Task<int> InsertAsync(
-        PESSOAS_BASE entity,
+        PESSOAS entity,
         CancellationToken cancellationToken = default
     );
     public Task<int> UpdateAsync(
-        PESSOAS_BASE entity,
+        PESSOAS entity,
         CancellationToken cancellationToken = default
     );
     public Task<int> DeleteAsync(
-        PESSOAS_BASE entity,
+        PESSOAS entity,
         CancellationToken cancellationToken = default
     );
     Task<int> GetMaxIdAsync();

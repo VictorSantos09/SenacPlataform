@@ -1,33 +1,20 @@
-﻿using BancoTalentos.Domain.Repositories;
-using BancoTalentos.Domain.Services.Professores;
-using BancoTalentos.Domain.Services.Professores.Dto;
+﻿using BancoTalentos.Domain.Services.Professores.Dto;
 using BancoTalentos.Domain.Services.Professores.Interfaces;
-using BancoTalentos.Domain.Validators;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
 namespace BancoTalentos.API.Controllers;
 
 [ApiController]
 [Route("pessoas")]
-public class PessoaController : ControllerBase
+public class PessoaController(ICadastrarProfessorService cadastrarProfessorService,
+                        IConsultaProfessorService consultaProfessorService,
+                        IAtualizarProfessorService atualizarProfessorService,
+                        IDeletarProfessorService deletarProfessorService) : ControllerBase
 {
-    private readonly ICadastrarProfessorService _cadastrarProfessorService;
-    private readonly IConsultaProfessorService _consultaProfessorService;
-    private readonly IAtualizarProfessorService _atualizarProfessorService;
-
-    public PessoaController(IDbConnection conn, IAtualizarProfessorService atualizarProfessorService)
-    {
-        _cadastrarProfessorService = new CadastrarProfessorService(new PESSOAS_REPOSITORY(conn),
-                                                                   new PESSOAS_CONTATOS_REPOSITORY(conn),
-                                                                   new TIPOS_CONTATOS_REPOSITORY(conn),
-                                                                   new ProfessorValidator(),
-                                                                   new PESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY(conn),
-                                                                   new DISCIPLINAS_REPOSITORY(conn));
-
-        _consultaProfessorService = new ConsultaProfessorService(new PESSOAS_REPOSITORY(conn));
-        _atualizarProfessorService = atualizarProfessorService;
-    }
+    private readonly ICadastrarProfessorService _cadastrarProfessorService = cadastrarProfessorService;
+    private readonly IConsultaProfessorService _consultaProfessorService = consultaProfessorService;
+    private readonly IAtualizarProfessorService _atualizarProfessorService = atualizarProfessorService;
+    private readonly IDeletarProfessorService _deletarProfessorService = deletarProfessorService;
 
     [HttpPost]
     public async Task<IActionResult> CadastrarProfessorAsync(ProfessorDto dto, CancellationToken cancellationToken = default)
@@ -53,6 +40,7 @@ public class PessoaController : ControllerBase
     [HttpDelete]
     public async Task<IActionResult> DeletarAsync(int id, CancellationToken cancellationToken = default)
     {
-        var result = 
+        var result =  await _deletarProfessorService.DeletarAsync(id, cancellationToken);
+        return Ok(result);
     }
 }
