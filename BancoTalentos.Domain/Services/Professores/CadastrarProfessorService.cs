@@ -1,4 +1,5 @@
 ﻿using BancoTalentos.Domain.Entity;
+using BancoTalentos.Domain.Entity.Enums;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using BancoTalentos.Domain.Services.Professores.Dto;
 using BancoTalentos.Domain.Services.Professores.Interfaces;
@@ -39,7 +40,7 @@ public class CadastrarProfessorService : ICadastrarProfessorService
             PESSOAS entity = new()
             {
                 CARGA_HORARIA = dto.CargaHoraria,
-                CARGO = dto.Cargo,
+                CARGO = CARGO.PROFESSOR,
                 FOTO = dto.Foto,
                 NOME = dto.Nome,
             };

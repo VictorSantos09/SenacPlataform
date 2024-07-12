@@ -1,6 +1,7 @@
 ﻿using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using BancoTalentos.Domain.Services.Professores.Interfaces;
+using FluentResults;
 
 namespace BancoTalentos.Domain.Services.Professores;
 
@@ -13,8 +14,21 @@ public class ConsultaProfessorService : IConsultaProfessorService
         _pessoas_repository = pessoas_repository;
     }
 
-    public async Task<IEnumerable<PESSOAS>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<IEnumerable<PESSOAS>>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _pessoas_repository.GetAllAsync(cancellationToken);
+        var result = await _pessoas_repository.GetAllAsync(cancellationToken);
+
+        return result.Count() > 0
+            ? Result.Ok(result)
+            : Result.Fail("Nenhum registro encontrado.");
+    }
+
+    public async Task<Result<PESSOAS>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var result = await _pessoas_repository.GetByIdAsync(id, cancellationToken);
+
+        return result is not null
+            ? Result.Ok(result)
+            : Result.Fail("Registro não encontrado.");
     }
 }

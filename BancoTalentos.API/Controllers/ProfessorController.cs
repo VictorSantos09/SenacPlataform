@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace BancoTalentos.API.Controllers;
 
 [ApiController]
-[Route("pessoas")]
-public class PessoaController(ICadastrarProfessorService cadastrarProfessorService,
+[Route("professores")]
+public class ProfessorController(ICadastrarProfessorService cadastrarProfessorService,
                         IConsultaProfessorService consultaProfessorService,
                         IAtualizarProfessorService atualizarProfessorService,
                         IDeletarProfessorService deletarProfessorService) : ControllerBase
@@ -17,16 +17,23 @@ public class PessoaController(ICadastrarProfessorService cadastrarProfessorServi
     private readonly IDeletarProfessorService _deletarProfessorService = deletarProfessorService;
 
     [HttpPost]
-    public async Task<IActionResult> CadastrarProfessorAsync(ProfessorDto dto, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> CadastrarAsync(ProfessorDto dto, CancellationToken cancellationToken = default)
     {
         var result = await _cadastrarProfessorService.CadastrarAsync(dto, cancellationToken);
-        return Ok(result);
+        return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var result = await _consultaProfessorService.GetAllAsync(cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var result = await _consultaProfessorService.GetByIdAsync(id, cancellationToken);
         return Ok(result);
     }
 

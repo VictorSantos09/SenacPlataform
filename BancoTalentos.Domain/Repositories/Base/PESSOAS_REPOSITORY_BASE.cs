@@ -49,7 +49,7 @@ WHERE ID = @idParam
             {
                 nomeParam = pessoas.NOME,
                 fotoParam = pessoas.FOTO,
-                cargoParam = pessoas.CARGO,
+                cargoParam = pessoas.CARGO.ToString(),
                 cargahorariaParam = pessoas.CARGA_HORARIA,
             };
             var sql =

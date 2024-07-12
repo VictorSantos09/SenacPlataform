@@ -1,3 +1,5 @@
+using BancoTalentos.Domain.Entity.Enums;
+
 namespace BancoTalentos.Domain.Entity.Base;
 
 // File Auto Generated. DOT NOT MODIFY

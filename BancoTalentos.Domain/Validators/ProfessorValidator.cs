@@ -14,7 +14,9 @@ public class ProfessorValidator : AbstractValidator<PESSOAS>
             .NotEmpty()
             .WithMessage("Nome deve ser informado");
         RuleFor(x => x.CARGO)
-            .NotEmpty()
-            .WithMessage("Cargo deve ser informado");
+            .NotNull()
+            .WithMessage("Cargo deve ser informado")
+            .IsInEnum()
+            .WithMessage("Cargo não é válido");
     }
 }
