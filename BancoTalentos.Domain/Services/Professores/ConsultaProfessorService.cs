@@ -18,9 +18,9 @@ public class ConsultaProfessorService : IConsultaProfessorService
     {
         var result = await _pessoas_repository.GetAllAsync(cancellationToken);
 
-        return result.Count() > 0
+        return result.Any()
             ? Result.Ok(result)
-            : Result.Fail("Nenhum registro encontrado.");
+            : Result.Fail(ProfessorMessages.NenhumProfessorEncontrado);
     }
 
     public async Task<Result<PESSOAS>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
@@ -29,6 +29,6 @@ public class ConsultaProfessorService : IConsultaProfessorService
 
         return result is not null
             ? Result.Ok(result)
-            : Result.Fail("Registro não encontrado.");
+            : Result.Fail(ProfessorMessages.ProfessorNaoEncontrado);
     }
 }

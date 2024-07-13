@@ -40,28 +40,24 @@ public class CadastrarProfessorService : ICadastrarProfessorService
             PESSOAS entity = new()
             {
                 CARGA_HORARIA = dto.CargaHoraria,
-                CARGO = CARGO.PROFESSOR,
+                CARGO = dto.Cargo,
                 FOTO = dto.Foto,
                 NOME = dto.Nome,
             };
 
             var validationResult = await _validator.ValidateAsync(entity, cancellationToken);
 
-            if (validationResult.IsValid)
-            {
-                _pessoas_repository.BeginTransaction();
+            if (!validationResult.IsValid)
+                return validationResult.ToErrorResult();
+            
+            _pessoas_repository.BeginTransaction();
 
-                var result = await CadastrarProfessorAsync(entity, dto, cancellationToken);
+            var result = await CadastrarProfessorAsync(entity, dto, cancellationToken);
 
-                if (result.IsFailed)
-                {
-                    _pessoas_repository.Rollback();
-                }
+            if (result.IsFailed) _pessoas_repository.Rollback();
+            else _pessoas_repository.Commit();
 
-                return result;
-            }
-
-            return validationResult.ToErrorResult();
+            return result;
         }
         catch (Exception)
         {
@@ -76,7 +72,7 @@ public class CadastrarProfessorService : ICadastrarProfessorService
 
         if (affectedRows == 0)
         {
-            return Result.Fail("Não foi possível cadastrar o professor.");
+            return Result.Fail(ProfessorMessages.NaoFoiPossivelCadastrar);
         }
 
         var idProfessor = await _pessoas_repository.GetMaxIdAsync();
@@ -95,7 +91,6 @@ public class CadastrarProfessorService : ICadastrarProfessorService
             return resultHabilidades;
         }
 
-        _pessoas_repository.Commit();
         return Result.Ok();
     }
 
@@ -150,7 +145,7 @@ public class CadastrarProfessorService : ICadastrarProfessorService
 
             if (await _pessoas_habilidades_disciplinas_repository.HasHabilidadeCadastrada(i, idProfessor, cancellationToken))
             {
-                return Result.Fail("O professor já tem a habilidade informada.");
+                return Result.Fail(ProfessorMessages.JaTemHabilidadeInformada);
             }
 
             entity.ID_DISCIPLINA = i;
@@ -158,7 +153,7 @@ public class CadastrarProfessorService : ICadastrarProfessorService
 
             if (result == 0)
             {
-                return Result.Fail("Não foi possível registrar a habilidade do professor.");
+                return Result.Fail(ProfessorMessages.NaoFoiPossivelCadastrarHabilidade);
             }
         }
 

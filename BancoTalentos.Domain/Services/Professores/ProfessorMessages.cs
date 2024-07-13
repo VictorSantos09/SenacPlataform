@@ -20,6 +20,12 @@ public static class ProfessorMessages
     public const string CargoNaoEValido = "Cargo não é válido.";
     public const string ProfessorNaoEncontrado = "Professor não encontrado.";
     public const string ProfessorJaCadastrado = "Professor já cadastrado.";
+    public const string NenhumProfessorEncontrado = "Nenhum professor encontrado.";
+    public const string NaoFoiPossivelCadastrar = "Não foi possível cadastrar o professor.";
+    public const string NaoFoiPossivelDeletar = "Não foi possível deletar o professor.";
+    public const string NaoFoiPossivelAtualizar = "Não foi possível atualizar o professor.";
+    public const string JaTemHabilidadeInformada = "O professor já tem a habilidade informada.";
+    public const string NaoFoiPossivelCadastrarHabilidade = "Não foi possível cadastrar a habilidade do professor.";
 
     private static readonly Dictionary<ProfessorErrorCode, string> _errorMessages = new()
     {

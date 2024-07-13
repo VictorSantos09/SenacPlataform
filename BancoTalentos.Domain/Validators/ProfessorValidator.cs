@@ -1,4 +1,5 @@
 ﻿using BancoTalentos.Domain.Entity;
+using BancoTalentos.Domain.Services.Professores;
 using FluentValidation;
 
 namespace BancoTalentos.Domain.Validators;
@@ -9,14 +10,14 @@ public class ProfessorValidator : AbstractValidator<PESSOAS>
     {
         RuleFor(x => x.CARGA_HORARIA)
             .NotEmpty()
-            .WithMessage("Carga horária deve ser informada");
+            .WithMessage(ProfessorMessages.CargaHorariaDeveSerInformada);
         RuleFor(x => x.NOME)
             .NotEmpty()
-            .WithMessage("Nome deve ser informado");
+            .WithMessage(ProfessorMessages.NomeDeveSerInformado);
         RuleFor(x => x.CARGO)
             .NotNull()
-            .WithMessage("Cargo deve ser informado")
+            .WithMessage(ProfessorMessages.CargoDeveSerInformado)
             .IsInEnum()
-            .WithMessage("Cargo não é válido");
+            .WithMessage(ProfessorMessages.CargoNaoEValido);
     }
 }
