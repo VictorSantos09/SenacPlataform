@@ -1,6 +1,7 @@
 ﻿using BancoTalentos.Domain.Services.Professores.Dto;
 using BancoTalentos.Domain.Services.Professores.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using SenacPlataform.Shared.Controllers;
 
 namespace BancoTalentos.API.Controllers;
 
@@ -11,43 +12,38 @@ public class ProfessorController(ICadastrarProfessorService cadastrarProfessorSe
                         IAtualizarProfessorService atualizarProfessorService,
                         IDeletarProfessorService deletarProfessorService) : ControllerBase
 {
-    private readonly ICadastrarProfessorService _cadastrarProfessorService = cadastrarProfessorService;
-    private readonly IConsultaProfessorService _consultaProfessorService = consultaProfessorService;
-    private readonly IAtualizarProfessorService _atualizarProfessorService = atualizarProfessorService;
-    private readonly IDeletarProfessorService _deletarProfessorService = deletarProfessorService;
-
-    [HttpPost]
+    [Add]
     public async Task<IActionResult> CadastrarAsync(ProfessorDto dto, CancellationToken cancellationToken = default)
     {
-        var result = await _cadastrarProfessorService.CadastrarAsync(dto, cancellationToken);
+        var result = await cadastrarProfessorService.CadastrarAsync(dto, cancellationToken);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 
-    [HttpGet]
+    [GetAll]
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var result = await _consultaProfessorService.GetAllAsync(cancellationToken);
+        var result = await consultaProfessorService.GetAllAsync(cancellationToken);
         return Ok(result);
     }
 
-    [HttpGet("{id}")]
+    [GetById]
     public async Task<IActionResult> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var result = await _consultaProfessorService.GetByIdAsync(id, cancellationToken);
+        var result = await consultaProfessorService.GetByIdAsync(id, cancellationToken);
         return Ok(result);
     }
 
-    [HttpPut]
+    [Update]
     public async Task<IActionResult> AtualizarAsync(ProfessorDto dto, CancellationToken cancellationToken = default)
     {
-        var result = await _atualizarProfessorService.AtualizarAsync(dto,cancellationToken);
+        var result = await atualizarProfessorService.AtualizarAsync(dto, cancellationToken);
         return Ok(result);
     }
 
-    [HttpDelete]
+    [Delete]
     public async Task<IActionResult> DeletarAsync(int id, CancellationToken cancellationToken = default)
     {
-        var result =  await _deletarProfessorService.DeletarAsync(id, cancellationToken);
+        var result = await deletarProfessorService.DeletarAsync(id, cancellationToken);
         return Ok(result);
     }
 }
