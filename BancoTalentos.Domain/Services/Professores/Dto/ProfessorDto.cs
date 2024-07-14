@@ -3,13 +3,13 @@ using BancoTalentos.Domain.Services.Contato.Dto;
 
 namespace BancoTalentos.Domain.Services.Professores.Dto;
 
-public sealed record ProfessorDto
+public record ProfessorDto
 {
-    public string Nome { get; set; }
-    public byte[]? Foto { get; set; }
+    public required string Nome { get; set; }
+    public required byte[]? Foto { get; set; }
     internal CARGO Cargo { get; } = CARGO.PROFESSOR;
-    public int CargaHoraria { get; set; }
-    public IEnumerable<int> IdsDisciplinas { get; set; }
-    public IEnumerable<ContatoDto> Contatos { get; set; }
-    public int Id { get; set; }
+    public required int CargaHorariaSemanal { get; set; }
+    public required IEnumerable<ContatoDto> Contatos { get; set; }
+    public required int Id { get; set; }
+    public required IEnumerable<int> IdsDisciplinas { get; set; }
 }

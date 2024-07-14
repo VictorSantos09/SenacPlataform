@@ -20,7 +20,7 @@ public class ConsultaProfessorService : IConsultaProfessorService
 
         return result.Any()
             ? Result.Ok(result)
-            : Result.Fail(ProfessorMessages.NenhumProfessorEncontrado);
+            : Result.Fail(ProfessorMessages.NENHUM_ENCONTRADO);
     }
 
     public async Task<Result<PESSOAS>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
@@ -29,6 +29,6 @@ public class ConsultaProfessorService : IConsultaProfessorService
 
         return result is not null
             ? Result.Ok(result)
-            : Result.Fail(ProfessorMessages.ProfessorNaoEncontrado);
+            : Result.Fail(ProfessorMessages.NAO_ENCONTRADO);
     }
 }

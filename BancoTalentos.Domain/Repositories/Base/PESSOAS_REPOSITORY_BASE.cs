@@ -26,7 +26,6 @@ public class PESSOAS_REPOSITORY_BASE : Repository, IPESSOAS_REPOSITORY_BASE
                 @"DELETE FROM pessoas
 WHERE ID = @idParam
 ";
-            using var _connection = Open();
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 
@@ -105,7 +104,7 @@ WHERE ID = @idParam
         {
             object parameters = new { idParam = id };
             var sql = @"SELECT * FROM pessoas WHERE ID = @idParam";
-            using var _connection = Open();
+
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             return await _connection.QuerySingleOrDefaultAsync<PESSOAS>(command);
         }
@@ -127,7 +126,7 @@ WHERE ID = @idParam
                 idParam = pessoas.ID,
                 nomeParam = pessoas.NOME,
                 fotoParam = pessoas.FOTO,
-                cargoParam = pessoas.CARGO,
+                cargoParam = pessoas.CARGO.ToString(),
                 cargahorariaParam = pessoas.CARGA_HORARIA,
             };
             var sql =
@@ -138,7 +137,7 @@ WHERE ID = @idParam
                     ,CARGA_HORARIA = @cargahorariaParam
                      WHERE ID = @idParam;
 ";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 

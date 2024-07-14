@@ -10,14 +10,14 @@ public class ProfessorValidator : AbstractValidator<PESSOAS>
     {
         RuleFor(x => x.CARGA_HORARIA)
             .NotEmpty()
-            .WithMessage(ProfessorMessages.CargaHorariaDeveSerInformada);
+            .WithMessage(ProfessorMessages.CARGA_HORARIA_DEVE_SER_INFORMADA);
         RuleFor(x => x.NOME)
             .NotEmpty()
-            .WithMessage(ProfessorMessages.NomeDeveSerInformado);
+            .WithMessage(ProfessorMessages.NOME_DEVE_SER_INFORMADO);
         RuleFor(x => x.CARGO)
             .NotNull()
-            .WithMessage(ProfessorMessages.CargoDeveSerInformado)
+            .WithMessage(ProfessorMessages.CARGO_DEVE_SER_INFORMADO)
             .IsInEnum()
-            .WithMessage(ProfessorMessages.CargoNaoEValido);
+            .WithMessage(ProfessorMessages.CARGO_NAO_E_VALIDO);
     }
 }

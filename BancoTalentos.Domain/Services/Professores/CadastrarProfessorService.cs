@@ -1,5 +1,4 @@
 ﻿using BancoTalentos.Domain.Entity;
-using BancoTalentos.Domain.Entity.Enums;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using BancoTalentos.Domain.Services.Professores.Dto;
 using BancoTalentos.Domain.Services.Professores.Interfaces;
@@ -17,6 +16,7 @@ public class CadastrarProfessorService : ICadastrarProfessorService
     private readonly IValidator<PESSOAS> _validator;
     private readonly IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY _pessoas_habilidades_disciplinas_repository;
     private readonly IDISCIPLINAS_REPOSITORY _disciplinas_repository;
+    public const int CARGA_HORARIA_SEMANA_MAXIMA_CLT = 44;
 
     public CadastrarProfessorService(IPESSOAS_REPOSITORY pessoas_repository,
                                      IPESSOAS_CONTATOS_REPOSITORY pessoas_contatos_repository,
@@ -37,9 +37,14 @@ public class CadastrarProfessorService : ICadastrarProfessorService
     {
         try
         {
+            if (dto.CargaHorariaSemanal > CARGA_HORARIA_SEMANA_MAXIMA_CLT)
+            {
+                return Result.Fail(ProfessorMessages.CARGA_HORARIA_EXCEDE_LIMITE);
+            }
+
             PESSOAS entity = new()
             {
-                CARGA_HORARIA = dto.CargaHoraria,
+                CARGA_HORARIA = dto.CargaHorariaSemanal,
                 CARGO = dto.Cargo,
                 FOTO = dto.Foto,
                 NOME = dto.Nome,
@@ -49,7 +54,7 @@ public class CadastrarProfessorService : ICadastrarProfessorService
 
             if (!validationResult.IsValid)
                 return validationResult.ToErrorResult();
-            
+
             _pessoas_repository.BeginTransaction();
 
             var result = await CadastrarProfessorAsync(entity, dto, cancellationToken);
@@ -72,7 +77,7 @@ public class CadastrarProfessorService : ICadastrarProfessorService
 
         if (affectedRows == 0)
         {
-            return Result.Fail(ProfessorMessages.NaoFoiPossivelCadastrar);
+            return Result.Fail(ProfessorMessages.NAO_FOI_POSSIVEL_CADASTRAR);
         }
 
         var idProfessor = await _pessoas_repository.GetMaxIdAsync();
@@ -145,7 +150,7 @@ public class CadastrarProfessorService : ICadastrarProfessorService
 
             if (await _pessoas_habilidades_disciplinas_repository.HasHabilidadeCadastrada(i, idProfessor, cancellationToken))
             {
-                return Result.Fail(ProfessorMessages.JaTemHabilidadeInformada);
+                return Result.Fail(ProfessorMessages.JA_TEM_HABILIDADE);
             }
 
             entity.ID_DISCIPLINA = i;
@@ -153,7 +158,7 @@ public class CadastrarProfessorService : ICadastrarProfessorService
 
             if (result == 0)
             {
-                return Result.Fail(ProfessorMessages.NaoFoiPossivelCadastrarHabilidade);
+                return Result.Fail(ProfessorMessages.NAO_FOI_POSSIVEL_CADASTRAR_HABILIDADE);
             }
         }
 

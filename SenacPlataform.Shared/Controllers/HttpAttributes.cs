@@ -63,7 +63,7 @@ public class Update(string template = "") : HttpPutAttribute(template)
 /// </summary>
 /// <param name="template">O template para o endpoint.</param>
 [AttributeUsage(AttributeTargets.Method)]
-public class Delete(string template = "") : HttpDeleteAttribute(template)
+public class Delete(string template = "{id}") : HttpDeleteAttribute(template)
 {
 }
 #endregion

@@ -28,7 +28,6 @@ public class PESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY_BASE
                 @"DELETE FROM pessoas_habilidades_disciplinas
 WHERE ID = @idParam
 ";
-            using var _connection = Open();
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 

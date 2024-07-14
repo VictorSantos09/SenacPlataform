@@ -101,7 +101,7 @@ WHERE ID = @idParam
         {
             object parameters = new { idParam = id };
             var sql = @"SELECT * FROM pessoas_contatos WHERE ID = @idParam";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             return await _connection.QuerySingleOrDefaultAsync<PESSOAS_CONTATOS>(command);
         }
@@ -132,7 +132,6 @@ WHERE ID = @idParam
                     ,ID_PESSOA = @idpessoaParam
                      WHERE ID = @idParam;
 ";
-            using var _connection = Open();
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 
