@@ -44,7 +44,7 @@ internal class AtualizarProfessorService : IAtualizarProfessorService
             if (resultadoPessoa == 0)
             {
                 _pessoas_repository.Rollback();
-                return Result.Fail("Não foi possível atualizar o professor.");
+                return Result.Fail(ProfessorMessages.NAO_FOI_POSSIVEL_ATUALIZAR);
             }
 
             var resultadoContato = await AtualizarContatosAsync(dto, professorEncontrado.ID, cancellationToken);
@@ -52,6 +52,7 @@ internal class AtualizarProfessorService : IAtualizarProfessorService
             if (resultadoContato.IsFailed)
             {
                 _pessoas_repository.Rollback();
+                return Result.Fail(ProfessorMessages.NAO_FOI_POSSIVEL_ATUALIZAR);
             }
 
             await AtualizarDisciplinasAsync(dto, professorEncontrado.ID, cancellationToken);
