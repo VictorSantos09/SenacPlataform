@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace BancoTalentos.Domain.Validators;
 
-public class ProfessorValidator : AbstractValidator<PESSOAS>
+internal class ProfessorValidator : AbstractValidator<PESSOAS>
 {
     public ProfessorValidator()
     {
