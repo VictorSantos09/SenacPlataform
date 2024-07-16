@@ -1,3 +1,4 @@
+using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Entity.Base;
 using BancoTalentos.Domain.Repositories.Base.Shared;
 using BancoTalentos.Domain.Repositories.Contracts.Base.Interfaces;
@@ -14,7 +15,7 @@ public class PESSOAS_CONTATOS_REPOSITORY_BASE : Repository, IPESSOAS_CONTATOS_RE
     }
 
     public async Task<int> DeleteAsync(
-        PESSOAS_CONTATOS_BASE pessoas_contatos,
+        PESSOAS_CONTATOS pessoas_contatos,
         CancellationToken cancellationToken = default
     )
     {
@@ -37,7 +38,7 @@ WHERE ID = @idParam
     }
 
     public async Task<int> InsertAsync(
-        PESSOAS_CONTATOS_BASE pessoas_contatos,
+        PESSOAS_CONTATOS pessoas_contatos,
         CancellationToken cancellationToken = default
     )
     {
@@ -74,7 +75,7 @@ WHERE ID = @idParam
         }
     }
 
-    public async Task<IEnumerable<PESSOAS_CONTATOS_BASE>> GetAllAsync(
+    public async Task<IEnumerable<PESSOAS_CONTATOS>> GetAllAsync(
         CancellationToken cancellationToken = default
     )
     {
@@ -83,7 +84,7 @@ WHERE ID = @idParam
             var sql = @"SELECT * FROM pessoas_contatos";
             using var _connection = Open();
             CommandDefinition command = new(sql, cancellationToken: cancellationToken);
-            return await _connection.QueryAsync<PESSOAS_CONTATOS_BASE>(command);
+            return await _connection.QueryAsync<PESSOAS_CONTATOS>(command);
         }
         catch (Exception)
         {
@@ -91,7 +92,7 @@ WHERE ID = @idParam
         }
     }
 
-    public async Task<PESSOAS_CONTATOS_BASE?> GetByIdAsync(
+    public async Task<PESSOAS_CONTATOS?> GetByIdAsync(
         object id,
         CancellationToken cancellationToken = default
     )
@@ -100,9 +101,9 @@ WHERE ID = @idParam
         {
             object parameters = new { idParam = id };
             var sql = @"SELECT * FROM pessoas_contatos WHERE ID = @idParam";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
-            return await _connection.QuerySingleOrDefaultAsync<PESSOAS_CONTATOS_BASE>(command);
+            return await _connection.QuerySingleOrDefaultAsync<PESSOAS_CONTATOS>(command);
         }
         catch (Exception)
         {
@@ -111,7 +112,7 @@ WHERE ID = @idParam
     }
 
     public async Task<int> UpdateAsync(
-        PESSOAS_CONTATOS_BASE pessoas_contatos,
+        PESSOAS_CONTATOS pessoas_contatos,
         CancellationToken cancellationToken = default
     )
     {
@@ -131,7 +132,6 @@ WHERE ID = @idParam
                     ,ID_PESSOA = @idpessoaParam
                      WHERE ID = @idParam;
 ";
-            using var _connection = Open();
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 

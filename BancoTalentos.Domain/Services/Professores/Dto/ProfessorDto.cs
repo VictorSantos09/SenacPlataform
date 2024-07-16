@@ -1,28 +1,15 @@
-﻿using BancoTalentos.Domain.Services.Contato.Dto;
+﻿using BancoTalentos.Domain.Entity.Enums;
+using BancoTalentos.Domain.Services.Contato.Dto;
 
 namespace BancoTalentos.Domain.Services.Professores.Dto;
 
-public sealed record ProfessorDto
+public record ProfessorDto
 {
-    public string Nome { get; set; }
-    public byte[]? Foto { get; set; }
-    public CARGO Cargo { get; set; }
-    public int CargaHoraria { get; set; }
-    public IEnumerable<int> IdsDisciplinas { get; set; }
-    public IEnumerable<ContatoDto> Contatos { get; set; }
-
-    public ProfessorDto(string nome,
-                        CARGO cargo,
-                        int cargaHoraria,
-                        IEnumerable<int> idsDisciplinas,
-                        IEnumerable<ContatoDto> contatos,
-                        byte[]? foto = null)
-    {
-        Nome = nome;
-        Foto = foto;
-        Cargo = cargo;
-        CargaHoraria = cargaHoraria;
-        IdsDisciplinas = idsDisciplinas;
-        Contatos = contatos;
-    }
+    public required string Nome { get; set; }
+    public required byte[]? Foto { get; set; }
+    internal CARGO Cargo { get; } = CARGO.PROFESSOR;
+    public required int CargaHorariaSemanal { get; set; }
+    public required IEnumerable<ContatoDto> Contatos { get; set; }
+    public required int Id { get; set; }
+    public required IEnumerable<int> IdsDisciplinas { get; set; }
 }

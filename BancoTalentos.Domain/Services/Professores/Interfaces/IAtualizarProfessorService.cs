@@ -3,7 +3,7 @@ using FluentResults;
 
 namespace BancoTalentos.Domain.Services.Professores.Interfaces;
 
-public interface ICadastrarProfessorService
+public interface IAtualizarProfessorService
 {
-    Task<Result> CadastrarAsync(ProfessorDto dto, CancellationToken cancellationToken);
+    Task<Result> AtualizarAsync(ProfessorDto dto, CancellationToken cancellationToken = default);
 }

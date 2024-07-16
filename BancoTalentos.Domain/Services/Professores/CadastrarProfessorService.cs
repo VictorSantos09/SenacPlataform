@@ -2,8 +2,9 @@
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using BancoTalentos.Domain.Services.Professores.Dto;
 using BancoTalentos.Domain.Services.Professores.Interfaces;
+using FluentResults;
 using FluentValidation;
-using LanguageExt.Common;
+using SenacPlataform.Shared.Extensions;
 
 namespace BancoTalentos.Domain.Services.Professores;
 
@@ -15,6 +16,7 @@ public class CadastrarProfessorService : ICadastrarProfessorService
     private readonly IValidator<PESSOAS> _validator;
     private readonly IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY _pessoas_habilidades_disciplinas_repository;
     private readonly IDISCIPLINAS_REPOSITORY _disciplinas_repository;
+    public const int CARGA_HORARIA_SEMANA_MAXIMA_CLT = 44;
 
     public CadastrarProfessorService(IPESSOAS_REPOSITORY pessoas_repository,
                                      IPESSOAS_CONTATOS_REPOSITORY pessoas_contatos_repository,
@@ -31,63 +33,73 @@ public class CadastrarProfessorService : ICadastrarProfessorService
         _disciplinas_repository = disciplinas_repository;
     }
 
-    public async Task<Result<bool>> CadastrarAsync(ProfessorDto dto, CancellationToken cancellationToken)
+    public async Task<Result> CadastrarAsync(ProfessorDto dto, CancellationToken cancellationToken)
     {
-        PESSOAS entity = new()
+        try
         {
-            CARGA_HORARIA = dto.CargaHoraria,
-            CARGO = dto.Cargo,
-            FOTO = dto.Foto,
-            NOME = dto.Nome,
-        };
-
-        var validationResult = await _validator.ValidateAsync(entity, cancellationToken);
-
-        if (validationResult.IsValid)
-        {
-            try
+            if (dto.CargaHorariaSemanal > CARGA_HORARIA_SEMANA_MAXIMA_CLT)
             {
-                var result = await CadastrarProfessorAsync(entity, dto, cancellationToken);
-                return result;
+                return Result.Fail(ProfessorMessages.CARGA_HORARIA_EXCEDE_LIMITE);
             }
-            catch (Exception)
+
+            PESSOAS entity = new()
             {
-                _pessoas_repository.Rollback();
-                throw;
-            }
+                CARGA_HORARIA = dto.CargaHorariaSemanal,
+                CARGO = dto.Cargo,
+                FOTO = dto.Foto,
+                NOME = dto.Nome,
+            };
+
+            var validationResult = await _validator.ValidateAsync(entity, cancellationToken);
+
+            if (!validationResult.IsValid)
+                return validationResult.ToErrorResult();
+
+            _pessoas_repository.BeginTransaction();
+
+            var result = await CadastrarProfessorAsync(entity, dto, cancellationToken);
+
+            if (result.IsFailed) _pessoas_repository.Rollback();
+            else _pessoas_repository.Commit();
+
+            return result;
         }
-
-        return new Result<bool>(false);
+        catch (Exception)
+        {
+            _pessoas_repository.Rollback();
+            throw;
+        }
     }
 
-    private async Task<Result<bool>> CadastrarProfessorAsync(PESSOAS entity, ProfessorDto dto, CancellationToken cancellationToken)
+    private async Task<Result> CadastrarProfessorAsync(PESSOAS entity, ProfessorDto dto, CancellationToken cancellationToken)
     {
-        _pessoas_repository.BeginTransaction();
-
         var affectedRows = await _pessoas_repository.InsertAsync(entity, cancellationToken);
 
         if (affectedRows == 0)
         {
-            _pessoas_repository.Rollback();
-            return new Result<bool>(false);
+            return Result.Fail(ProfessorMessages.NAO_FOI_POSSIVEL_CADASTRAR);
         }
 
         var idProfessor = await _pessoas_repository.GetMaxIdAsync();
 
         var resultContato = await CadastrarContatosAsync(dto, idProfessor, cancellationToken);
-        var resultHabilidades = await CadastrarProfessorHabilidades(dto, idProfessor, cancellationToken);
 
-
-        if (resultContato.IsSuccess && resultHabilidades.IsSuccess)
+        if (resultContato.IsFailed)
         {
-            _pessoas_repository.Commit();
-            return new Result<bool>(true);
+            return resultContato;
         }
 
-        return new Result<bool>(false);
+        var resultHabilidades = await CadastrarProfessorHabilidades(dto, idProfessor, cancellationToken);
+
+        if (resultHabilidades.IsFailed)
+        {
+            return resultHabilidades;
+        }
+
+        return Result.Ok();
     }
 
-    private async Task<Result<bool>> CadastrarContatosAsync(ProfessorDto dto, int idProfessor, CancellationToken cancellationToken)
+    private async Task<Result> CadastrarContatosAsync(ProfessorDto dto, int idProfessor, CancellationToken cancellationToken)
     {
         PESSOAS_CONTATOS entity = new()
         {
@@ -100,14 +112,12 @@ public class CadastrarProfessorService : ICadastrarProfessorService
         {
             if (!await _tipos_contatos_repository.ExistsAsync("TIPOS_CONTATOS", c.IdTipo, cancellationToken))
             {
-                _pessoas_repository.Rollback();
-                return new Result<bool>(false);
+                return Result.Fail($"Não existe o tipo de contato informado.");
             }
 
             else if (await _pessoas_contatos_repository.HasContatoCadadastrado(c.Contato, idProfessor, cancellationToken))
             {
-                _pessoas_repository.Rollback();
-                return new Result<bool>(false);
+                return Result.Fail($"Já existe o contato {c.Contato} registrado para o professor.");
             }
 
             entity.CONTATO = c.Contato;
@@ -116,15 +126,14 @@ public class CadastrarProfessorService : ICadastrarProfessorService
 
             if (rowsAffected == 0)
             {
-                _pessoas_repository.Rollback();
-                return new Result<bool>(false);
+                return Result.Fail($"Não foi possível cadastrar o contato {c.Contato} para o professor.");
             }
         }
 
-        return new Result<bool>(true);
+        return Result.Ok();
     }
 
-    private async Task<Result<bool>> CadastrarProfessorHabilidades(ProfessorDto dto, int idProfessor, CancellationToken cancellationToken)
+    private async Task<Result> CadastrarProfessorHabilidades(ProfessorDto dto, int idProfessor, CancellationToken cancellationToken)
     {
         PESSOAS_HABILIDADES_DISCIPLINAS entity = new()
         {
@@ -136,14 +145,12 @@ public class CadastrarProfessorService : ICadastrarProfessorService
         {
             if (!await _disciplinas_repository.ExistsAsync("DISCIPLINAS", i, cancellationToken))
             {
-                _pessoas_repository.Rollback();
-                return new Result<bool>(false);
+                return Result.Fail("Não existe a disciplina informada.");
             }
 
             if (await _pessoas_habilidades_disciplinas_repository.HasHabilidadeCadastrada(i, idProfessor, cancellationToken))
             {
-                _pessoas_repository.Rollback();
-                return new Result<bool>(false);
+                return Result.Fail(ProfessorMessages.JA_TEM_HABILIDADE);
             }
 
             entity.ID_DISCIPLINA = i;
@@ -151,11 +158,10 @@ public class CadastrarProfessorService : ICadastrarProfessorService
 
             if (result == 0)
             {
-                _pessoas_repository.Rollback();
-                return new Result<bool>(false);
+                return Result.Fail(ProfessorMessages.NAO_FOI_POSSIVEL_CADASTRAR_HABILIDADE);
             }
         }
 
-        return new Result<bool>(true);
+        return Result.Ok();
     }
 }

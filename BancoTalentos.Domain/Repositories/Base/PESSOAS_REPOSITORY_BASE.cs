@@ -1,3 +1,4 @@
+using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Entity.Base;
 using BancoTalentos.Domain.Repositories.Base.Shared;
 using BancoTalentos.Domain.Repositories.Contracts.Base.Interfaces;
@@ -14,7 +15,7 @@ public class PESSOAS_REPOSITORY_BASE : Repository, IPESSOAS_REPOSITORY_BASE
     }
 
     public async Task<int> DeleteAsync(
-        PESSOAS_BASE pessoas,
+        PESSOAS pessoas,
         CancellationToken cancellationToken = default
     )
     {
@@ -25,7 +26,6 @@ public class PESSOAS_REPOSITORY_BASE : Repository, IPESSOAS_REPOSITORY_BASE
                 @"DELETE FROM pessoas
 WHERE ID = @idParam
 ";
-            using var _connection = Open();
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 
@@ -38,7 +38,7 @@ WHERE ID = @idParam
     }
 
     public async Task<int> InsertAsync(
-        PESSOAS_BASE pessoas,
+        PESSOAS pessoas,
         CancellationToken cancellationToken = default
     )
     {
@@ -48,7 +48,7 @@ WHERE ID = @idParam
             {
                 nomeParam = pessoas.NOME,
                 fotoParam = pessoas.FOTO,
-                cargoParam = pessoas.CARGO,
+                cargoParam = pessoas.CARGO.ToString(),
                 cargahorariaParam = pessoas.CARGA_HORARIA,
             };
             var sql =
@@ -78,7 +78,7 @@ WHERE ID = @idParam
         }
     }
 
-    public async Task<IEnumerable<PESSOAS_BASE>> GetAllAsync(
+    public async Task<IEnumerable<PESSOAS>> GetAllAsync(
         CancellationToken cancellationToken = default
     )
     {
@@ -87,7 +87,7 @@ WHERE ID = @idParam
             var sql = @"SELECT * FROM pessoas";
             using var _connection = Open();
             CommandDefinition command = new(sql, cancellationToken: cancellationToken);
-            return await _connection.QueryAsync<PESSOAS_BASE>(command);
+            return await _connection.QueryAsync<PESSOAS>(command);
         }
         catch (Exception)
         {
@@ -95,8 +95,8 @@ WHERE ID = @idParam
         }
     }
 
-    public async Task<PESSOAS_BASE?> GetByIdAsync(
-        object id,
+    public async Task<PESSOAS?> GetByIdAsync(
+        int id,
         CancellationToken cancellationToken = default
     )
     {
@@ -104,9 +104,9 @@ WHERE ID = @idParam
         {
             object parameters = new { idParam = id };
             var sql = @"SELECT * FROM pessoas WHERE ID = @idParam";
-            using var _connection = Open();
+
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
-            return await _connection.QuerySingleOrDefaultAsync<PESSOAS_BASE>(command);
+            return await _connection.QuerySingleOrDefaultAsync<PESSOAS>(command);
         }
         catch (Exception)
         {
@@ -115,7 +115,7 @@ WHERE ID = @idParam
     }
 
     public async Task<int> UpdateAsync(
-        PESSOAS_BASE pessoas,
+        PESSOAS pessoas,
         CancellationToken cancellationToken = default
     )
     {
@@ -126,7 +126,7 @@ WHERE ID = @idParam
                 idParam = pessoas.ID,
                 nomeParam = pessoas.NOME,
                 fotoParam = pessoas.FOTO,
-                cargoParam = pessoas.CARGO,
+                cargoParam = pessoas.CARGO.ToString(),
                 cargahorariaParam = pessoas.CARGA_HORARIA,
             };
             var sql =
@@ -137,7 +137,7 @@ WHERE ID = @idParam
                     ,CARGA_HORARIA = @cargahorariaParam
                      WHERE ID = @idParam;
 ";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 
