@@ -115,7 +115,7 @@ public class CadastrarProfessorService : ICadastrarProfessorService
                 return Result.Fail($"Não existe o tipo de contato informado.");
             }
 
-            else if (await _pessoas_contatos_repository.HasContatoCadadastrado(c.Contato, idProfessor, cancellationToken))
+            else if (await _pessoas_contatos_repository.HasContatoCadadastradoAsync(c.Contato, idProfessor, cancellationToken))
             {
                 return Result.Fail($"Já existe o contato {c.Contato} registrado para o professor.");
             }

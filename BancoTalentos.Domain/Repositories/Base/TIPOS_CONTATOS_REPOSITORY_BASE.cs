@@ -65,7 +65,6 @@ WHERE ID = @idParam
 					,@datainativacaoParam
 					)
 ";
-            using var _connection = Open();
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 
