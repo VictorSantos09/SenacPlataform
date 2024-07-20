@@ -1,5 +1,6 @@
 ﻿using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
+using BancoTalentos.Domain.Services.TipoContato.Dto;
 using BancoTalentos.Domain.Services.TipoContato.Interface;
 using FluentResults;
 using FluentValidation;
@@ -18,21 +19,21 @@ internal class TipoContatoAtualizarService : ITipoContatoAtualizarService
         _validator = validator;
     }
 
-    public async Task<Result> AtualizarAsync(int id, string tipo, CancellationToken cancellationToken)
+    public async Task<Result> AtualizarAsync(TipoContatoDto dto, CancellationToken cancellationToken)
     {
-        if (tipo.IsEmpty())
+        if (dto.Tipo.IsEmpty())
         {
             return Result.Fail("Tipo de contato não informado.");
         }
 
-        var tipoContato = await _tipos_contatos_repository.GetByIdAsync(id, cancellationToken);
+        var tipoContato = await _tipos_contatos_repository.GetByIdAsync(dto.Id, cancellationToken);
 
         if (tipoContato is null)
         {
-            return Result.Fail($"Tipo de contato com código {id} não encontrado.");
+            return Result.Fail($"Tipo de contato com código {dto.Id} não encontrado.");
         }
 
-        tipoContato.TIPO = tipo;
+        tipoContato.TIPO = dto.Tipo;
 
         var validationResult = await _validator.ValidateAsync(tipoContato, cancellationToken);
 
@@ -45,7 +46,7 @@ internal class TipoContatoAtualizarService : ITipoContatoAtualizarService
         {
             _tipos_contatos_repository.BeginTransaction();
 
-            if (await _tipos_contatos_repository.ExistsBy_IDX_TIPOS_CONTATOS_002_Async(tipo, cancellationToken))
+            if (await _tipos_contatos_repository.ExistsBy_IDX_TIPOS_CONTATOS_002_Async(dto.Tipo, cancellationToken))
             {
                 _tipos_contatos_repository.Rollback();
                 return Result.Fail("Tipo de contato já cadastrado.");

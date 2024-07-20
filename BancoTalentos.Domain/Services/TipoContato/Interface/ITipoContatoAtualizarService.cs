@@ -1,7 +1,8 @@
-﻿using FluentResults;
+﻿using BancoTalentos.Domain.Services.TipoContato.Dto;
+using FluentResults;
 
 namespace BancoTalentos.Domain.Services.TipoContato.Interface;
 public interface ITipoContatoAtualizarService
 {
-    Task<Result> AtualizarAsync(int id, string tipo, CancellationToken cancellationToken);
+    Task<Result> AtualizarAsync(TipoContatoDto dto, CancellationToken cancellationToken);
 }
