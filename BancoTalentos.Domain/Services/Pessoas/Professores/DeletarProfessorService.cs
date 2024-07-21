@@ -1,8 +1,8 @@
 ﻿using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
-using BancoTalentos.Domain.Services.Professores.Interfaces;
+using BancoTalentos.Domain.Services.Pessoas.Professores.Interfaces;
 using FluentResults;
 
-namespace BancoTalentos.Domain.Services.Professores;
+namespace BancoTalentos.Domain.Services.Pessoas.Professores;
 
 internal class DeletarProfessorService : IDeletarProfessorService
 {

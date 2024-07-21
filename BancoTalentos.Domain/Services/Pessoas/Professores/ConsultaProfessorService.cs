@@ -1,9 +1,9 @@
 ﻿using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
-using BancoTalentos.Domain.Services.Professores.Interfaces;
+using BancoTalentos.Domain.Services.Pessoas.Professores.Interfaces;
 using FluentResults;
 
-namespace BancoTalentos.Domain.Services.Professores;
+namespace BancoTalentos.Domain.Services.Pessoas.Professores;
 
 public class ConsultaProfessorService : IConsultaProfessorService
 {
@@ -20,7 +20,7 @@ public class ConsultaProfessorService : IConsultaProfessorService
 
         return result.Any()
             ? Result.Ok(result)
-            : Result.Fail(ProfessorMessages.NENHUM_ENCONTRADO);
+            : Result.Fail(PessoaMessages.NENHUM_ENCONTRADO);
     }
 
     public async Task<Result<PESSOAS>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
@@ -29,6 +29,6 @@ public class ConsultaProfessorService : IConsultaProfessorService
 
         return result is not null
             ? Result.Ok(result)
-            : Result.Fail(ProfessorMessages.NAO_ENCONTRADO);
+            : Result.Fail(PessoaMessages.NAO_ENCONTRADO);
     }
 }

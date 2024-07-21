@@ -1,10 +1,10 @@
 ﻿using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
-using BancoTalentos.Domain.Services.Professores.Dto;
-using BancoTalentos.Domain.Services.Professores.Interfaces;
+using BancoTalentos.Domain.Services.Pessoas.Professores.Dto;
+using BancoTalentos.Domain.Services.Pessoas.Professores.Interfaces;
 using FluentResults;
 
-namespace BancoTalentos.Domain.Services.Professores;
+namespace BancoTalentos.Domain.Services.Pessoas.Professores;
 
 internal class AtualizarProfessorService : IAtualizarProfessorService
 {
@@ -44,7 +44,7 @@ internal class AtualizarProfessorService : IAtualizarProfessorService
             if (resultadoPessoa == 0)
             {
                 _pessoas_repository.Rollback();
-                return Result.Fail(ProfessorMessages.NAO_FOI_POSSIVEL_ATUALIZAR);
+                return Result.Fail(PessoaMessages.NAO_FOI_POSSIVEL_ATUALIZAR);
             }
 
             var resultadoContato = await AtualizarContatosAsync(dto, professorEncontrado.ID, cancellationToken);
@@ -52,7 +52,7 @@ internal class AtualizarProfessorService : IAtualizarProfessorService
             if (resultadoContato.IsFailed)
             {
                 _pessoas_repository.Rollback();
-                return Result.Fail(ProfessorMessages.NAO_FOI_POSSIVEL_ATUALIZAR);
+                return Result.Fail(PessoaMessages.NAO_FOI_POSSIVEL_ATUALIZAR);
             }
 
             await AtualizarDisciplinasAsync(dto, professorEncontrado.ID, cancellationToken);

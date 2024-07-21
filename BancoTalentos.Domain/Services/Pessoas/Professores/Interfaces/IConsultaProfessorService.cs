@@ -1,7 +1,7 @@
 ﻿using BancoTalentos.Domain.Entity;
 using FluentResults;
 
-namespace BancoTalentos.Domain.Services.Professores.Interfaces;
+namespace BancoTalentos.Domain.Services.Pessoas.Professores.Interfaces;
 
 public interface IConsultaProfessorService
 {
