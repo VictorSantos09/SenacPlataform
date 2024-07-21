@@ -26,7 +26,6 @@ public class TIPOS_CONTATOS_REPOSITORY_BASE : Repository, ITIPOS_CONTATOS_REPOSI
                 @"DELETE FROM tipos_contatos
 WHERE ID = @idParam
 ";
-            using var _connection = Open();
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 
@@ -83,7 +82,6 @@ WHERE ID = @idParam
         try
         {
             var sql = @"SELECT * FROM tipos_contatos";
-            using var _connection = Open();
             CommandDefinition command = new(sql, cancellationToken: cancellationToken);
             return await _connection.QueryAsync<TIPOS_CONTATOS>(command);
         }
@@ -102,7 +100,6 @@ WHERE ID = @idParam
         {
             object parameters = new { idParam = id };
             var sql = @"SELECT * FROM tipos_contatos WHERE ID = @idParam";
-            using var _connection = Open();
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             return await _connection.QuerySingleOrDefaultAsync<TIPOS_CONTATOS>(command);
         }
@@ -133,7 +130,6 @@ WHERE ID = @idParam
                     ,DATA_INATIVACAO = @datainativacaoParam
                      WHERE ID = @idParam;
 ";
-            using var _connection = Open();
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 
