@@ -26,7 +26,6 @@ public class DISCIPLINAS_REPOSITORY_BASE : Repository, IDISCIPLINAS_REPOSITORY_B
                 @"DELETE FROM disciplinas
 WHERE ID = @idParam
 ";
-            using var _connection = Open();
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 
@@ -65,7 +64,7 @@ WHERE ID = @idParam
 					,@descricaoParam
 					)
 ";
-            using var _connection = Open();
+
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 
@@ -84,7 +83,7 @@ WHERE ID = @idParam
         try
         {
             var sql = @"SELECT * FROM disciplinas";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, cancellationToken: cancellationToken);
             return await _connection.QueryAsync<DISCIPLINAS>(command);
         }
@@ -103,7 +102,7 @@ WHERE ID = @idParam
         {
             object parameters = new { idParam = id };
             var sql = @"SELECT * FROM disciplinas WHERE ID = @idParam";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             return await _connection.QuerySingleOrDefaultAsync<DISCIPLINAS>(command);
         }
@@ -134,7 +133,7 @@ WHERE ID = @idParam
                     ,DESCRICAO = @descricaoParam
                      WHERE ID = @idParam;
 ";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 

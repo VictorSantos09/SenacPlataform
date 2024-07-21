@@ -47,4 +47,12 @@ public class PESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY
             idDisciplina
         }, cancellationToken);
     }
+
+    public async Task<bool> ExistsBy_IDX_PESSOAS_HABILIDADES_DISCIPLINAS_002(int idDisciplina, CancellationToken cancellationToken = default)
+    {
+        var sql = @"PESSOAS_HABILIDADES_DISCIPLINAS
+                    WHERE ID_DISCIPLINA = @idDisciplina";
+
+        return await IfAsync(sql, new { idDisciplina }, cancellationToken);
+    }
 }

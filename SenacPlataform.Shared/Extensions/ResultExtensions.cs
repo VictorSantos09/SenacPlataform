@@ -22,4 +22,9 @@ public static class ValidationResultExtensions
     {
         return Result.Fail(ToErrors(result));
     }
+
+    public static bool IsInvalid(this ValidationResult result)
+    {
+        return !result.IsValid;
+    }
 }
