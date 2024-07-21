@@ -8,7 +8,7 @@ internal static class BancoTalentosConfig
 {
     public static IServiceCollection AddBancoTalentos(this IServiceCollection services)
     {
-        _ = services.AddValidatorsFromAssembly(typeof(BancoTalentosDomainConfig).Assembly);
+        _ = services.AddValidatorsFromAssembly(typeof(BancoTalentosDomainConfig).Assembly, includeInternalTypes: true);
         _ = services.AddDependencies(typeof(BancoTalentosDomainConfig).Assembly);
         _ = services.AddDependencies(typeof(BancoTalentosConfig).Assembly);
         return services;

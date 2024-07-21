@@ -24,7 +24,7 @@ public class PESSOAS_CONTATOS_REPOSITORY
         return await _connection.QueryAsync<PESSOAS_CONTATOS>(command);
     }
 
-    public async Task<bool> HasContatoCadadastrado(string contato, int idPessoa, CancellationToken cancellationToken = default)
+    public async Task<bool> HasContatoCadadastradoAsync(string contato, int idPessoa, CancellationToken cancellationToken = default)
     {
         var sql = @$"PESSOAS_CONTATOS
                 WHERE CONTATO = @contato
@@ -35,5 +35,12 @@ public class PESSOAS_CONTATOS_REPOSITORY
             contato,
             idPessoa
         }, cancellationToken);
+    }
+
+    public async Task<bool> HasPessoaComTipoContatoAsync(int idTipo, CancellationToken cancellationToken)
+    {
+        var sql = @"SELECT ID FROM PESSOAS_CONTATOS WHERE ID_TIPO_CONTATO = @idTipo";
+
+        return await IfAsync(sql, new { idTipo }, cancellationToken);
     }
 }
