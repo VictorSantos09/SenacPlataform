@@ -1,47 +1,50 @@
-﻿using BancoTalentos.Domain.Services.Professores.Interfaces;
-using BancoTalentos.Domain.Services.Professores;
+﻿using BancoTalentos.Domain.Services.Pessoas.Coordenador;
+using BancoTalentos.Domain.Services.Pessoas.Coordenador.Interfaces;
+using BancoTalentos.Domain.Services.Pessoas.Professores.Dto;
 using Microsoft.AspNetCore.Mvc;
 using SenacPlataform.Shared.Controllers;
-using BancoTalentos.Domain.Services.Pessoas.Professores.Dto;
 
 namespace BancoTalentos.API.Controllers;
 
 [ApiController]
 [Route("coordenadores")]
-public class CoordenadorController : ControllerBase
+public class CoordenadorController(IConsultaCoordenadorService consultaCoordenadorService,
+                                   ICadastrarCoordenadorService cadastrarCoordenadorService,
+                                   IDeletarCoordenadorService deletarCoordenadorService,
+                                   IAtualizarCoordenadorService atualizarCoordenadorService) : ControllerBase
 {
     [Add]
-    public async Task<IActionResult> CadastrarAsync(ProfessorDto dto, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> CadastrarAsync(CoordenadorDto dto, CancellationToken cancellationToken = default)
     {
-        var result = await cadastrarProfessorService.CadastrarAsync(dto, cancellationToken);
+        var result = await cadastrarCoordenadorService.CadastrarAsync(dto, cancellationToken);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 
     [GetAll]
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var result = await consultaProfessorService.GetAllAsync(cancellationToken);
+        var result = await consultaCoordenadorService.GetAllAsync(cancellationToken);
         return Ok(result);
     }
 
     [GetById]
     public async Task<IActionResult> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var result = await consultaProfessorService.GetByIdAsync(id, cancellationToken);
+        var result = await consultaCoordenadorService.GetByIdAsync(id, cancellationToken);
         return Ok(result);
     }
 
     [Update]
-    public async Task<IActionResult> AtualizarAsync(ProfessorDto dto, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> AtualizarAsync(CoordenadorDto dto, CancellationToken cancellationToken = default)
     {
-        var result = await atualizarProfessorService.AtualizarAsync(dto, cancellationToken);
+        var result = await atualizarCoordenadorService.AtualizarAsync(dto, cancellationToken);
         return Ok(result);
     }
 
     [Delete]
     public async Task<IActionResult> DeletarAsync(int id, CancellationToken cancellationToken = default)
     {
-        var result = await deletarProfessorService.DeletarAsync(id, cancellationToken);
+        var result = await deletarCoordenadorService.DeletarCoordenadorAsync(id, cancellationToken);
         return Ok(result);
     }
 }

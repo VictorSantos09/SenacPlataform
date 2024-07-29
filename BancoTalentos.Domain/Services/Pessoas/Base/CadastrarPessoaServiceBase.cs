@@ -1,6 +1,5 @@
 ﻿using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
-using BancoTalentos.Domain.Services.Foto;
 using BancoTalentos.Domain.Services.Pessoas.Professores;
 using BancoTalentos.Domain.Services.Pessoas.Professores.Dto;
 using FluentResults;
@@ -18,15 +17,13 @@ public abstract class CadastrarPessoaServiceBase
     private readonly IPESSOAS_REPOSITORY _pessoas_repository;
     private readonly ITIPOS_CONTATOS_REPOSITORY _tipos_contatos_repository;
     private readonly IValidator<PESSOAS> _validator;
-    private readonly IFotoService _fotoService;
 
     public CadastrarPessoaServiceBase(IDISCIPLINAS_REPOSITORY disciplinas_repository,
                                       IPESSOAS_CONTATOS_REPOSITORY pessoas_contatos_repository,
                                       IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY pessoas_habilidades_disciplinas_repository,
                                       IPESSOAS_REPOSITORY pessoas_repository,
                                       ITIPOS_CONTATOS_REPOSITORY tipos_contatos_repository,
-                                      IValidator<PESSOAS> validator,
-                                      IFotoService fotoService)
+                                      IValidator<PESSOAS> validator)
     {
         _disciplinas_repository = disciplinas_repository;
         _pessoas_contatos_repository = pessoas_contatos_repository;
@@ -34,7 +31,6 @@ public abstract class CadastrarPessoaServiceBase
         _pessoas_repository = pessoas_repository;
         _tipos_contatos_repository = tipos_contatos_repository;
         _validator = validator;
-        _fotoService = fotoService;
     }
 
     public async Task<Result> CadastrarPessoaAsync(PessoaDto dto, CancellationToken cancellationToken)
@@ -52,16 +48,6 @@ public abstract class CadastrarPessoaServiceBase
                 CARGO = dto.Cargo,
                 NOME = dto.Nome,
             };
-
-            if (dto.Foto is not null)
-            {
-                var resultFoto = await _fotoService.ArmazenarFotoPerfilOnDiskAsync(dto.Foto, cancellationToken);
-
-                if (resultFoto.IsSuccess)
-                {
-                    entity.FOTO = resultFoto.ValueOrDefault;
-                }
-            }
 
             var validationResult = await _validator.ValidateAsync(entity, cancellationToken);
 

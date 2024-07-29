@@ -43,7 +43,7 @@ public class ProfessorController(ICadastrarProfessorService cadastrarProfessorSe
     [Delete]
     public async Task<IActionResult> DeletarAsync(int id, CancellationToken cancellationToken = default)
     {
-        var result = await deletarProfessorService.DeletarAsync(id, cancellationToken);
+        var result = await deletarProfessorService.DeletarProfessorAsync(id, cancellationToken);
         return Ok(result);
     }
 }
