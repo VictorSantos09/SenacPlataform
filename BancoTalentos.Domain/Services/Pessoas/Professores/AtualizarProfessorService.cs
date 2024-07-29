@@ -1,8 +1,12 @@
-﻿using BancoTalentos.Domain.Entity;
+﻿using BancoTalentos.Domain.Config;
+using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
+using BancoTalentos.Domain.Services.Foto;
 using BancoTalentos.Domain.Services.Pessoas.Professores.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Professores.Interfaces;
 using FluentResults;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace BancoTalentos.Domain.Services.Pessoas.Professores;
 
@@ -14,12 +18,13 @@ internal class AtualizarProfessorService : IAtualizarProfessorService
 
     public AtualizarProfessorService(IPESSOAS_REPOSITORY pessoas_repository,
                                      IPESSOAS_CONTATOS_REPOSITORY pessoas_contatos_repository,
-                                     IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY pessoas_habilidades_disciplinas_repository)
+                                     IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY pessoas_habilidades_disciplinas_repository,
+                                     ImageConfig configuration) : base(configuration)
     {
         _pessoas_repository = pessoas_repository;
         _pessoas_contatos_repository = pessoas_contatos_repository;
         _pessoas_habilidades_disciplinas_repository = pessoas_habilidades_disciplinas_repository;
-    }
+    } 
 
     public async Task<Result> AtualizarAsync(ProfessorDto dto, CancellationToken cancellationToken = default)
     {
@@ -66,6 +71,20 @@ internal class AtualizarProfessorService : IAtualizarProfessorService
             _pessoas_repository.Rollback();
             throw;
         }
+    }
+
+    public async Task<Result> AtualizarAsync(IFormFile fotoPerfil, int id, CancellationToken cancellationToken = default)
+    {
+        var professorExiste = await _pessoas_repository.ExistsAsync("PESSOAS", id, cancellationToken);
+
+        if (!professorExiste)
+        {
+            return Result.Fail($"O professor com o código {id} não foi encontrado.");
+        }
+
+        _  = await ArmazenarFotoPerfilOnDiskAsync(fotoPerfil, cancellationToken: cancellationToken);
+
+        return Result.Ok();
     }
 
     private async Task<Result> AtualizarContatosAsync(ProfessorDto dto, int idProfessor, CancellationToken cancellationToken)
