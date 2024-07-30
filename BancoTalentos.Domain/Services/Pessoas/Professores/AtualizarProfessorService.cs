@@ -19,6 +19,6 @@ internal class AtualizarProfessorService(IPESSOAS_REPOSITORY pessoas_repository,
 
     public async Task<Result> AtualizarAsync(IFormFile fotoPerfil, int id, CancellationToken cancellationToken = default)
     {
-        return await AtualizarFotoPerfilAsync(fotoPerfil, id, cancellationToken);
+        return await AtualizarPessoaFotoPerfilAsync(fotoPerfil, id, cancellationToken);
     }
 }

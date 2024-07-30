@@ -14,6 +14,6 @@ internal class DeletarCoordenadorService(IPESSOAS_REPOSITORY pessoas_repository,
 {
     public async Task<Result> DeletarCoordenadorAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await DeletarCoordenadorAsync(id, cancellationToken);
+        return await DeletarAsync(id, cancellationToken);
     }
 }

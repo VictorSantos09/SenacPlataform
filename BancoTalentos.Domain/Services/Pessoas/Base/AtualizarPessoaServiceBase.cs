@@ -10,7 +10,7 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
                                  IPESSOAS_CONTATOS_REPOSITORY pessoas_contatos_repository,
                                  IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY pessoas_habilidades_disciplinas_repository)
 {
-    public async Task<Result> AtualizarPessoaAsync(ProfessorDto dto, CancellationToken cancellationToken = default)
+    public async Task<Result> AtualizarPessoaAsync(PessoaDto dto, CancellationToken cancellationToken = default)
     {
         if (dto.Id == 0)
         {
@@ -57,7 +57,7 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
         }
     }
 
-    public async Task<Result> AtualizarFotoPerfilAsync(IFormFile fotoPerfil, int id, CancellationToken cancellationToken = default)
+    public async Task<Result> AtualizarPessoaFotoPerfilAsync(IFormFile fotoPerfil, int id, CancellationToken cancellationToken = default)
     {
         var professorExiste = await pessoas_repository.ExistsAsync("PESSOAS", id, cancellationToken);
 
@@ -71,7 +71,7 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
         return Result.Ok();
     }
 
-    private async Task<Result> AtualizarContatosAsync(ProfessorDto dto, int idProfessor, CancellationToken cancellationToken)
+    private async Task<Result> AtualizarContatosAsync(PessoaDto dto, int idProfessor, CancellationToken cancellationToken)
     {
         PESSOAS_CONTATOS? contatoEncontrado;
         int resultadoContato;
@@ -100,7 +100,7 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
         return Result.Ok();
     }
 
-    private async Task AtualizarDisciplinasAsync(ProfessorDto dto, int idProfessor, CancellationToken cancellationToken)
+    private async Task AtualizarDisciplinasAsync(PessoaDto dto, int idProfessor, CancellationToken cancellationToken)
     {
         PESSOAS_HABILIDADES_DISCIPLINAS? pessoaHabilidadeEncontrada;
         PESSOAS_HABILIDADES_DISCIPLINAS novaHabilidade;
@@ -122,10 +122,10 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
         }
     }
 
-    private async Task<int> AtualizarProfessorAsync(ProfessorDto dto, PESSOAS professorEncontrado, CancellationToken cancellationToken)
+    private async Task<int> AtualizarProfessorAsync(PessoaDto dto, PESSOAS professorEncontrado, CancellationToken cancellationToken)
     {
         professorEncontrado.CARGA_HORARIA = dto.CargaHorariaSemanal;
-        professorEncontrado.FOTO = dto.Foto;
+        //professorEncontrado.FOTO = dto.Foto;
         professorEncontrado.CARGO = dto.Cargo;
         professorEncontrado.NOME = dto.Nome;
 

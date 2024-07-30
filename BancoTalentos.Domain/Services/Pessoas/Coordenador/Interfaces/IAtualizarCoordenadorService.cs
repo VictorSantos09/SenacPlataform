@@ -6,6 +6,6 @@ namespace BancoTalentos.Domain.Services.Pessoas.Coordenador.Interfaces;
 
 public interface IAtualizarCoordenadorService
 {
-    Task<Result> AtualizarAsync(IFormFile fotoPerfil, int id, CancellationToken cancellationToken = default);
-    Task<Result> AtualizarAsync(CoordenadorDto dto, CancellationToken cancellationToken = default);
+    Task<Result> AtualizarFotoPerfilAsync(IFormFile fotoPerfil, int id, CancellationToken cancellationToken = default);
+    Task<Result> AtualizarCoordenadorAsync(CoordenadorDto dto, CancellationToken cancellationToken = default);
 }

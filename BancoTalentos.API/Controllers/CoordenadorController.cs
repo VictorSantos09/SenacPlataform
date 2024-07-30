@@ -36,7 +36,7 @@ public class CoordenadorController(IConsultaCoordenadorService consultaCoordenad
     [Update]
     public async Task<IActionResult> AtualizarAsync(CoordenadorDto dto, CancellationToken cancellationToken = default)
     {
-        var result = await atualizarCoordenadorService.AtualizarAsync(dto, cancellationToken);
+        var result = await atualizarCoordenadorService.AtualizarCoordenadorAsync(dto, cancellationToken);
         return Ok(result);
     }
 
