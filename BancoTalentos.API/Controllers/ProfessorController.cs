@@ -1,4 +1,4 @@
-﻿using BancoTalentos.Domain.Services.Pessoas.Professores.Dto;
+﻿using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Professores.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using SenacPlataform.Shared.Controllers;

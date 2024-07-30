@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace BancoTalentos.Domain.Services.Pessoas.Professores;
+namespace BancoTalentos.Domain.Services.Pessoas.Base;
 
 public enum ProfessorErrorCode
 {

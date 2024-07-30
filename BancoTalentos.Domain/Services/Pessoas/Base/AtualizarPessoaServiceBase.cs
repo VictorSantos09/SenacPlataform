@@ -1,9 +1,8 @@
 ﻿using BancoTalentos.Domain.Entity;
-using BancoTalentos.Domain.Services.Pessoas.Professores.Dto;
-using BancoTalentos.Domain.Services.Pessoas.Professores;
 using Microsoft.AspNetCore.Http;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using FluentResults;
+using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 
 namespace BancoTalentos.Domain.Services.Pessoas.Base;
 

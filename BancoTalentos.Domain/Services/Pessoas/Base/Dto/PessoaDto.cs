@@ -1,17 +1,7 @@
 ﻿using BancoTalentos.Domain.Entity.Enums;
 using BancoTalentos.Domain.Services.Contato.Dto;
 
-namespace BancoTalentos.Domain.Services.Pessoas.Professores.Dto;
-
-public record ProfessorDto : PessoaDto
-{
-    internal override CARGO Cargo { get; init; } = CARGO.PROFESSOR;
-}
-
-public record CoordenadorDto : PessoaDto
-{
-    internal override CARGO Cargo { get; init; } = CARGO.COORDENADOR;
-}
+namespace BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 
 public abstract record PessoaDto
 {

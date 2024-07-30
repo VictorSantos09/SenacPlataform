@@ -1,6 +1,7 @@
 ﻿using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Entity.Enums;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
+using BancoTalentos.Domain.Services.Pessoas.Base;
 using BancoTalentos.Domain.Services.Pessoas.Professores.Interfaces;
 using FluentResults;
 

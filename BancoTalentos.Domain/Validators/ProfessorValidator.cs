@@ -1,5 +1,5 @@
 ﻿using BancoTalentos.Domain.Entity;
-using BancoTalentos.Domain.Services.Pessoas.Professores;
+using BancoTalentos.Domain.Services.Pessoas.Base;
 using FluentValidation;
 
 namespace BancoTalentos.Domain.Validators;

@@ -1,7 +1,6 @@
 ﻿using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
-using BancoTalentos.Domain.Services.Pessoas.Professores;
-using BancoTalentos.Domain.Services.Pessoas.Professores.Dto;
+using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using FluentResults;
 using FluentValidation;
 using SenacPlataform.Shared.Extensions;
