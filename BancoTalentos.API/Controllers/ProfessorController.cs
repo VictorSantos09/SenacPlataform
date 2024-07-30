@@ -1,5 +1,4 @@
-﻿using BancoTalentos.Domain.Services.Pessoas.Base;
-using BancoTalentos.Domain.Services.Pessoas.Professores.Dto;
+﻿using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Professores.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using SenacPlataform.Shared.Controllers;
@@ -41,17 +40,10 @@ public class ProfessorController(ICadastrarProfessorService cadastrarProfessorSe
         return Ok(result);
     }
 
-    [Update("foto")]
-    public async Task<IActionResult> AtualizarFotoPerfilAsync(IFormFile foto, int id, CancellationToken cancellationToken = default)
-    {
-        var result = await atualizarProfessorService.AtualizarAsync(foto, id, cancellationToken);
-        return Ok(result);
-    }
-
     [Delete]
     public async Task<IActionResult> DeletarAsync(int id, CancellationToken cancellationToken = default)
     {
-        var result = await deletarProfessorService.DeletarAsync(id, cancellationToken);
+        var result = await deletarProfessorService.DeletarProfessorAsync(id, cancellationToken);
         return Ok(result);
     }
 }
