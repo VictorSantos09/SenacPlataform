@@ -1,5 +1,6 @@
 ﻿using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
+using BancoTalentos.Domain.Services.Foto;
 using BancoTalentos.Domain.Services.Pessoas.Base;
 using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Professores.Interfaces;
@@ -15,9 +16,14 @@ public class CadastrarProfessorService : CadastrarPessoaServiceBase, ICadastrarP
                                      IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY pessoas_habilidades_disciplinas_repository,
                                      IPESSOAS_REPOSITORY pessoas_repository,
                                      ITIPOS_CONTATOS_REPOSITORY tipos_contatos_repository,
-                                     IValidator<PESSOAS> validator) : base(
-        disciplinas_repository, pessoas_contatos_repository, pessoas_habilidades_disciplinas_repository,
-        pessoas_repository, tipos_contatos_repository, validator)
+                                     IValidator<PESSOAS> validator,
+                                     IImagemService imagemService) : base(disciplinas_repository,
+                                                                          pessoas_contatos_repository,
+                                                                          pessoas_habilidades_disciplinas_repository,
+                                                                          pessoas_repository,
+                                                                          tipos_contatos_repository,
+                                                                          validator,
+                                                                          imagemService)
     {
     }
 

@@ -4,58 +4,6 @@ using System.Net.Mime;
 
 namespace BancoTalentos.Domain.Config;
 
-public static class ImageConfigValidator
-{
-    /// <summary>
-    /// Valida a instância fornecida de <see cref="DevelopmentEnviromentImageConfig"/> com base nas configurações especificadas.
-    /// </summary>
-    /// <param name="config">O objeto de configuração a ser validado.</param>
-    /// <returns><c>true</c> se a configuração for válida; caso contrário, <c>false</c>.</returns>
-    /// <exception cref="ArgumentNullException">Lançado quando o parâmetro <paramref name="config"/> é nulo.</exception>
-    public static bool Validate(DevelopmentEnviromentImageConfig config)
-    {
-        if (config is null)
-        {
-            throw new ArgumentNullException(nameof(config), "A configuração não pode ser nula.");
-        }
-
-        return config.UseTempPath
-            ? ValidateTempPathConfig(config.PathTempFolderName)
-            : ValidatePermanentPathConfig(config.Path);
-    }
-
-    /// <summary>
-    /// Valida a configuração quando um caminho temporário é utilizado.
-    /// </summary>
-    /// <param name="pathTempFolderName">O nome da pasta temporária.</param>
-    /// <returns><c>true</c> se a configuração do caminho temporário for válida; caso contrário, <c>false</c>.</returns>
-    private static bool ValidateTempPathConfig(string pathTempFolderName)
-    {
-        if (pathTempFolderName.IsEmpty())
-        {
-            // O caminho temporário é usado, mas o nome da pasta temporária não foi fornecido
-            return false;
-        }
-        // O caminho temporário e o nome da pasta foram fornecidos
-        return true;
-    }
-
-    /// <summary>
-    /// Valida a configuração quando um caminho permanente é utilizado.
-    /// </summary>
-    /// <param name="path">O caminho permanente.</param>
-    /// <returns><c>true</c> se a configuração do caminho permanente for válida; caso contrário, <c>false</c>.</returns>
-    private static bool ValidatePermanentPathConfig(string path)
-    {
-        if (path.IsEmpty())
-        {
-            return false;
-        }
-
-        return true;
-    }
-}
-
 /// <summary>
 /// Contém as configurações gerais para tratamento de imagens. As configurações são definidas no arquivo appsettings.json.
 /// <para/>
@@ -110,11 +58,6 @@ public class ImageConfig
     {
         var errors = new List<Error>();
 
-        if (string.IsNullOrEmpty(imageConfig. Path))
-        {
-            errors.Add(new($"Caminho não informado. Campo: {nameof(imageConfig.Path)}"));
-        }
-
         if (!imageConfig.AllowedFormats.Any())
         {
             errors.Add(new($"Nenhum formato permitido informado. Campo: {nameof(imageConfig.AllowedFormats)}"));
@@ -134,6 +77,16 @@ public class ImageConfig
         {
             errors.Add(new($"Qualidade inválida. Deve ser um valor entre 0 e 100. Campo: {nameof(imageConfig.Quality)}"));
         }
+
+        if (imageConfig.MaxSizeBytes <= 0)
+        {
+            errors.Add(new($"Tamanho máximo do arquivo não informado. Campo: {nameof(imageConfig.MaxSizeBytes)}"));
+        }
+
+        var resultProfile = ProfileImageConfig.Validate(imageConfig.Profile);
+        //var resultEnviroment = EnviromentImageConfig.Validate(imageConfig.Enviroment);
+
+        //errors.AddRange(resultProfile.)
 
         return errors.Count > 0 ? Result.Fail(errors) : Result.Ok();
     }
@@ -183,6 +136,14 @@ public class ProfileImageConfig
     /// Sufixo do nome do arquivo das imagens de perfil. Exemplo: "_profilePhotoSenacPlataform".
     /// </summary>
     public required string FileNameSuffix { get; init; }
+
+    public static Result Validate(ProfileImageConfig config)
+    {
+        return Result.Ok();
+        var resultValidacaoCompressao = CompressionImageConfig.Validate(config.Compression);
+        if (resultValidacaoCompressao.IsFailed)
+            return resultValidacaoCompressao; // trocar
+    }
 }
 
 /// <summary>
@@ -200,9 +161,9 @@ public class CompressionImageConfig
     /// </summary>
     /// <param name="config">O objeto de configuração de compressão a ser validado.</param>
     /// <returns><c>true</c> se a configuração de compressão for válida; caso contrário, <c>false</c>.</returns>
-    public static bool Validate(CompressionImageConfig config)
+    public static Result Validate(CompressionImageConfig config)
     {
-        return config.Amount >= 0 && config.Amount <= 100;
+        return config.Amount >= 0 || config.Amount <= 100 ? Result.Ok() : Result.Fail("Quantidade de compressão é inválida, deve ser entre 0 e 100.");
     }
 }
 
@@ -220,16 +181,6 @@ public class EnviromentImageConfig
     /// Configurações para o ambiente de produção.
     /// </summary>
     public required ProductionEnviromentImageConfig Production { get; init; }
-
-    /// <summary>
-    /// Valida as configurações de ambiente.
-    /// </summary>
-    /// <param name="config">O objeto de configuração de ambiente a ser validado.</param>
-    /// <returns><c>true</c> se as configurações de ambiente forem válidas; caso contrário, <c>false</c>.</returns>
-    public static bool Validate(EnviromentImageConfig config)
-    {
-        return config.Development != null && config.Production != null;
-    }
 }
 
 /// <summary>
@@ -255,6 +206,44 @@ public class DevelopmentEnviromentImageConfig
     /// Caminho permanente onde os arquivos serão armazenados se <see cref="UseTempPath"/> for <c>false</c>.
     /// </summary>
     public string Path { get; set; }
+
+    /// <summary>
+    /// Valida a instância fornecida de <see cref="DevelopmentEnviromentImageConfig"/> com base nas configurações especificadas.
+    /// </summary>
+    /// <param name="config">O objeto de configuração a ser validado.</param>
+    /// <returns><c>true</c> se a configuração for válida; caso contrário, <c>false</c>.</returns>
+    /// <exception cref="ArgumentNullException">Lançado quando o parâmetro <paramref name="config"/> é nulo.</exception>
+    public static Result Validate(DevelopmentEnviromentImageConfig config)
+    {
+        if (config is null)
+        {
+            return Result.Fail("A configuração não pode ser nula");
+        }
+
+        return config.UseTempPath
+            ? ValidateTempPathConfig(config.PathTempFolderName)
+            : ValidatePermanentPathConfig(config.Path);
+    }
+
+    /// <summary>
+    /// Valida a configuração quando um caminho temporário é utilizado.
+    /// </summary>
+    /// <param name="pathTempFolderName">O nome da pasta temporária.</param>
+    /// <returns><c>true</c> se a configuração do caminho temporário for válida; caso contrário, <c>false</c>.</returns>
+    private static Result ValidateTempPathConfig(string pathTempFolderName)
+    {
+        return !pathTempFolderName.IsEmpty() ? Result.Ok() : Result.Fail("A pasta no diretório temporário é vázia");
+    }
+
+    /// <summary>
+    /// Valida a configuração quando um caminho permanente é utilizado.
+    /// </summary>
+    /// <param name="path">O caminho permanente.</param>
+    /// <returns><c>true</c> se a configuração do caminho permanente for válida; caso contrário, <c>false</c>.</returns>
+    private static Result ValidatePermanentPathConfig(string path)
+    {
+        return !path.IsEmpty() ? Result.Ok() : Result.Fail("O caminho permanente informado é vázio");
+    }
 }
 
 /// <summary>
@@ -266,4 +255,9 @@ public class ProductionEnviromentImageConfig
     /// Caminho onde as imagens serão salvas no ambiente de produção.
     /// </summary>
     public required string Path { get; init; }
+
+    public static Result Validate(ProductionEnviromentImageConfig config)
+    {
+        return config.Path is not null ? Result.Ok() : Result.Fail("O caminho dos arquivos de produção não foi informado");
+    }
 }

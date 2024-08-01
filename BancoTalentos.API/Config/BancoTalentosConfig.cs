@@ -3,7 +3,6 @@ using BancoTalentos.Domain.Exceptions;
 using FluentValidation;
 using SenacPlataform.Shared.DependencyInjection;
 using SenacPlataform.Shared.Extensions;
-using ZstdSharp.Unsafe;
 
 namespace BancoTalentos.API.Config;
 

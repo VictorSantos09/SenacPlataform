@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace SenacPlataform.Shared.Config;
+namespace SenacPlataform.Shared.Config.Interfaces;
 
 public interface ILayerConfiguration
 {
