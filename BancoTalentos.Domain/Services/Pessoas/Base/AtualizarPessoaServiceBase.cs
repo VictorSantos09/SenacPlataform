@@ -1,50 +1,80 @@
 ﻿using BancoTalentos.Domain.Entity;
-using Microsoft.AspNetCore.Http;
+using BancoTalentos.Domain.Exceptions;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
-using FluentResults;
+using BancoTalentos.Domain.Services.Foto;
 using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
+using FluentResults;
+using Microsoft.AspNetCore.Http;
 
 namespace BancoTalentos.Domain.Services.Pessoas.Base;
 
 internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_repository,
                                  IPESSOAS_CONTATOS_REPOSITORY pessoas_contatos_repository,
-                                 IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY pessoas_habilidades_disciplinas_repository)
+                                 IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY pessoas_habilidades_disciplinas_repository,
+                                 IImagemService imagemService)
 {
     public async Task<Result> AtualizarPessoaAsync(PessoaDto dto, CancellationToken cancellationToken = default)
     {
         if (dto.Id == 0)
         {
-            return Result.Fail("O código do professor não foi informado.");
+            return Result.Fail("O código da pessoa não foi informado.");
         }
 
-        var professorEncontrado = await pessoas_repository.GetByIdAsync(dto.Id, cancellationToken);
+        var pessoaEncontrada = await pessoas_repository.GetByIdAsync(dto.Id, cancellationToken);
 
-        if (professorEncontrado is null)
+        if (pessoaEncontrada is null)
         {
-            return Result.Fail($"O professor com o código {dto.Id} não foi encontrado.");
+            return Result.Fail($"A pessoa com o código {dto.Id} não foi encontrado.");
         }
 
         try
         {
             pessoas_repository.BeginTransaction();
 
-            int resultadoPessoa = await AtualizarProfessorAsync(dto, professorEncontrado, cancellationToken);
-
-            if (resultadoPessoa == 0)
-            {
-                pessoas_repository.Rollback();
-                return Result.Fail(PessoaMessages.NAO_FOI_POSSIVEL_ATUALIZAR);
-            }
-
-            var resultadoContato = await AtualizarContatosAsync(dto, professorEncontrado.ID, cancellationToken);
+            var resultadoContato = await AtualizarContatosAsync(dto, pessoaEncontrada.ID, cancellationToken);
 
             if (resultadoContato.IsFailed)
             {
                 pessoas_repository.Rollback();
+                return resultadoContato;
+            }
+
+            await AtualizarDisciplinasAsync(dto, pessoaEncontrada.ID, cancellationToken);
+
+            bool fotoAtualizada = false;
+            var nomeFotoAntiga = pessoaEncontrada.FOTO;
+
+            if (dto.Foto is not null)
+            {
+                var resultadoFoto = await AtualizarFotoPerfilAsync(dto.Foto, pessoaEncontrada, cancellationToken);
+                if (resultadoFoto.IsSuccess)
+                {
+                    pessoaEncontrada.FOTO = resultadoFoto.Value;
+                    fotoAtualizada = true;
+                }
+            }
+
+            AtualizarDadosRestantesProfessor(dto, pessoaEncontrada);
+            var resultadoPessoa = await pessoas_repository.UpdateAsync(pessoaEncontrada, cancellationToken);
+
+            if (resultadoPessoa == 0)
+            {
+                pessoas_repository.Rollback();
+
+                if (pessoaEncontrada.FOTO is null)
+                {
+                    throw new ImagemErroAtualizarException("Ocorreu um erro ao reverter para a foto de perfil anterior ao atualizar a pessoa.",
+                                                                                nomeFotoAntiga,
+                                                                                pessoaEncontrada.FOTO);
+                }
+                imagemService.DeletarImagemOnDisk(pessoaEncontrada.FOTO);
                 return Result.Fail(PessoaMessages.NAO_FOI_POSSIVEL_ATUALIZAR);
             }
 
-            await AtualizarDisciplinasAsync(dto, professorEncontrado.ID, cancellationToken);
+            if (fotoAtualizada && nomeFotoAntiga is not null)
+            {
+                imagemService.DeletarImagemOnDisk(nomeFotoAntiga);
+            }
 
             pessoas_repository.Commit();
 
@@ -56,6 +86,7 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
             throw;
         }
     }
+    #region ATUALIZAR RELACIONAMENTOS
 
     public async Task<Result> AtualizarPessoaFotoPerfilAsync(IFormFile fotoPerfil, int id, CancellationToken cancellationToken = default)
     {
@@ -122,14 +153,28 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
         }
     }
 
-    private async Task<int> AtualizarProfessorAsync(PessoaDto dto, PESSOAS professorEncontrado, CancellationToken cancellationToken)
+    private static void AtualizarDadosRestantesProfessor(PessoaDto dto, PESSOAS professorEncontrado)
     {
         professorEncontrado.CARGA_HORARIA = dto.CargaHorariaSemanal;
-        //professorEncontrado.FOTO = dto.Foto;
         professorEncontrado.CARGO = dto.Cargo;
         professorEncontrado.NOME = dto.Nome;
+    }
+    #endregion
 
-        var resultadoPessoa = await pessoas_repository.UpdateAsync(professorEncontrado, cancellationToken);
-        return resultadoPessoa;
+    private async Task<Result<string>> AtualizarFotoPerfilAsync(IFormFile novaFoto, PESSOAS pessoa, CancellationToken cancellationToken = default)
+    {
+        if (pessoa.FOTO is null)
+        {
+            throw new ImagemNaoInformadaException("A foto de perfil para ser atualizada deve ser informada.");
+        }
+
+        var resultadoGravacaoNovaImagem = await imagemService.ArmazenarFotoPerfilOnDiskAsync(novaFoto, cancellationToken);
+
+        if (resultadoGravacaoNovaImagem.IsSuccess)
+        {
+            return Result.Ok(resultadoGravacaoNovaImagem.Value);
+        }
+
+        return Result.Fail("Não foi possível armazenar a nova imagem. Portanto não será alterada.");
     }
 }

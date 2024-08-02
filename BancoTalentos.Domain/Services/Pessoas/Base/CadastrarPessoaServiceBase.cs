@@ -164,6 +164,7 @@ public abstract class CadastrarPessoaServiceBase(IDISCIPLINAS_REPOSITORY discipl
     #region Cadastrar Foto
     private async Task<string?> CadastrarFotoPerfilOnDiskAsync(IFormFile foto, CancellationToken cancellationToken)
     {
+
         var resultadoGravacaoImagemDisco = await imagemService.ArmazenarFotoPerfilOnDiskAsync(foto, cancellationToken);
 
         if (resultadoGravacaoImagemDisco.IsSuccess)

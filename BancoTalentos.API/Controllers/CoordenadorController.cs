@@ -26,6 +26,13 @@ public class CoordenadorController(IConsultaCoordenadorService consultaCoordenad
         return Ok(result);
     }
 
+    [HttpGet("foto")]
+    public async Task<IActionResult> GetImagem(int id, CancellationToken cancellationToken = default)
+    {
+        var result = await consultaCoordenadorService.GetFotoPerfilAsync(id, cancellationToken);
+        return File(result.Value, "image/png");
+    }
+
     [GetById]
     public async Task<IActionResult> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
