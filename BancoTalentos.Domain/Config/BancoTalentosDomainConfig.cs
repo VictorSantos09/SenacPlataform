@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
-using SenacPlataform.Shared.Config;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace BancoTalentos.Domain.Config;
 

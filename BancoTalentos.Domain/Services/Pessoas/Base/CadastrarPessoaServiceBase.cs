@@ -1,36 +1,23 @@
 ﻿using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
+using BancoTalentos.Domain.Services.Foto;
 using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using FluentResults;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using SenacPlataform.Shared.Extensions;
 
 namespace BancoTalentos.Domain.Services.Pessoas.Base;
 
-public abstract class CadastrarPessoaServiceBase
+public abstract class CadastrarPessoaServiceBase(IDISCIPLINAS_REPOSITORY disciplinas_repository,
+                                  IPESSOAS_CONTATOS_REPOSITORY pessoas_contatos_repository,
+                                  IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY pessoas_habilidades_disciplinas_repository,
+                                  IPESSOAS_REPOSITORY pessoas_repository,
+                                  ITIPOS_CONTATOS_REPOSITORY tipos_contatos_repository,
+                                  IValidator<PESSOAS> validator,
+                                  IImagemService imagemService)
 {
     public const int CARGA_HORARIA_SEMANA_MAXIMA_CLT = 44;
-    private readonly IDISCIPLINAS_REPOSITORY _disciplinas_repository;
-    private readonly IPESSOAS_CONTATOS_REPOSITORY _pessoas_contatos_repository;
-    private readonly IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY _pessoas_habilidades_disciplinas_repository;
-    private readonly IPESSOAS_REPOSITORY _pessoas_repository;
-    private readonly ITIPOS_CONTATOS_REPOSITORY _tipos_contatos_repository;
-    private readonly IValidator<PESSOAS> _validator;
-
-    public CadastrarPessoaServiceBase(IDISCIPLINAS_REPOSITORY disciplinas_repository,
-                                      IPESSOAS_CONTATOS_REPOSITORY pessoas_contatos_repository,
-                                      IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY pessoas_habilidades_disciplinas_repository,
-                                      IPESSOAS_REPOSITORY pessoas_repository,
-                                      ITIPOS_CONTATOS_REPOSITORY tipos_contatos_repository,
-                                      IValidator<PESSOAS> validator)
-    {
-        _disciplinas_repository = disciplinas_repository;
-        _pessoas_contatos_repository = pessoas_contatos_repository;
-        _pessoas_habilidades_disciplinas_repository = pessoas_habilidades_disciplinas_repository;
-        _pessoas_repository = pessoas_repository;
-        _tipos_contatos_repository = tipos_contatos_repository;
-        _validator = validator;
-    }
 
     public async Task<Result> CadastrarPessoaAsync(PessoaDto dto, CancellationToken cancellationToken)
     {
@@ -48,23 +35,30 @@ public abstract class CadastrarPessoaServiceBase
                 NOME = dto.Nome,
             };
 
-            var validationResult = await _validator.ValidateAsync(entity, cancellationToken);
+            var validationResult = await validator.ValidateAsync(entity, cancellationToken);
 
             if (!validationResult.IsValid)
                 return validationResult.ToErrorResult();
 
-            _pessoas_repository.BeginTransaction();
+            var nomeArquivo = await CadastrarFotoPerfilOnDiskAsync(dto.Foto, cancellationToken);
+
+            if (nomeArquivo is not null)
+            {
+                entity.FOTO = nomeArquivo;
+            }
+
+            pessoas_repository.BeginTransaction();
 
             var result = await CadastrarPessoaAsync(entity, dto, cancellationToken);
 
-            if (result.IsFailed) _pessoas_repository.Rollback();
-            else _pessoas_repository.Commit();
+            if (result.IsFailed) pessoas_repository.Rollback();
+            else pessoas_repository.Commit();
 
             return result;
         }
         catch (Exception)
         {
-            _pessoas_repository.Rollback();
+            pessoas_repository.Rollback();
             throw;
         }
     }
@@ -82,19 +76,19 @@ public abstract class CadastrarPessoaServiceBase
 
         foreach (var c in dto.Contatos)
         {
-            if (!await _tipos_contatos_repository.ExistsAsync("TIPOS_CONTATOS", c.IdTipo, cancellationToken))
+            if (!await tipos_contatos_repository.ExistsAsync("TIPOS_CONTATOS", c.IdTipo, cancellationToken))
             {
                 return Result.Fail($"Não existe o tipo de contato informado.");
             }
 
-            else if (await _pessoas_contatos_repository.HasContatoCadadastradoAsync(c.Contato, idProfessor, cancellationToken))
+            else if (await pessoas_contatos_repository.HasContatoCadadastradoAsync(c.Contato, idProfessor, cancellationToken))
             {
                 return Result.Fail($"Já existe o contato {c.Contato} registrado.");
             }
 
             entity.CONTATO = c.Contato;
             entity.ID_TIPO_CONTATO = c.IdTipo;
-            rowsAffected = await _pessoas_contatos_repository.InsertAsync(entity, cancellationToken);
+            rowsAffected = await pessoas_contatos_repository.InsertAsync(entity, cancellationToken);
 
             if (rowsAffected == 0)
             {
@@ -107,14 +101,14 @@ public abstract class CadastrarPessoaServiceBase
 
     private async Task<Result> CadastrarPessoaAsync(PESSOAS entity, PessoaDto dto, CancellationToken cancellationToken)
     {
-        var affectedRows = await _pessoas_repository.InsertAsync(entity, cancellationToken);
+        var affectedRows = await pessoas_repository.InsertAsync(entity, cancellationToken);
 
         if (affectedRows == 0)
         {
             return Result.Fail(PessoaMessages.NAO_FOI_POSSIVEL_CADASTRAR);
         }
 
-        var idProfessor = await _pessoas_repository.GetMaxIdAsync();
+        var idProfessor = await pessoas_repository.GetMaxIdAsync();
 
         var resultContato = await CadastrarContatosAsync(dto, idProfessor, cancellationToken);
 
@@ -143,18 +137,18 @@ public abstract class CadastrarPessoaServiceBase
 
         foreach (var i in dto.IdsDisciplinas)
         {
-            if (!await _disciplinas_repository.ExistsAsync("DISCIPLINAS", i, cancellationToken))
+            if (!await disciplinas_repository.ExistsAsync("DISCIPLINAS", i, cancellationToken))
             {
                 return Result.Fail("Não existe a disciplina informada.");
             }
 
-            if (await _pessoas_habilidades_disciplinas_repository.HasHabilidadeCadastrada(i, idProfessor, cancellationToken))
+            if (await pessoas_habilidades_disciplinas_repository.HasHabilidadeCadastrada(i, idProfessor, cancellationToken))
             {
                 return Result.Fail(PessoaMessages.JA_TEM_HABILIDADE);
             }
 
             entity.ID_DISCIPLINA = i;
-            var result = await _pessoas_habilidades_disciplinas_repository.InsertAsync(entity, cancellationToken);
+            var result = await pessoas_habilidades_disciplinas_repository.InsertAsync(entity, cancellationToken);
 
             if (result == 0)
             {
@@ -165,5 +159,20 @@ public abstract class CadastrarPessoaServiceBase
         return Result.Ok();
     }
 
+    #endregion
+
+    #region Cadastrar Foto
+    private async Task<string?> CadastrarFotoPerfilOnDiskAsync(IFormFile foto, CancellationToken cancellationToken)
+    {
+
+        var resultadoGravacaoImagemDisco = await imagemService.ArmazenarFotoPerfilOnDiskAsync(foto, cancellationToken);
+
+        if (resultadoGravacaoImagemDisco.IsSuccess)
+        {
+            return resultadoGravacaoImagemDisco.ValueOrDefault;
+        }
+
+        return null;
+    }
     #endregion
 }

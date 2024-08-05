@@ -7,7 +7,7 @@ public class PESSOAS_BASE
 {
     public int ID { get; set; }
     public string NOME { get; set; }
-    public byte[]? FOTO { get; set; }
+    public string? FOTO { get; set; }
     public CARGO CARGO { get; set; }
     public int CARGA_HORARIA { get; set; }
 }

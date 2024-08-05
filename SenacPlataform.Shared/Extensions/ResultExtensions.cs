@@ -9,6 +9,11 @@ public static class ResultExtensions
     {
         return Result.Fail(message);
     }
+
+    public static IEnumerable<string> ToErros(this Result result)
+    {
+        return result.Errors.Select(x => x.Message);
+    }
 }
 
 public static class ValidationResultExtensions
