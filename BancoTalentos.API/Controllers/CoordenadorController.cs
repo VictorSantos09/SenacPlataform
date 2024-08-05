@@ -1,5 +1,6 @@
 ﻿using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Coordenador.Interfaces;
+using BancoTalentos.Domain.Services.Pessoas.Professores;
 using Microsoft.AspNetCore.Mvc;
 using SenacPlataform.Shared.Controllers;
 
@@ -27,10 +28,10 @@ public class CoordenadorController(IConsultaCoordenadorService consultaCoordenad
     }
 
     [HttpGet("foto")]
-    public async Task<IActionResult> GetImagem(int id, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetFotoPerfilAsync(int id, CancellationToken cancellationToken = default)
     {
         var result = await consultaCoordenadorService.GetFotoPerfilAsync(id, cancellationToken);
-        return File(result.Value.ImagemMemory, result.Value.MimeType);
+        return result is null ? NotFound() : File(result.Value.ImagemMemory, result.Value.MimeType);
     }
 
     [GetById]

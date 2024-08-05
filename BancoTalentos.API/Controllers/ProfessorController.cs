@@ -1,4 +1,5 @@
-﻿using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
+﻿using BancoTalentos.Domain.Services.Foto;
+using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Professores.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using SenacPlataform.Shared.Controllers;
@@ -45,5 +46,12 @@ public class ProfessorController(ICadastrarProfessorService cadastrarProfessorSe
     {
         var result = await deletarProfessorService.DeletarProfessorAsync(id, cancellationToken);
         return Ok(result);
+    }
+
+    [HttpGet("foto")]
+    public async Task<IActionResult> GetFotoPerfil(int id, CancellationToken cancellationToken = default)
+    {
+        var result = await consultaProfessorService.GetFotoPerfilAsync(id, cancellationToken);
+        return result is null ? NotFound() : File(result.Value.ImagemMemory, result.Value.MimeType);
     }
 }
