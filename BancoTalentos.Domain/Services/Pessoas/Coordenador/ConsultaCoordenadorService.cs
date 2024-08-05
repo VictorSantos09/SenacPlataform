@@ -2,14 +2,17 @@
 using BancoTalentos.Domain.Entity.Enums;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using BancoTalentos.Domain.Services.Foto;
+using BancoTalentos.Domain.Services.Imagem.Dto;
+using BancoTalentos.Domain.Services.Pessoa.Interfaces;
 using BancoTalentos.Domain.Services.Pessoas.Base;
 using BancoTalentos.Domain.Services.Pessoas.Coordenador.Interfaces;
 using FluentResults;
-using SixLabors.ImageSharp;
 
 namespace BancoTalentos.Domain.Services.Pessoas.Coordenador;
 
-internal class ConsultaCoordenadorService(IPESSOAS_REPOSITORY pessoas_repository, IImagemService imagemService) : IConsultaCoordenadorService
+internal class ConsultaCoordenadorService(IPESSOAS_REPOSITORY pessoas_repository,
+                                          IImagemService imagemService,
+                                          IConsultaPessoaService consultaPessoaService) : IConsultaCoordenadorService
 {
     public async Task<Result<IEnumerable<PESSOAS>>> GetAllAsync(CancellationToken cancellationToken = default)
     {
@@ -25,14 +28,8 @@ internal class ConsultaCoordenadorService(IPESSOAS_REPOSITORY pessoas_repository
             : Result.Fail(PessoaMessages.NAO_ENCONTRADO);
     }
     
-    public async Task<Result<MemoryStream>> GetFotoPerfilAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result<ImagemDTO>> GetFotoPerfilAsync(int id, CancellationToken cancellationToken = default)
     {
-        var pessoaEncontrada = await pessoas_repository.GetByIdAsync(id, cancellationToken);
-
-        if(pessoaEncontrada is null)
-        {
-            return Result.Fail($"Não foi encontrado o coordenador com o código {id}");
-        }
-        return Result.Ok(await imagemService.GetImagemOnDisk(pessoaEncontrada.FOTO, cancellationToken));
+        return await consultaPessoaService.GetFotoPerfilAsync(id, "Não foi encontrado o coordenador", "O coordenador não tem foto de perfil", cancellationToken);
     }
 }

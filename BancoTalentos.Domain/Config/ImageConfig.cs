@@ -118,11 +118,6 @@ public class ProfileImageConfig
     public int MaxSizeBytes { get; init; }
 
     /// <summary>
-    /// Configurações de compressão específicas para a imagem de perfil.
-    /// </summary>
-    public required CompressionImageConfig Compression { get; init; }
-
-    /// <summary>
     /// Formatos de imagem permitidos para a imagem de perfil. Exemplo: "image/jpeg".
     /// </summary>
     public required IEnumerable<string> AllowedFormats { get; init; }
@@ -140,30 +135,6 @@ public class ProfileImageConfig
     public static Result Validate(ProfileImageConfig config)
     {
         return Result.Ok();
-        var resultValidacaoCompressao = CompressionImageConfig.Validate(config.Compression);
-        if (resultValidacaoCompressao.IsFailed)
-            return resultValidacaoCompressao; // trocar
-    }
-}
-
-/// <summary>
-/// Contém configurações de compressão para imagens.
-/// </summary>
-public class CompressionImageConfig
-{
-    /// <summary>
-    /// Quantidade de compressão aplicada à imagem. Deve estar entre 0 e 100.
-    /// </summary>
-    public required int Amount { get; init; }
-
-    /// <summary>
-    /// Valida a configuração de compressão da imagem.
-    /// </summary>
-    /// <param name="config">O objeto de configuração de compressão a ser validado.</param>
-    /// <returns><c>true</c> se a configuração de compressão for válida; caso contrário, <c>false</c>.</returns>
-    public static Result Validate(CompressionImageConfig config)
-    {
-        return config.Amount >= 0 || config.Amount <= 100 ? Result.Ok() : Result.Fail("Quantidade de compressão é inválida, deve ser entre 0 e 100.");
     }
 }
 

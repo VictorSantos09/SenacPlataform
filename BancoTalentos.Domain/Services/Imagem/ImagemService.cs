@@ -1,5 +1,6 @@
 ﻿using BancoTalentos.Domain.Config;
 using BancoTalentos.Domain.Services.Converter;
+using BancoTalentos.Domain.Services.Imagem.Dto;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
 using SenacPlataform.Shared.Enviroment.Interfaces;
@@ -53,7 +54,7 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
     /// <param name="fileName">Nome do arquivo da imagem.</param>
     /// <param name="cancellationToken">Token de cancelamento para operações canceláveis.</param>
     /// <returns>Objeto Image representando a imagem.</returns>
-    public async Task<MemoryStream> GetImagemOnDisk(string fileName, CancellationToken cancellationToken = default)
+    public async Task<ImagemDTO> GetImagemOnDisk(string fileName, CancellationToken cancellationToken = default)
     {
         var path = GetPathOnEnvironment();
 
@@ -71,7 +72,7 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
 
             stream.Seek(0, SeekOrigin.Begin);
 
-            return stream;
+            return new(image.Metadata.DecodedImageFormat.DefaultMimeType ?? MediaTypeNames.Image.Jpeg, stream);
         }
     }
     private async Task SaveImageAsync(IFormFile foto, string filePath, int compressionAmount, CancellationToken cancellationToken)

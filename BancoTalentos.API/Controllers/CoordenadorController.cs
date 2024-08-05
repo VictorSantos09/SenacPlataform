@@ -30,7 +30,7 @@ public class CoordenadorController(IConsultaCoordenadorService consultaCoordenad
     public async Task<IActionResult> GetImagem(int id, CancellationToken cancellationToken = default)
     {
         var result = await consultaCoordenadorService.GetFotoPerfilAsync(id, cancellationToken);
-        return File(result.Value, "image/png");
+        return File(result.Value.ImagemMemory, result.Value.MimeType);
     }
 
     [GetById]
