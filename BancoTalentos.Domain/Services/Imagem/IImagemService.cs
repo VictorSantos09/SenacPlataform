@@ -2,7 +2,7 @@
 using FluentResults;
 using Microsoft.AspNetCore.Http;
 
-namespace BancoTalentos.Domain.Services.Foto;
+namespace BancoTalentos.Domain.Services.Imagem;
 public interface IImagemService
 {
     Task<Result<string>> ArmazenarFotoOnDiskAsync(IFormFile foto, string fileName, int maxSizeBytes, CancellationToken cancellationToken = default);
