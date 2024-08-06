@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace BancoTalentos.Domain.Exceptions;
+namespace BancoTalentos.Domain.Exceptions.ImagemConfig;
 
 internal class ImagemErroAtualizarException : ApplicationException
 {

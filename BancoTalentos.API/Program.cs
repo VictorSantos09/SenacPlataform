@@ -13,6 +13,9 @@ builder.Services.AddScoped<IDbConnection>(x => new MySqlConnection("server=local
 
 var app = builder.Build();
 
+// aguardando correção https://github.com/dotnet/aspnetcore/issues/51888
+app.UseExceptionHandler(o => { });
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
