@@ -1,5 +1,5 @@
 ﻿using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
-using BancoTalentos.Domain.Services.Foto;
+using BancoTalentos.Domain.Services.Imagem;
 using BancoTalentos.Domain.Services.Imagem.Dto;
 using BancoTalentos.Domain.Services.Pessoa.Interfaces;
 using FluentResults;

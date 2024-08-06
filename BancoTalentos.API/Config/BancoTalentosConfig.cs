@@ -1,5 +1,6 @@
-﻿using BancoTalentos.Domain.Config;
-using BancoTalentos.Domain.Exceptions;
+﻿using BancoTalentos.API.Handlers;
+using BancoTalentos.Domain.Config;
+using BancoTalentos.Domain.Exceptions.ImagemConfig;
 using FluentValidation;
 using SenacPlataform.Shared.DependencyInjection;
 using SenacPlataform.Shared.Extensions;
@@ -11,6 +12,7 @@ internal static class BancoTalentosConfig
     public const string ConfiguracaoImagemJsonSection = "ImageConfig";
     public static IServiceCollection AddBancoTalentos(this IServiceCollection services, WebApplicationBuilder builder)
     {
+        _ = services.AddExceptionHandler<GlobalExceptionHandler>();
         AddConfiguracaoImagem(services, builder);
         _ = services.AddValidatorsFromAssembly(typeof(BancoTalentosDomainConfig).Assembly, includeInternalTypes: true);
         _ = services.AddDependencies(typeof(BancoTalentosDomainConfig).Assembly);

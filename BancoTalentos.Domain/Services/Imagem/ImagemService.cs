@@ -12,7 +12,7 @@ using SixLabors.ImageSharp.Formats.Tiff;
 using SixLabors.ImageSharp.Formats.Webp;
 using System.Net.Mime;
 
-namespace BancoTalentos.Domain.Services.Foto;
+namespace BancoTalentos.Domain.Services.Imagem;
 
 internal class ImagemService(ImageConfig configuration, IApplicationEnviroment applicationEnviroment) : IImagemService
 {
