@@ -5,4 +5,14 @@ public static class StringExtensions
     {
         return string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value);
     }
+
+    public static string Format(this string value, params object[] args)
+    {
+        return string.Format(value, args);
+    }
+
+    public static string Format(this string value, object? arg)
+    {
+        return string.Format(value, arg);
+    }
 }

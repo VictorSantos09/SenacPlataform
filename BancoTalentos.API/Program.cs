@@ -1,6 +1,5 @@
 using BancoTalentos.API.Config;
-using MySql.Data.MySqlClient;
-using System.Data;
+using BancoTalentos.API.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +8,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddBancoTalentos(builder);
-builder.Services.AddScoped<IDbConnection>(x => new MySqlConnection("server=localhost;user id=root;pwd=root;database=gestoredu;"));
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.MapIdentityApi<ApplicationIdentityUser>();
 
 // aguardando correção https://github.com/dotnet/aspnetcore/issues/51888
 app.UseExceptionHandler(o => { });
@@ -22,10 +24,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors(BancoTalentosConfig.CNT_CORS_POLICY_NAME);
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+//await BancoTalentosConfig.AddDomainRolesAsync(app);
 
 app.Run();

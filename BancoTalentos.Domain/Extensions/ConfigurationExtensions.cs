@@ -2,7 +2,7 @@
 using BancoTalentos.Domain.Exceptions.ExceptionConfig;
 using Microsoft.Extensions.Configuration;
 
-namespace SenacPlataform.Shared.Extensions;
+namespace BancoTalentos.Domain.Extensions;
 
 public static class ConfigurationExtensions
 {

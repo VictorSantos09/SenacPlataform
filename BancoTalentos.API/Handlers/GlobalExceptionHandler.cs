@@ -1,6 +1,6 @@
 ﻿using BancoTalentos.Domain.Config;
+using BancoTalentos.Domain.Extensions;
 using Microsoft.AspNetCore.Diagnostics;
-using SenacPlataform.Shared.Extensions;
 
 namespace BancoTalentos.API.Handlers;
 
