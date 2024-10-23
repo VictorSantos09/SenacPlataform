@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BancoTalentos.Domain\BancoTalentos.Domain.csproj" />
+    <ProjectReference Include="..\SenacPlataform.Shared\SenacPlataform.Shared.csproj" />
   </ItemGroup>
 
 </Project>
