@@ -1,4 +1,4 @@
-﻿namespace BancoTalentos.Domain.Exceptions.ImagemConfig;
+﻿namespace SenacPlataform.Shared.Exceptions.ImagemConfig;
 
 public class ImagemNaoInformadaException : ApplicationException
 {

@@ -1,4 +1,4 @@
-﻿namespace BancoTalentos.Domain.Services.Converter;
+﻿namespace SenacPlataform.Shared.Converter;
 
 public class ByteConverter
 {

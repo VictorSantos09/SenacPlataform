@@ -1,8 +1,7 @@
-﻿using BancoTalentos.API.Handlers;
-using BancoTalentos.Domain.Config;
-using BancoTalentos.Domain.Exceptions.ImagemConfig;
-using FluentValidation;
+﻿using FluentValidation;
+using SenacPlataform.Shared.Config;
 using SenacPlataform.Shared.DependencyInjection;
+using SenacPlataform.Shared.Exceptions.ImagemConfig;
 using SenacPlataform.Shared.Extensions;
 
 namespace BancoTalentos.API.Config;
@@ -14,8 +13,8 @@ internal static class BancoTalentosConfig
     {
         _ = services.AddExceptionHandler<GlobalExceptionHandler>();
         AddConfiguracaoImagem(services, builder);
-        _ = services.AddValidatorsFromAssembly(typeof(BancoTalentosDomainConfig).Assembly, includeInternalTypes: true);
-        _ = services.AddDependencies(typeof(BancoTalentosDomainConfig).Assembly);
+        _ = services.AddValidatorsFromAssembly(typeof(SystemConfig).Assembly, includeInternalTypes: true);
+        _ = services.AddDependencies(typeof(SystemConfig).Assembly);
         _ = services.AddDependencies(typeof(BancoTalentosConfig).Assembly);
         return services;
     }

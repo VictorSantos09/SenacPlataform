@@ -1,5 +1,6 @@
 using BancoTalentos.API.Config;
 using MySql.Data.MySqlClient;
+using SenacPlataform.Shared.Extensions;
 using System.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddBancoTalentos(builder);
-builder.Services.AddScoped<IDbConnection>(x => new MySqlConnection("server=localhost;user id=root;pwd=root;database=gestoredu;"));
+builder.Services.AddScoped<IDbConnection>(x => new MySqlConnection(builder.Configuration.SNGetConnectionString()));
 
 var app = builder.Build();
 

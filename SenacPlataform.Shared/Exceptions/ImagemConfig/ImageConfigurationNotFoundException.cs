@@ -1,4 +1,4 @@
-﻿namespace BancoTalentos.Domain.Exceptions.ImagemConfig;
+﻿namespace SenacPlataform.Shared.Exceptions.ImagemConfig;
 public class ImageConfigurationNotFoundException(string sectionBuscada, string message) : ApplicationException(CreateMessage(sectionBuscada, message))
 {
     public static string CreateMessage(string sectionBuscada, string? details)

@@ -1,8 +1,8 @@
-﻿using BancoTalentos.Domain.Config;
-using BancoTalentos.Domain.Services.Converter;
-using BancoTalentos.Domain.Services.Imagem.Dto;
+﻿using BancoTalentos.Domain.Services.Imagem.Dto;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
+using SenacPlataform.Shared.Config;
+using SenacPlataform.Shared.Converter;
 using SenacPlataform.Shared.Enviroment.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;

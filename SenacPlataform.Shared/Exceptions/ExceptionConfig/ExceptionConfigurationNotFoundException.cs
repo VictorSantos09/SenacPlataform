@@ -1,4 +1,4 @@
-﻿namespace BancoTalentos.Domain.Exceptions.ExceptionConfig;
+﻿namespace SenacPlataform.Shared.Exceptions.ExceptionConfig;
 
 public class ExceptionConfigurationNotFoundException : ApplicationException
 {

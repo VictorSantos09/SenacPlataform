@@ -2,7 +2,7 @@
 using SenacPlataform.Shared.Extensions;
 using System.Net.Mime;
 
-namespace BancoTalentos.Domain.Config;
+namespace SenacPlataform.Shared.Config;
 
 /// <summary>
 /// Contém as configurações gerais para tratamento de imagens. As configurações são definidas no arquivo appsettings.json.

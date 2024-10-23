@@ -1,4 +1,4 @@
-﻿namespace BancoTalentos.Domain.Config;
+﻿namespace SenacPlataform.Shared.Config;
 
 public sealed class ExceptionConfig
 {
