@@ -1,10 +1,10 @@
 ﻿using BancoTalentos.Domain.Entity;
-using BancoTalentos.Domain.Exceptions.ImagemConfig;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using BancoTalentos.Domain.Services.Imagem;
 using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
+using SenacPlataform.Shared.Exceptions.ImagemConfig;
 
 namespace BancoTalentos.Domain.Services.Pessoas.Base;
 

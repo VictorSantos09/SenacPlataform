@@ -1,5 +1,4 @@
-﻿using BancoTalentos.Domain.Services.Foto;
-using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
+﻿using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Professores.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using SenacPlataform.Shared.Controllers;

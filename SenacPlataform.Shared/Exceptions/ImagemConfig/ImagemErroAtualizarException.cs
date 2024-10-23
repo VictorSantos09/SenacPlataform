@@ -1,8 +1,6 @@
-﻿using System.Configuration;
+﻿namespace SenacPlataform.Shared.Exceptions.ImagemConfig;
 
-namespace SenacPlataform.Shared.Exceptions.ImagemConfig;
-
-internal class ImagemErroAtualizarException : ApplicationException
+public class ImagemErroAtualizarException : ApplicationException
 {
     public string ImageAntigaFileName { get; init; }
     public string? ImagemNovaFileName { get; init; }

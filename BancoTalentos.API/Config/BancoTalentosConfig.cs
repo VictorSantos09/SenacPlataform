@@ -3,6 +3,7 @@ using SenacPlataform.Shared.Config;
 using SenacPlataform.Shared.DependencyInjection;
 using SenacPlataform.Shared.Exceptions.ImagemConfig;
 using SenacPlataform.Shared.Extensions;
+using SenacPlataform.Shared.Handlers;
 
 namespace BancoTalentos.API.Config;
 
@@ -11,7 +12,7 @@ internal static class BancoTalentosConfig
     public const string ConfiguracaoImagemJsonSection = "ImageConfig";
     public static IServiceCollection AddBancoTalentos(this IServiceCollection services, WebApplicationBuilder builder)
     {
-        _ = services.AddExceptionHandler<GlobalExceptionHandler>();
+        //_ = services.AddExceptionHandler<GlobalExceptionHandler>();
         AddConfiguracaoImagem(services, builder);
         _ = services.AddValidatorsFromAssembly(typeof(SystemConfig).Assembly, includeInternalTypes: true);
         _ = services.AddDependencies(typeof(SystemConfig).Assembly);
@@ -30,12 +31,12 @@ internal static class BancoTalentosConfig
     /// </summary>
     /// <param name="services"></param>
     /// <param name="builder"></param>
-    /// <exception cref="ImageConfigurationNotFoundException">Caso não seja encontrada a seção de configuração.</exception>
+    /// <exception cref="ImageConfigurationExceptions">Caso não seja encontrada a seção de configuração.</exception>
     /// <exception cref="ImageConfigurationInvalidException">Caso alguma das configurações seja inválida. </exception>
     private static void AddConfiguracaoImagem(IServiceCollection services, WebApplicationBuilder builder)
     {
         var imageConfig = builder.Configuration.GetSection(ConfiguracaoImagemJsonSection).Get<ImageConfig>()
-            ?? throw new ImageConfigurationNotFoundException(ConfiguracaoImagemJsonSection, $"Exceção lançada em {nameof(BancoTalentosConfig)}.cs");
+            ?? throw new ImageConfigurationExceptions(ConfiguracaoImagemJsonSection, $"Exceção lançada em {nameof(BancoTalentosConfig)}.cs");
 
         CheckImageConfiguration(imageConfig);
         services.AddScoped(x => imageConfig);
