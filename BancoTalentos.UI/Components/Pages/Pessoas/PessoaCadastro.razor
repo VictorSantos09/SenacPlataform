@@ -5,7 +5,7 @@
 @using SenacPlataform.Shared.Converter
 @using SenacPlataform.Shared.Extensions
 
-<RadzenTemplateForm Data="@Data">
+<RadzenTemplateForm Data="@Dto">
     <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
         <RadzenColumn Size="12" SizeMD="6">
             <RadzenStack>
@@ -32,12 +32,10 @@
                                 <RadzenLabel Text="Cargo" Component="CardId" />
                             </RadzenColumn>
                             <RadzenColumn Size="12" SizeMD="8">
-                                <RadzenDropDown @bind-Value="Data.Cargo"
-                                                AllowClear="true"
-                                                Placeholder="Selecione o cargo"
-                                                Data="@Cargos"
-                                                Style="width: 100%;"
-                                                Name="CardId" />
+                                <RadzenDropDown Data="@(EnumConverter.SNToList<CARGO>())"
+                                                @bind-Value="@Dto.Cargo"
+                                                Style="width: 100%; max-width: 400px;"
+                                                AllowClear=true />
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow AlignItems="AlignItems.Center">
@@ -45,50 +43,11 @@
                                 <RadzenLabel Text="Foto" Component="CardNr" />
                             </RadzenColumn>
                             <RadzenColumn Size="12" SizeMD="8">
-                                <RadzenFileInput @bind-Value=@Data.Foto @bind-FileName=@fileName @bind-FileSize=@fileSize TValue="string" Style="width: 100%" />
-
-                            </RadzenColumn>
-                        </RadzenRow>
-                    </RadzenStack>
-                </RadzenFieldset>
-            </RadzenStack>
-        </RadzenColumn>
-        <RadzenColumn Size="12" SizeMD="6">
-            <RadzenStack>
-                <RadzenFieldset Text="Dados de contato">
-                    <RadzenStack>
-                        <RadzenRow AlignItems="AlignItems.Center">
-                            <RadzenColumn Size="12" SizeMD="4">
-                                <RadzenLabel Text="Nome" Component="CardHolder" />
-                            </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
-                                <RadzenTextBox Style="width: 100%;" Name="CardHolder" />
-                            </RadzenColumn>
-                        </RadzenRow>
-                        <RadzenRow AlignItems="AlignItems.Center">
-                            <RadzenColumn Size="12" SizeMD="4">
-                                <RadzenLabel Text="Cargo" Component="CardId" />
-                            </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
-                                <RadzenDropDown @bind-Value="Data.Id"
-                                                AllowClear="true"
-                                                Placeholder="Selecione o cargo"
-                                                Data="@Cargos"
-                                                Style="width: 100%;"
-                                                Name="CardId" />
-                            </RadzenColumn>
-                        </RadzenRow>
-                        <RadzenRow AlignItems="AlignItems.Center">
-                            <RadzenColumn Size="12" SizeMD="4">
-                                <RadzenLabel Text="Foto" Component="CardNr" />
-                            </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
-                                <RadzenFileInput @bind-Value=@Data.Foto
-                                                 @bind-FileName=@fileName
-                                                 @bind-FileSize=@fileSize
-                                                 TValue="string"
-                                                 Style="width: 100%" />
-
+                                <RadzenUpload Multiple="false"
+                                              Style="width: 100%"
+                                              Accept="image/*"
+                                              Auto="true"
+                                              Change=@OnImagemPerfilChanged />
                             </RadzenColumn>
                         </RadzenRow>
                     </RadzenStack>
@@ -97,15 +56,31 @@
         </RadzenColumn>
     </RadzenRow>
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" class="rz-mt-8 rz-mb-4">
-        <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Save" />
-        <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Icon="cancel" Text="Cancel" />
+        <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Salvar" />
+        <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Icon="cancel" Text="Cancelar" />
     </RadzenStack>
 </RadzenTemplateForm>
 
 @code {
     Variant variant = Variant.Outlined;
-    string fileName;
-    long? fileSize;
-    public PessoaDto Data { get; set; }
-    public IEnumerable<string> Cargos { get; set; } = EnumConverter.SNToList<CARGO>();
+    public PessoaDto Dto { get; set; } = new();
+
+    void OnImagemPerfilChanged(UploadChangeEventArgs args)
+    {
+        foreach (var file in args.Files)
+        {
+            Console.WriteLine($"File: {file.Name} / {file.Size} bytes");
+            try
+            {
+                long maxFileSize = 10 * 1024 * 1024;
+                // read file
+                var stream = file.OpenReadStream(maxFileSize);
+                stream.Close();
+            }
+            catch (Exception ex)
+            {
+                // console.Log($"Client-side file read error: {ex.Message}");
+            }
+        }
+    }
 }
