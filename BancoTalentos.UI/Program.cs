@@ -17,7 +17,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddRadzenCookieThemeService(options =>
 {
     options.Name = SystemConfig.SYSTEM_COOKIE_NAME;
-    options.Duration = TimeSpan.FromDays(365);
+    options.Duration = TimeSpan.FromDays(SystemConfig.SYSTEM_COOKIE_EXPIRATION);
 });
 
 builder.Services.AddScoped<ThemeService>();
