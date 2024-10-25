@@ -4,6 +4,7 @@ namespace SenacPlataform.Shared.Config;
 
 public static class SystemConfig
 {
+    public const string SYSTEM_COOKIE_NAME = "SenacPlataform";
     public static IServiceCollection AddBancoTalentos(this IServiceCollection services)
     {
         services.Scan(services =>

@@ -8,7 +8,7 @@
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
                 <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
                 <RadzenLabel Text="Plataforma Senac" />
-                <RadzenLink Path="/login" Text="Go to url" Style="display: flex">
+                <RadzenLink Path="/login" Text="Entrar" Style="display: flex">
                     <RadzenButton Icon="account_circle" Style="align-self: end;" />
                 </RadzenLink>
             </RadzenStack>
@@ -41,7 +41,7 @@
 
         if (HttpContext != null)
         {
-            var theme = HttpContext.Request.Cookies["SenacPlataform"];
+            var theme = HttpContext.Request.Cookies[SystemConfig.SYSTEM_COOKIE_NAME];
 
             if (!string.IsNullOrEmpty(theme))
             {

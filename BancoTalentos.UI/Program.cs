@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
+using SenacPlataform.Shared.Config;
 using SenacPlataform.Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +16,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddRadzenCookieThemeService(options =>
 {
-    options.Name = "SenacPlataform";
+    options.Name = SystemConfig.SYSTEM_COOKIE_NAME;
     options.Duration = TimeSpan.FromDays(365);
 });
 
