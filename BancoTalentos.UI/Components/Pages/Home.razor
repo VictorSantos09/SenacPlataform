@@ -1,7 +1,12 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>@SystemConfig.SYSTEM_NAME</PageTitle>
 
-<h1>Hello, world!</h1>
+<RadzenStack class="rz-mx-auto rz-my-12" Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center">
 
-Welcome to your new app.
+    <!--Alterar para ler do arquivo, está na pasta em public/images
+
+    link: https://blazor.radzen.com/image?theme=material3
+    -->
+    <RadzenImage Path="https://upload.wikimedia.org/wikipedia/commons/8/86/Senac_logo.svg" Style="width: 15rem;" AlternateText="Logo Senac" />
+</RadzenStack>

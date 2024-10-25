@@ -3,17 +3,17 @@
 
 <RadzenComponents @rendermode="SenacPlataformConfig.ComponentRenderMode" />
 
-    <RadzenLayout>
+<RadzenLayout style="position: relative">
         <RadzenHeader>
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
                 <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
-                <RadzenLabel Text="Plataforma Senac" />
+                <RadzenLabel Text="@SystemConfig.SYSTEM_NAME" />
                 <RadzenLink Path="/login" Text="Entrar" Style="display: flex">
                     <RadzenButton Icon="account_circle" Style="align-self: end;" />
                 </RadzenLink>
             </RadzenStack>
         </RadzenHeader>
-        <RadzenSidebar Responsive="false" Style="width: max-content">
+    <RadzenSidebar Responsive="false" @bind-Expanded="@sidebarExpanded" Style="width: 15rem">
                 <NavMenu/>
         </RadzenSidebar>
         <RadzenBody>
