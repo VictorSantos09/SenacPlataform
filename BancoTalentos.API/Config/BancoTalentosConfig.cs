@@ -3,7 +3,6 @@ using SenacPlataform.Shared.Config;
 using SenacPlataform.Shared.DependencyInjection;
 using SenacPlataform.Shared.Exceptions.ImagemConfig;
 using SenacPlataform.Shared.Extensions;
-using SenacPlataform.Shared.Handlers;
 
 namespace BancoTalentos.API.Config;
 

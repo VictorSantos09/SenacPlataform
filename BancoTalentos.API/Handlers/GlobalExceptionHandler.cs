@@ -1,6 +1,4 @@
-﻿using BancoTalentos.Domain.Config;
-using Microsoft.AspNetCore.Diagnostics;
-using SenacPlataform.Shared.Extensions;
+﻿using Microsoft.AspNetCore.Diagnostics;
 
 namespace BancoTalentos.API.Handlers;
 
@@ -11,15 +9,15 @@ internal sealed class GlobalExceptionHandler(IConfiguration configuration) : IEx
         Exception exception,
         CancellationToken cancellationToken)
     {
-        var exceptionConfig = configuration.GetExceptionConfig();
+        //var exceptionConfig = configuration.GetExceptionConfig();
 
         var result = new
         {
             Status = StatusCodes.Status500InternalServerError,
             Title = "Server error",
             Detail = exception.Message,
-            exceptionConfig.ShowStackTrace,
-            StackTrace = exceptionConfig.ShowStackTrace ? exception.StackTrace : null
+            //exceptionConfig.ShowStackTrace,
+            StackTrace = /*exceptionConfig.ShowStackTrace ? */exception.StackTrace /*: null*/
         };
 
         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
