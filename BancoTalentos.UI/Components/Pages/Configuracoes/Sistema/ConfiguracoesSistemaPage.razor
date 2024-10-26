@@ -1,0 +1,41 @@
+﻿@page "/configuracoes-sistema"
+@inject ThemeService ThemeService
+@inject DialogService DialogService
+@inject TooltipService tooltipService
+
+<RadzenStack Orientation="Orientation.Vertical" Gap="1.5rem" class="rz-p-sm-2">
+    <RadzenStack Orientation="Orientation.Horizontal">
+        <RadzenButton Text="Voltar ao padrão" Click="setDefaultConfig" MouseEnter="@(arg => tooltipService.Open(arg, "Redefinir ao padrão", new () {Position = TooltipPosition.Top}))" />
+    </RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal">
+        <RadzenText TextStyle="TextStyle.H5">Alterar tema</RadzenText>
+        <RadzenDropDown Name="ThemeDropDown" TValue="string" Value="@ThemeService.Theme" ValueChanged="@ChangeTheme" Data="@Themes.Free" TextProperty=@nameof(Theme.Text) ValueProperty=@nameof(Theme.Value)>
+        </RadzenDropDown>
+    </RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal">
+        <RadzenText TextStyle="TextStyle.H5">Alterar modo</RadzenText>
+        <RadzenAppearanceToggle Variant="Variant.Filled" />
+    </RadzenStack>
+</RadzenStack>
+
+
+@code {
+    private const string DEFAULT_THEME_NAME = "default";
+    void ChangeTheme(string value)
+    {
+        ThemeService.SetTheme(value);
+    }
+
+    async Task setDefaultConfig()
+    {
+        var option = await DialogService.Confirm("Tem certeza que deseja redefinir para as configurações padrões?", "Voltar ao padrão", new ConfirmOptions() { OkButtonText = "Sim", CancelButtonText = "Não" });
+        if (option.GetValueOrDefault() == true)
+        {
+            ThemeService.SetTheme(DEFAULT_THEME_NAME);
+        }
+        else if (option is null)
+        {
+            ThemeService.SetTheme(DEFAULT_THEME_NAME);
+        }
+    }
+}
