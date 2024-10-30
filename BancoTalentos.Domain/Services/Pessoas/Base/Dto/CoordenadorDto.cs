@@ -4,5 +4,5 @@ namespace BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 
 public record CoordenadorDto : PessoaDto
 {
-    internal override CARGO Cargo { get; init; } = CARGO.COORDENADOR;
+    public override CARGO Cargo { get; init; } = CARGO.COORDENADOR;
 }

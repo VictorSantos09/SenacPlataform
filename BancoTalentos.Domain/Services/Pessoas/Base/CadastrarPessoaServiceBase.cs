@@ -40,11 +40,14 @@ public abstract class CadastrarPessoaServiceBase(IDISCIPLINAS_REPOSITORY discipl
             if (!validationResult.IsValid)
                 return validationResult.ToErrorResult();
 
-            var nomeArquivo = await CadastrarFotoPerfilOnDiskAsync(dto.Foto, cancellationToken);
-
-            if (nomeArquivo is not null)
+            if (dto.Foto is not null)
             {
-                entity.FOTO = nomeArquivo;
+                var nomeArquivo = await CadastrarFotoPerfilOnDiskAsync(dto.Foto, cancellationToken);
+
+                if (nomeArquivo is not null)
+                {
+                    entity.FOTO = nomeArquivo;
+                }
             }
 
             pessoas_repository.BeginTransaction();

@@ -2,7 +2,7 @@
 
 namespace BancoTalentos.UI.Components.Pages.Pessoas.dto;
 
-public record PessoaDto
+public record PessoaCadastroDto
 {
     public int Id { get; set; }
     public string Nome { get; set; }
