@@ -15,6 +15,8 @@ using BancoTalentos.Domain.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.SNConfigureAppSettings();
+
 // Add services to the container.
 builder.Services.AddBancoTalentosConfig(builder.Configuration);
 builder.Services.AddScoped<IDbConnection>(x => new MySqlConnection(builder.Configuration.SNGetConnectionString()));
