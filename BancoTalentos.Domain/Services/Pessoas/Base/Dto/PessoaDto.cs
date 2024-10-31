@@ -1,13 +1,16 @@
 ﻿using BancoTalentos.Domain.Entity.Enums;
 using BancoTalentos.Domain.Services.Contato.Dto;
-using Microsoft.AspNetCore.Http;
+using BancoTalentos.Domain.Services.Imagem.Dto;
 
 namespace BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 
 public record PessoaDto
 {
     public required string Nome { get; set; }
-    public IFormFile Foto { get; set; }
+    /// <summary>
+    /// Foto de perfil em Base64
+    /// </summary>
+    public ImagemBase64DTO Foto { get; set; }
     public virtual CARGO Cargo { get; init; }
     public required int CargaHorariaSemanal { get; set; }
     public IEnumerable<ContatoDto> Contatos { get; set; }

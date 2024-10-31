@@ -1,7 +1,6 @@
 ﻿using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Services.Imagem.Dto;
 using FluentResults;
-using SixLabors.ImageSharp;
 
 namespace BancoTalentos.Domain.Services.Pessoas.Coordenador.Interfaces;
 

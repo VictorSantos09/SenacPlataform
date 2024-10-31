@@ -1,30 +1,24 @@
 ﻿using BancoTalentos.Domain.Services.Imagem.Dto;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
 using SenacPlataform.Shared.Config;
 using SenacPlataform.Shared.Converter;
 using SenacPlataform.Shared.Enviroment.Interfaces;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Formats.Tiff;
-using SixLabors.ImageSharp.Formats.Webp;
+using SenacPlataform.Shared.Extensions;
 using System.Net.Mime;
 
 namespace BancoTalentos.Domain.Services.Imagem;
 
 internal class ImagemService(ImageConfig configuration, IApplicationEnviroment applicationEnviroment) : IImagemService
 {
-    public async Task<Result<string>> ArmazenarFotoPerfilOnDiskAsync(IFormFile foto, CancellationToken cancellationToken = default)
+    public async Task<Result<string>> ArmazenarFotoPerfilOnDiskAsync(ImagemBase64DTO dto, CancellationToken cancellationToken = default)
     {
-        string fileName = $"{Guid.NewGuid()}{configuration.Profile.FileNameSuffix ?? "_fotoPerfil"}{Path.GetExtension(foto.FileName)}";
-        return await ArmazenarFotoOnDiskAsync(foto, fileName, configuration.Profile.MaxSizeBytes, cancellationToken);
+        dto.FileName = $"{Guid.NewGuid()}{configuration.Profile.FileNameSuffix ?? "_fotoPerfil"}__{dto.FileName}";
+        return await ArmazenarFotoOnDiskAsync(dto, configuration.Profile.MaxSizeBytes, cancellationToken);
     }
 
-    public async Task<Result<string>> ArmazenarFotoOnDiskAsync(IFormFile foto, string fileName, int maxSizeBytes, CancellationToken cancellationToken = default)
+    public async Task<Result<string>> ArmazenarFotoOnDiskAsync(ImagemBase64DTO dto, int maxSizeBytes, CancellationToken cancellationToken = default)
     {
-        var resultadoValidacao = ValidarEntrada(foto, maxSizeBytes);
+        var resultadoValidacao = ValidarEntrada(dto, maxSizeBytes);
 
         if (resultadoValidacao.IsFailed)
         {
@@ -33,11 +27,11 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
 
         var filePath = GetPathOnEnvironment();
         Directory.CreateDirectory(filePath);
-        filePath = Path.Combine(filePath, fileName);
+        filePath = Path.Combine(filePath, dto.FileName);
 
-        await SaveImageAsync(foto, filePath, 0, cancellationToken);
+        await SaveImageAsync(dto, filePath, 0, cancellationToken);
 
-        return Result.Ok(fileName);
+        return Result.Ok(dto.FileName);
     }
 
     public void DeletarImagemOnDisk(string fileName)
@@ -57,7 +51,6 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
     public async Task<ImagemDTO> GetImagemOnDisk(string fileName, CancellationToken cancellationToken = default)
     {
         var path = GetPathOnEnvironment();
-
         path = Path.Combine(path, fileName);
 
         if (!File.Exists(path))
@@ -65,43 +58,25 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
             throw new FileNotFoundException("O arquivo da imagem não foi encontrado.", path);
         }
 
-        using (var image = await Image.LoadAsync(path, cancellationToken))
-        {
-            var stream = new MemoryStream();
-            await image.SaveAsync(stream, new PngEncoder(), cancellationToken);
+        // Lê o arquivo de imagem diretamente como array de bytes
+        var imageBytes = await File.ReadAllBytesAsync(path, cancellationToken);
 
-            stream.Seek(0, SeekOrigin.Begin);
+        // Converte os bytes da imagem para Base64
+        string base64String = Convert.ToBase64String(imageBytes);
 
-            return new(image.Metadata.DecodedImageFormat.DefaultMimeType ?? MediaTypeNames.Image.Jpeg, stream);
-        }
-    }
-    private async Task SaveImageAsync(IFormFile foto, string filePath, int compressionAmount, CancellationToken cancellationToken)
-    {
-        using (var memoryStream = new MemoryStream())
-        {
-            await foto.CopyToAsync(memoryStream, cancellationToken);
-            memoryStream.Position = 0;
+        // Determina o tipo MIME com base na extensão do arquivo
+        string mimeType = fileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ? "image/png" :
+                          fileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || fileName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ? "image/jpeg" :
+                          MediaTypeNames.Application.Octet;
 
-            using (var image = Image.Load(memoryStream))
-            {
-                CompressImage(image, compressionAmount);
-                var encoder = GetEncoder(foto.ContentType);
-
-                if (encoder is null) await image.SaveAsync(filePath, cancellationToken);
-                else await image.SaveAsync(filePath, encoder, cancellationToken);
-            }
-        }
+        return new ImagemDTO(mimeType, base64String);
     }
 
-    private static void CompressImage(Image image, int compressionAmount)
+
+    private async Task SaveImageAsync(ImagemBase64DTO dto, string filePath, int compressionAmount, CancellationToken cancellationToken)
     {
-        if (compressionAmount > 0)
-        {
-            for (int i = 0; i < compressionAmount; i++)
-            {
-                //image.Mutate(x => x.Resize(configuration.Width, configuration.Height));
-            }
-        }
+        byte[] decodedBytes = Convert.FromBase64String(dto.Image);
+        File.WriteAllBytes(filePath, decodedBytes);
     }
 
     /// <summary>
@@ -120,33 +95,21 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
 
     }
 
-    private ImageEncoder? GetEncoder(string contentType)
+    private Result ValidarEntrada(ImagemBase64DTO dto, int maxSizeBytes)
     {
-        return contentType switch
-        {
-            MediaTypeNames.Image.Jpeg => new JpegEncoder { Quality = configuration.Quality },
-            MediaTypeNames.Image.Png => new PngEncoder(),
-            MediaTypeNames.Image.Webp => new WebpEncoder(),
-            MediaTypeNames.Image.Tiff => new TiffEncoder(),
-            _ => null,
-        };
-    }
-
-    private Result ValidarEntrada(IFormFile foto, int maxSizeBytes)
-    {
-        if (foto is null || foto.Length == 0)
+        if (dto.Image.IsEmpty() || dto.Size == 0)
         {
             return Result.Fail("Nenhuma foto enviada.");
         }
 
         var validationResult = ImageConfig.Validate(configuration);
 
-        if (!configuration.AllowedFormats.Contains(foto.ContentType))
+        if (!configuration.AllowedFormats.Contains(dto.ContentType))
         {
             validationResult.WithError("Formato de imagem inválido.");
         }
 
-        if (foto.Length > maxSizeBytes)
+        if (dto.Size > maxSizeBytes)
         {
             validationResult.WithError($"Tamanho da imagem é maior do que o permitido. Tamanho permitido é {ByteConverter.BytesToMB(maxSizeBytes)}Mb");
         }

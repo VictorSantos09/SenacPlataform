@@ -1,6 +1,7 @@
 ﻿using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using BancoTalentos.Domain.Services.Imagem;
+using BancoTalentos.Domain.Services.Imagem.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
@@ -88,7 +89,7 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
     }
     #region ATUALIZAR RELACIONAMENTOS
 
-    public async Task<Result> AtualizarPessoaFotoPerfilAsync(IFormFile fotoPerfil, int id, CancellationToken cancellationToken = default)
+    public async Task<Result> AtualizarPessoaFotoPerfilAsync(ImagemBase64DTO fotoPerfil, int id, CancellationToken cancellationToken = default)
     {
         var professorExiste = await pessoas_repository.ExistsAsync("PESSOAS", id, cancellationToken);
 
@@ -161,7 +162,7 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
     }
     #endregion
 
-    private async Task<Result<string>> AtualizarFotoPerfilAsync(IFormFile novaFoto, PESSOAS pessoa, CancellationToken cancellationToken = default)
+    private async Task<Result<string>> AtualizarFotoPerfilAsync(ImagemBase64DTO novaFoto, PESSOAS pessoa, CancellationToken cancellationToken = default)
     {
         if (pessoa.FOTO is null)
         {

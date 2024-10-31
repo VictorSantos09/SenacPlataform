@@ -1,10 +1,10 @@
 ﻿using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using BancoTalentos.Domain.Services.Imagem;
+using BancoTalentos.Domain.Services.Imagem.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using FluentResults;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using SenacPlataform.Shared.Extensions;
 
 namespace BancoTalentos.Domain.Services.Pessoas.Base;
@@ -165,10 +165,10 @@ public abstract class CadastrarPessoaServiceBase(IDISCIPLINAS_REPOSITORY discipl
     #endregion
 
     #region Cadastrar Foto
-    private async Task<string?> CadastrarFotoPerfilOnDiskAsync(IFormFile foto, CancellationToken cancellationToken)
+    private async Task<string?> CadastrarFotoPerfilOnDiskAsync(ImagemBase64DTO fotoPerfil, CancellationToken cancellationToken)
     {
 
-        var resultadoGravacaoImagemDisco = await imagemService.ArmazenarFotoPerfilOnDiskAsync(foto, cancellationToken);
+        var resultadoGravacaoImagemDisco = await imagemService.ArmazenarFotoPerfilOnDiskAsync(fotoPerfil, cancellationToken);
 
         if (resultadoGravacaoImagemDisco.IsSuccess)
         {
