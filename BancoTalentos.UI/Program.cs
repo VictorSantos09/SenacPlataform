@@ -1,27 +1,20 @@
-using BancoTalentos.Domain;
-using BancoTalentos.Domain.Services.Pessoas;
 using BancoTalentos.UI.Components;
 using BancoTalentos.UI.Components.Account;
 using BancoTalentos.UI.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
 using Radzen;
 using SenacPlataform.Shared.Config;
 using SenacPlataform.Shared.Extensions;
-using System.Data;
-using BancoTalentos.Domain.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.SNConfigureAppSettings();
 
 // Add services to the container.
-builder.Services.AddBancoTalentosConfig(builder.Configuration);
-builder.Services.AddScoped<IDbConnection>(x => new MySqlConnection(builder.Configuration.SNGetConnectionString()));
-builder.Services.SNAddBancoTalentosDomain();
-builder.Services.SNAddBancoTalentosShared();
+builder.Services.SNConfigureBancoTalentos(builder.Configuration);
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 

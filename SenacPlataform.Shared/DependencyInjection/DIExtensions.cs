@@ -1,19 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SenacPlataform.Shared.Enviroment;
-using SenacPlataform.Shared.Enviroment.Interfaces;
+using SenacPlataform.Shared.Config;
 using System.Reflection;
 
 namespace SenacPlataform.Shared.DependencyInjection;
 
 public static class DIExtensions
 {
-    public static IServiceCollection AddDependencies(this IServiceCollection services, Assembly assembly)
+    public static IServiceCollection SNScan(this IServiceCollection services, params Assembly[] assemblies)
     {
-        services.AddSingleton<IApplicationEnviroment, ApplicationEnviroment>();
-        services.Scan(scan => scan.FromAssemblies(assembly)
-       .AddClasses(classes => classes.Where(c => c.Name.ToUpper().EndsWith("REPOSITORY") || c.Name.ToUpper().EndsWith("SERVICE")), false)
-       .AsImplementedInterfaces()
-       .WithTransientLifetime());
+        services.Scan(scan => scan.FromAssemblies(assemblies)
+                .SNApplyFilter(services));
 
         return services;
     }
