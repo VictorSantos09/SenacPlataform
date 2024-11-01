@@ -1,5 +1,6 @@
 ﻿using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using BancoTalentos.Domain.Services.Imagem;
+using BancoTalentos.Domain.Services.Imagem.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Base;
 using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Coordenador.Interfaces;
@@ -18,7 +19,7 @@ internal class AtualizarCoordenadorService(IPESSOAS_REPOSITORY pessoas_repositor
     {
         return await AtualizarPessoaAsync(dto, cancellationToken);
     }
-    public async Task<Result> AtualizarFotoPerfilAsync(IFormFile fotoPerfil, int id, CancellationToken cancellationToken = default)
+    public async Task<Result> AtualizarFotoPerfilAsync(ImagemBase64DTO fotoPerfil, int id, CancellationToken cancellationToken = default)
     {
         return await AtualizarPessoaFotoPerfilAsync(fotoPerfil, id, cancellationToken);
     }
