@@ -1,22 +1,32 @@
 ﻿@page "/pessoas/cadastro"
 @using BancoTalentos.Domain.Entity.Enums
-@using BancoTalentos.UI.Components.Pages.Pessoas.dto
+@using BancoTalentos.Domain.Services.Contato.Dto
+@using BancoTalentos.Domain.Services.Disciplina.Dto
+@using BancoTalentos.Domain.Services.Disciplina.Interfaces
+@using BancoTalentos.Domain.Services.Imagem.Dto
+@using BancoTalentos.Domain.Services.Pessoa.Interfaces
+@using BancoTalentos.Domain.Services.Pessoas
 @using BancoTalentos.Domain.Entity;
+@using BancoTalentos.Domain.Services.Pessoas.Base.Dto
+@using BancoTalentos.UI.Components.Pages.Pessoas.dto
 @using SenacPlataform.Shared.Converter
 @using SenacPlataform.Shared.Extensions
 
-<RadzenTemplateForm Data="@Dto">
+@inject IPessoaMediatorService service
+@inject IConsultarDisciplinaService consultarDisciplinaService
+
+<RadzenTemplateForm Data="@Dto" Submit="@(async (PessoaCadastroDto dto) => { await Gravar(); })">
     <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
         <RadzenColumn Size="12" SizeMD="6">
             <RadzenStack>
-                <RadzenFieldset Text="Dados da pessoa">
+                <RadzenFieldset Text="Informações pessoais">
                     <RadzenStack>
                         <RadzenRow AlignItems="AlignItems.Center">
                             <RadzenColumn Size="12" SizeMD="4">
                                 <RadzenLabel Text="Nome" Component="CardHolder" />
                             </RadzenColumn>
                             <RadzenColumn Size="12" SizeMD="8">
-                                <RadzenTextBox Name="CardHolder" />
+                                <RadzenTextBox Name="CardHolder" @bind-Value="@Dto.Nome" />
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow AlignItems="AlignItems.Center">
@@ -24,7 +34,7 @@
                                 <RadzenLabel Text="Carga horária" Component="CardHolder" />
                             </RadzenColumn>
                             <RadzenColumn Size="12" SizeMD="8">
-                                <RadzenNumeric TValue="int" Name="CardHolder" />
+                                <RadzenNumeric TValue="int" Name="CardHolder" @bind-Value="@Dto.CargaHoraria" />
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow AlignItems="AlignItems.Center">
@@ -40,14 +50,53 @@
                         </RadzenRow>
                         <RadzenRow AlignItems="AlignItems.Center">
                             <RadzenColumn Size="12" SizeMD="4">
-                                <RadzenLabel Text="Foto" Component="CardNr" />
+                                <RadzenLabel Text="Habilidades" />
                             </RadzenColumn>
                             <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenListBox Data=@_disciplinasExistentes
+                                               Style="width: 100%; max-width: 400px; height:200px"
+                                               @bind-Value="@Dto.HabilidadesDisciplinas"
+                                               Multiple=true
+                                               AllowClear=true
+                                               Placeholder="Selecione as habilidades"
+                                               TextProperty="@nameof(DisciplinaDto.Descricao)" />
+
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="12">
+                                <RadzenLabel Text="Foto de perfil" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="12">
                                 <RadzenUpload Multiple="false"
                                               Style="width: 100%"
                                               Accept="image/*"
                                               Auto="true"
                                               Change=@OnImagemPerfilChanged />
+                                <RadzenImage Path="@($"data:image/jpeg;base64,{Dto?.Foto?.Image}")" AlternateText="base64 image" Visible="@(Dto.Foto is not null)" Style="width: 100%; max-height: 50%" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenStack>
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack>
+                <RadzenFieldset Text="Informações de contato">
+                    <RadzenStack>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12">
+                                <RadzenTextBox Name="Email" Style="display: block; width: 100%;" Change="@(() => OnLeaveCampoContato())" @bind-Value=@_contatoInformado />
+                                <RadzenRequiredValidator Component="Email" Text="Campo obrigatório" />
+                                <!--Adicionar validação que permita telefone ou email, tentar usar regex. A documentação deles tem um para telefone, talvez funcione-->
+                            </RadzenColumn>
+
+                            <RadzenColumn Size="12">
+                                <RadzenListBox @bind-Value=@Dto.Contatos Data=@Dto.Contatos TextProperty="@nameof(ContatoDto.Contato)" AllowFiltering=true AllowClear=true Multiple=true Style="width: 100%; max-width: 400px; height: 200px" FilterDelay="150">
+                                    <Template Context="contato">
+                                        @((contato as ContatoDto).Contato)
+                                    </Template>
+                                </RadzenListBox>
                             </RadzenColumn>
                         </RadzenRow>
                     </RadzenStack>
@@ -63,24 +112,77 @@
 
 @code {
     Variant variant = Variant.Outlined;
-    public PessoaDto Dto { get; set; } = new();
+    public PessoaCadastroDto Dto { get; set; } = new();
+    private IEnumerable<DisciplinaDto> _disciplinasExistentes = [];
+    private string _contatoInformado;
 
-    void OnImagemPerfilChanged(UploadChangeEventArgs args)
+    protected override async Task OnInitializedAsync()
     {
-        foreach (var file in args.Files)
+        var result = await consultarDisciplinaService.GetAllAsync(default);
+        _disciplinasExistentes = result.ValueOrDefault;
+        await base.OnInitializedAsync();
+    }
+
+    void OnLeaveCampoContato()
+    {
+        Dto.Contatos.Add(new ContatoDto()
+            {
+                Contato = _contatoInformado,
+                Id = Random.Shared.Next()
+            });
+    }
+
+    async Task OnImagemPerfilChanged(UploadChangeEventArgs args)
+    {
+
+        try
         {
-            Console.WriteLine($"File: {file.Name} / {file.Size} bytes");
-            try
+            if (args.Files.Count() > 1) throw new Exception("Mais de um arquivo fornecido");
+
+            var file = args.Files.FirstOrDefault();
+
+            long maxFileSize = 10 * 1024 * 1024;
+
+            using (var stream = file.OpenReadStream(maxFileSize))
+            using (var memoryStream = new MemoryStream())
             {
-                long maxFileSize = 10 * 1024 * 1024;
-                // read file
-                var stream = file.OpenReadStream(maxFileSize);
-                stream.Close();
-            }
-            catch (Exception ex)
-            {
-                // console.Log($"Client-side file read error: {ex.Message}");
+                await stream.CopyToAsync(memoryStream);
+                string base64String = Convert.ToBase64String(memoryStream.ToArray());
+
+                Dto.Foto = new ImagemBase64DTO()
+                    {
+                        ContentType = file.ContentType,
+                        FileName = file.Name,
+                        Image = base64String,
+                        Size = file.Size
+                    };
+
+                if (file is null)
+                {
+                    Dto.Foto = null;
+                }
             }
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao processar o arquivo: {ex.Message}");
+            Dto.Foto = null;
+        }
+    }
+
+    async Task Gravar()
+    {
+        var dto = new PessoaDto()
+            {
+                CargaHorariaSemanal = Dto.CargaHoraria,
+                Nome = Dto.Nome,
+                Cargo = Dto.Cargo,
+                Contatos = Dto.Contatos,
+                IdsDisciplinas = Dto.HabilidadesDisciplinas.Select(x => x.Id).ToList(),
+                Foto = Dto.Foto,
+                Id = Dto.Id,
+            };
+
+        await service.CadastrarAsync(dto);
     }
 }
