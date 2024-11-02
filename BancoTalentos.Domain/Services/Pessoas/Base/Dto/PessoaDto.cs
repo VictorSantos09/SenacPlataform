@@ -10,7 +10,7 @@ public record PessoaDto
     /// <summary>
     /// Foto de perfil em Base64
     /// </summary>
-    public ImagemBase64DTO Foto { get; set; }
+    public ImagemBase64DTO? Foto { get; set; }
     public virtual CARGO Cargo { get; init; }
     public required int CargaHorariaSemanal { get; set; }
     public IEnumerable<ContatoDto> Contatos { get; set; }
