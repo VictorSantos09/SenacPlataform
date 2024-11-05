@@ -1,0 +1,61 @@
+﻿@page "/pessoas/consulta"
+@using BancoTalentos.Domain.Entity
+@using BancoTalentos.Domain.Repositories.Contracts.Interfaces
+@using QuickKit.Blazor.Components.Grid
+@using QuickKit.Blazor.Services.Notification
+
+@inject INotifierService NotifierService
+@inject IPESSOAS_REPOSITORY PessoasRepository
+
+<Grid Data=@_pessoas Columns=@GetColumns() AllowManipulation=false CustomActionButton=@CustomButtons />
+
+@code {
+    private IEnumerable<ButtonComponent<PESSOAS>> CustomButtons = [];
+    private IEnumerable<PESSOAS> _pessoas = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _pessoas = await PessoasRepository.GetAllAsync();
+        CustomButtons = GetCustomButtons();
+        await base.OnInitializedAsync();
+    }
+
+    private IEnumerable<GridColumn> GetColumns()
+    {
+        var output = new List<GridColumn>();
+
+        output.Add(new GridColumn("Nome", nameof(PESSOAS.NOME), new GridColumnOptions<IRadzenComponent>()
+            {
+                Type = RadzenFormInputType.TextBox,
+            }));
+
+        return output;
+    }
+
+    private Task NotificarCliqueLinha(PESSOAS data)
+    {
+        NotifierService.Notify(new()
+            {
+                Detail = $"Vendo registro Nª{data.ID}.",
+                Severity = NotificationSeverity.Success,
+                Summary = "Clique",
+                CloseOnClick = true
+            });
+        return Task.CompletedTask;
+    }
+
+    private IEnumerable<ButtonComponent<PESSOAS>> GetCustomButtons()
+    {
+        return new List<ButtonComponent<PESSOAS>>
+        {
+            new ()
+            {
+                ButtonStyle = ButtonStyle.Primary,
+                Icon = "numbers",
+                Variant = Variant.Filled,
+                OnClick =EventCallback.Factory.Create<PESSOAS>(this, async (data) => await NotificarCliqueLinha(data))
+            },
+
+        };
+    }
+}

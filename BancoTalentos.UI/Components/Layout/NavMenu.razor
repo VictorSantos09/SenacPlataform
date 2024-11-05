@@ -10,7 +10,10 @@
         <NotAuthorized>
             @* <RadzenPanelMenuItem Text="Criar conta" Icon="person_add" Path="Account/Register" /> *@
             <RadzenPanelMenuItem Text="Entrar" Icon="Login" Path="/Login" />
-            <RadzenPanelMenuItem Text="Pessoas" Icon="person" Path="/pessoas/cadastro" />
+            <RadzenPanelMenuItem Text="Pessoas" Icon="person">
+                <RadzenPanelMenuItem Text="Cadastro" Icon="add" Path="/pessoas/cadastro" />
+                <RadzenPanelMenuItem Text="Consulta" Icon="visibility" Path="pessoas/consulta" />
+            </RadzenPanelMenuItem>
             <RadzenPanelMenuItem Text="Configurações" Icon="settings">
                 <RadzenPanelMenuItem Text="Temas" Icon="color_lens" Path="/configuracoes-sistema" />
             </RadzenPanelMenuItem>

@@ -10,6 +10,7 @@ using SenacPlataform.Shared.Exceptions.ImagemConfig;
 using SenacPlataform.Shared.Extensions;
 using System.Data;
 using System.Reflection;
+using QuickKit.Blazor.Configuration;
 
 namespace SenacPlataform.Shared.Config;
 
@@ -27,6 +28,7 @@ public static class SystemConfig
 
     public static IServiceCollection SNConfigureBancoTalentos(this IServiceCollection services, ConfigurationManager configuration)
     {
+        services.AddBlazorSupport();
         configuration.SNConfigureAppSettings();
 
         services.AddSingleton<IApplicationEnviroment, ApplicationEnviroment>();
