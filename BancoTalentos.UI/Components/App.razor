@@ -9,12 +9,12 @@
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="BancoTalentos.UI.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <RadzenTheme Theme="material" @rendermode="RenderModeForPage" />
-    <HeadOutlet @rendermode="RenderModeForPage" />
+    <RadzenTheme Theme="material" @rendermode="SenacPlataformConfig.ComponentRenderMode" />
+    <HeadOutlet @rendermode="SenacPlataformConfig.ComponentRenderMode" />
 </head>
 
 <body>
-    <Routes @rendermode="RenderModeForPage" />
+    <Routes @rendermode="SenacPlataformConfig.ComponentRenderMode" />
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>
 </body>

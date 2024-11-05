@@ -8,9 +8,6 @@
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
                 <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
                 <RadzenLabel Text="@SystemConfig.SYSTEM_NAME" />
-                <RadzenLink Path="/login" Text="Entrar" Style="display: flex">
-                    <RadzenButton Icon="account_circle" Style="align-self: end;" />
-                </RadzenLink>
             </RadzenStack>
         </RadzenHeader>
     <RadzenSidebar Responsive="false" @bind-Expanded="@sidebarExpanded" Style="width: 15rem">

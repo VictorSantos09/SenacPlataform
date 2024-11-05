@@ -5,23 +5,15 @@
 <RadzenPanelMenu DisplayStyle="@(sidebarExpanded ? MenuItemDisplayStyle.IconAndText : MenuItemDisplayStyle.Icon)" ShowArrow="true">
     <AuthorizeView>
         <Authorized>
-            <RadzenPanelMenuItem Text="Gerenciar conta" Icon="manage_accounts" Path="Account/Manage" />
-            <RadzenPanelMenuItem Text="Sair" Icon="Logout" Path="Account/Logout" />
-            @* <div class="nav-item px-3">
-            <form action="Account/Logout" method="post">
-            <AntiforgeryToken />
-            <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-            <button type="submit" class="nav-link">
-            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-            </button>
-            </form>
-            </div> *@
+            <RadzenPanelMenuItem Text="Inicio" Icon="Home" Path="/" />
         </Authorized>
         <NotAuthorized>
-            <RadzenPanelMenuItem Text="Criar conta" Icon="person_add" Path="Account/Register" />
-            <RadzenPanelMenuItem Text="Entrar" Icon="Login" Path="Account/Login" />
+            @* <RadzenPanelMenuItem Text="Criar conta" Icon="person_add" Path="Account/Register" /> *@
+            <RadzenPanelMenuItem Text="Entrar" Icon="Login" Path="/Login" />
             <RadzenPanelMenuItem Text="Pessoas" Icon="person" Path="/pessoas/cadastro" />
-            <RadzenPanelMenuItem Text="Configurações" Icon="settings" Path="/configuracoes-sistema"/>
+            <RadzenPanelMenuItem Text="Configurações" Icon="settings">
+                <RadzenPanelMenuItem Text="Temas" Icon="color_lens" Path="/configuracoes-sistema" />
+            </RadzenPanelMenuItem>
         </NotAuthorized>
     </AuthorizeView>
 </RadzenPanelMenu>
