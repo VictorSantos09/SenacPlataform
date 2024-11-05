@@ -84,7 +84,7 @@ WHERE ID = @idParam
         try
         {
             var sql = @"SELECT * FROM pessoas_habilidades_disciplinas";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, cancellationToken: cancellationToken);
             return await _connection.QueryAsync<PESSOAS_HABILIDADES_DISCIPLINAS>(command);
         }
@@ -103,7 +103,7 @@ WHERE ID = @idParam
         {
             object parameters = new { idParam = id };
             var sql = @"SELECT * FROM pessoas_habilidades_disciplinas WHERE ID = @idParam";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             return await _connection.QuerySingleOrDefaultAsync<PESSOAS_HABILIDADES_DISCIPLINAS>(
                 command
@@ -136,7 +136,7 @@ WHERE ID = @idParam
                     ,DATA_CADASTRO = @datacadastroParam
                      WHERE ID = @idParam;
 ";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 

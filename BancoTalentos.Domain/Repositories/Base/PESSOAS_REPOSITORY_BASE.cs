@@ -85,7 +85,7 @@ WHERE ID = @idParam
         try
         {
             var sql = @"SELECT * FROM pessoas";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, cancellationToken: cancellationToken);
             return await _connection.QueryAsync<PESSOAS>(command);
         }

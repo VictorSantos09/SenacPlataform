@@ -26,7 +26,7 @@ public class TURMAS_DISCIPLINAS_REPOSITORY_BASE : Repository, ITURMAS_DISCIPLINA
                 @"DELETE FROM turmas_disciplinas
 WHERE ID = @idParam
 ";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 
@@ -71,7 +71,7 @@ WHERE ID = @idParam
 					,@iddisciplinaParam
 					)
 ";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 
@@ -90,7 +90,7 @@ WHERE ID = @idParam
         try
         {
             var sql = @"SELECT * FROM turmas_disciplinas";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, cancellationToken: cancellationToken);
             return await _connection.QueryAsync<TURMAS_DISCIPLINAS>(command);
         }
@@ -109,7 +109,7 @@ WHERE ID = @idParam
         {
             object parameters = new { idParam = id };
             var sql = @"SELECT * FROM turmas_disciplinas WHERE ID = @idParam";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             return await _connection.QuerySingleOrDefaultAsync<TURMAS_DISCIPLINAS>(command);
         }
@@ -144,7 +144,7 @@ WHERE ID = @idParam
                     ,ID_DISCIPLINA = @iddisciplinaParam
                      WHERE ID = @idParam;
 ";
-            using var _connection = Open();
+            
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 
