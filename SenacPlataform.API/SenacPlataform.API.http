@@ -1,0 +1,6 @@
+@SenacPlataform.API_HostAddress = http://localhost:5183
+
+GET {{SenacPlataform.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

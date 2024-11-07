@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SenacPlataform.Shared", "Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BancoTalentos.UI", "BancoTalentos.UI\BancoTalentos.UI.csproj", "{653DD282-9AD9-4A0C-A593-57D305D35CEF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SenacPlataform.API", "SenacPlataform.API\SenacPlataform.API.csproj", "{3FE6CE34-BFB4-40F3-B33D-56B551A9CE79}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{653DD282-9AD9-4A0C-A593-57D305D35CEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{653DD282-9AD9-4A0C-A593-57D305D35CEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{653DD282-9AD9-4A0C-A593-57D305D35CEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FE6CE34-BFB4-40F3-B33D-56B551A9CE79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FE6CE34-BFB4-40F3-B33D-56B551A9CE79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FE6CE34-BFB4-40F3-B33D-56B551A9CE79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FE6CE34-BFB4-40F3-B33D-56B551A9CE79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -43,6 +49,7 @@ Global
 		{84C68AAC-EA68-4FAF-BF8C-2F084C2BE7E2} = {65C6B008-131C-404D-B667-3D7CCEC45424}
 		{78EE5350-EC8A-4F33-856A-4375A2732871} = {84C68AAC-EA68-4FAF-BF8C-2F084C2BE7E2}
 		{653DD282-9AD9-4A0C-A593-57D305D35CEF} = {584FEC1C-CD2F-46B4-916A-E4A0B2166DA1}
+		{3FE6CE34-BFB4-40F3-B33D-56B551A9CE79} = {65C6B008-131C-404D-B667-3D7CCEC45424}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9964781D-8314-4615-AD00-0F3581A08E63}

@@ -6,12 +6,15 @@
 
 @inject INotifierService NotifierService
 @inject IPESSOAS_REPOSITORY PessoasRepository
+@inject IJSRuntime _jsRuntime
+@inject NavigationManager _navigationManager
 
-<Grid Data=@_pessoas Columns=@GetColumns() AllowManipulation=false CustomActionButton=@CustomButtons />
+<Grid Data=@_pessoas ColumnsDeclared=@GetColumns() AllowManipulation=false CustomActionButton=@CustomButtons OnExportCSV="@(args => Export("csv"))" OnExportExcel="@(args => Export("excel"))" @ref="GridComponent" />
 
 @code {
     private IEnumerable<ButtonComponent<PESSOAS>> CustomButtons = [];
     private IEnumerable<PESSOAS> _pessoas = [];
+    private Grid<PESSOAS> GridComponent;
 
     protected override async Task OnInitializedAsync()
     {
@@ -24,9 +27,24 @@
     {
         var output = new List<GridColumn>();
 
+        output.Add(new GridColumn("Código", nameof(PESSOAS.ID), new GridColumnOptions<IRadzenComponent>()
+            {
+                Type = RadzenFormInputType.Numeric,
+            }));
+
         output.Add(new GridColumn("Nome", nameof(PESSOAS.NOME), new GridColumnOptions<IRadzenComponent>()
             {
                 Type = RadzenFormInputType.TextBox,
+            }));
+
+        output.Add(new GridColumn("Cargo", nameof(PESSOAS.CARGO), new GridColumnOptions<IRadzenComponent>()
+            {
+                Type = RadzenFormInputType.TextBox,
+            }));
+
+        output.Add(new GridColumn("Carga Horária", nameof(PESSOAS.CARGA_HORARIA), new GridColumnOptions<IRadzenComponent>()
+            {
+                Type = RadzenFormInputType.Numeric,
             }));
 
         return output;
@@ -51,11 +69,59 @@
             new ()
             {
                 ButtonStyle = ButtonStyle.Primary,
-                Icon = "numbers",
+                Icon = "delete",
                 Variant = Variant.Filled,
                 OnClick =EventCallback.Factory.Create<PESSOAS>(this, async (data) => await NotificarCliqueLinha(data))
             },
 
         };
+    }
+
+    private protected async Task Export(string type)
+    {
+        var visibleColumns = GridComponent?.ColumnsDeclared?
+    .Where(c => c.Visible && !string.IsNullOrEmpty(c.PropertyName))
+    .Select(c => c.PropertyName.Contains(".")
+        ? $"{c.PropertyName} as {c.PropertyName.Replace(".", "_")}"
+        : c.PropertyName)
+    .ToArray();
+
+        var visibleData = GridComponent?.Data;
+
+        var exportRequest = new
+        {
+            Columns = visibleColumns,
+            Data = visibleData
+        };
+
+        var exportUrl = type == "csv" ? "http://localhost:5183/api/export/csv" : "http://localhost:5183/api/export/excel";
+
+        using var client = new HttpClient();
+        client.BaseAddress = new Uri(exportUrl);
+
+        var response = await client.PostAsJsonAsync("", exportRequest);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var fileContent = await response.Content.ReadAsByteArrayAsync();
+
+            var contentType = response.Content.Headers.ContentType?.MediaType;
+            var fileName = contentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                ? "export.xlsx"
+                : "export.csv";
+
+            var blobUrl = $"data:{contentType};base64,{Convert.ToBase64String(fileContent)}";
+
+            var jsInvoke = $@"var a = document.createElement('a');
+                      a.href = '{blobUrl}';
+                      a.download = '{fileName}';
+                      a.click();";
+            await _jsRuntime.InvokeVoidAsync("eval", jsInvoke);
+        }
+        else
+        {
+            Console.WriteLine("Erro ao exportar dados: " + response.ReasonPhrase);
+        }
+
     }
 }
