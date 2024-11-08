@@ -31,6 +31,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="MySql.Data" Version="8.4.0" />
+    <PackageReference Include="Radzen.Blazor" Version="5.5.5" />
     <PackageReference Include="Scrutor" Version="4.2.2" />
   </ItemGroup>
 
