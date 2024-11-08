@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SenacPlataform.Shared", "Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BancoTalentos.UI", "BancoTalentos.UI\BancoTalentos.UI.csproj", "{653DD282-9AD9-4A0C-A593-57D305D35CEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SenacPlataform.API", "SenacPlataform.API\SenacPlataform.API.csproj", "{3FE6CE34-BFB4-40F3-B33D-56B551A9CE79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SenacPlataform.API", "SenacPlataform.API\SenacPlataform.API.csproj", "{3FE6CE34-BFB4-40F3-B33D-56B551A9CE79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

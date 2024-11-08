@@ -1,23 +1,24 @@
 ﻿@page "/pessoas/consulta"
 @using BancoTalentos.Domain.Entity
 @using BancoTalentos.Domain.Repositories.Contracts.Interfaces
+@using BancoTalentos.UI.Components.Pages.Common
 @using QuickKit.Blazor.Components.Grid
 @using QuickKit.Blazor.Components.Grid.Export
 @using QuickKit.Blazor.Services.Notification
 @using SenacPlataform.Shared.Controllers
 
-@inject INotifierService NotifierService
+@inherits Page
 @inject IPESSOAS_REPOSITORY PessoasRepository
-@inject IJSRuntime _jsRuntime
-@inject NavigationManager _navigationManager
-@inject IGridExportProvider GridExportProvider
 
 <Grid Data=@_pessoas
       ColumnsDeclared=@GetColumns()
       AllowManipulation=false
+      IsLoading=@IsLoading
+      IsExportingCsv=@IsExportingCsv
+      IsExportingExcel=@IsExportingExcel
       CustomActionButton=@CustomButtons
-      OnExportCSV="@(async args => await GridExportProvider.ExportAsync(GridComponent, _jsRuntime, ExportEndpoint.CSV, EXPORT_FILE_NAME))"
-      OnExportExcel="@(async args => await GridExportProvider.ExportAsync(GridComponent, _jsRuntime, ExportEndpoint.EXCEL, EXPORT_FILE_NAME))"
+      OnExportCSV="@(async args => await ExportCsv())"
+      OnExportExcel="@(async args => await ExportExcel())"
       @ref="GridComponent" />
 
 @code {
@@ -28,9 +29,44 @@
 
     protected override async Task OnInitializedAsync()
     {
+        ToogleLoading();
+        try
+        {
+            await InitializeDataAsync();
+            ConfigureCustomButtons();
+        }
+        catch (Exception ex)
+        {
+            NotificarErroCarregarDados(ex);
+        }
+        finally
+        {
+            ToogleLoading();
+        }
+    }
+
+    private async Task InitializeDataAsync()
+    {
         _pessoas = await PessoasRepository.GetAllAsync();
+    }
+
+    private void ConfigureCustomButtons()
+    {
         CustomButtons = GetCustomButtons();
-        await base.OnInitializedAsync();
+    }
+
+    private async Task ExportCsv()
+    {
+        ToggleExportingCsv();
+        await GridExportProvider.ExportAsync(GridComponent, JsRuntime, ExportEndpoint.CSV, EXPORT_FILE_NAME);
+        ToggleExportingCsv();
+    }
+
+    private async Task ExportExcel()
+    {
+        ToggleExportingExcel();
+        await GridExportProvider.ExportAsync(GridComponent, JsRuntime, ExportEndpoint.EXCEL, EXPORT_FILE_NAME);
+        ToggleExportingExcel();
     }
 
     private IEnumerable<GridColumn> GetColumns()

@@ -1,0 +1,43 @@
+﻿@using QuickKit.Blazor.Components.Grid.Export
+@using QuickKit.Blazor.Services.Notification
+
+@code {
+    [Inject]
+    protected INotifierService NotifierService { get; set; }
+    [Inject]
+    protected IJSRuntime JsRuntime { get; set; }
+    [Inject]
+    protected NavigationManager NavigationManager { get; set; }
+    [Inject]
+    protected IGridExportProvider GridExportProvider { get; set; }
+    protected bool IsLoading { get; set; }
+    protected bool IsExportingCsv { get; set; }
+    protected bool IsExportingExcel { get; set; }
+
+    protected void ToogleLoading()
+    {
+        IsLoading = !IsLoading;
+    }
+
+    protected void ToggleExportingCsv()
+    {
+        IsExportingCsv = !IsExportingCsv;
+    }
+
+    protected void ToggleExportingExcel()
+    {
+        IsExportingExcel = !IsExportingExcel;
+    }
+
+    protected void NotificarErroCarregarDados(Exception ex)
+    {
+        NotifierService?.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = "Erro ao carregar dados",
+                Detail = ex.Message,
+                Duration = 4000,
+                CloseOnClick = true,
+            });
+    }
+}
