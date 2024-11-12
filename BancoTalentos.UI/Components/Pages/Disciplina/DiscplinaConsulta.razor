@@ -6,7 +6,7 @@
 @inherits Page
 @inject IDISCIPLINAS_REPOSITORY DisciplinaRepository
 
-<Grid Data=@_disciplinas
+ <Grid Data=@_disciplinas
       ColumnsDeclared=@GetColumns()
       ExpandMode="@expandMode"
       IsLoading=@IsLoading
@@ -36,35 +36,11 @@
         </Grid>
     </Template>
 </Grid>
-
 @code {
-    DataGridExpandMode expandMode = DataGridExpandMode.Single;
     private IEnumerable<DISCIPLINAS> _disciplinas;
     private IEnumerable<GridColumn> _gridColumns;
     private Grid<DISCIPLINAS> GridComponent;
     private const string EXPORT_FILE_NAME = "Disciplinas";
-
-
-    void OnCustomersDataGridRender(DataGridRenderEventArgs<DISCIPLINAS> args)
-    {
-        if (args.FirstRender)
-        {
-            InvokeAsync(() => args.Grid.ExpandRow(args.Grid.View.Where(c => c.QTD_PESSOAS_CAPACITADAS > 0).FirstOrDefault()));
-        }
-    }
-
-    void OnOrdersDataGridRender(DataGridRenderEventArgs<DISCIPLINAS> args)
-    {
-        if (args.FirstRender)
-        {
-            InvokeAsync(() => args.Grid.ExpandRow(args.Grid.View.Where(c => c.QTD_PESSOAS_CAPACITADAS > 0).FirstOrDefault()));
-        }
-    }
-
-    void RowRender(RowRenderEventArgs<DISCIPLINAS> args)
-    {
-        args.Expandable = args.Data.QTD_PESSOAS_CAPACITADAS > 0;
-    }
 
     protected override async Task OnInitializedAsync()
     {
