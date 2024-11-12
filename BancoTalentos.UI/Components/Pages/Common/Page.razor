@@ -1,5 +1,7 @@
 ﻿@using QuickKit.Blazor.Components.Grid.Export
+@using QuickKit.Blazor.Services.Dialog
 @using QuickKit.Blazor.Services.Notification
+@using SenacPlataform.Shared.Controllers
 
 @code {
     [Inject]
@@ -10,6 +12,8 @@
     protected NavigationManager NavigationManager { get; set; }
     [Inject]
     protected IGridExportProvider GridExportProvider { get; set; }
+    [Inject]
+    public  Radzen.DialogService DialogService { get; set; }
     protected bool IsLoading { get; set; }
     protected bool IsExportingCsv { get; set; }
     protected bool IsExportingExcel { get; set; }
@@ -40,4 +44,20 @@
                 CloseOnClick = true,
             });
     }
+
+    #region EXPORT
+    protected async Task ExportCsv<T>(Grid<T> grid, string fileName)
+    {
+        ToggleExportingCsv();
+        await GridExportProvider.ExportAsync(grid, JsRuntime, ExportEndpoint.CSV, fileName);
+        ToggleExportingCsv();
+    }
+
+    protected async Task ExportExcel<T>(Grid<T> grid, string fileName)
+    {
+        ToggleExportingExcel();
+        await GridExportProvider.ExportAsync(grid, JsRuntime, ExportEndpoint.EXCEL, fileName);
+        ToggleExportingExcel();
+    }
+    #endregion
 }
