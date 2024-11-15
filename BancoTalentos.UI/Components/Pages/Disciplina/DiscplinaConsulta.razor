@@ -8,34 +8,12 @@
 
  <Grid Data=@_disciplinas
       ColumnsDeclared=@GetColumns()
-      ExpandMode="@expandMode"
       IsLoading=@IsLoading
       IsExportingCsv=@IsExportingCsv
       IsExportingExcel=@IsExportingExcel
       OnExportCSV="@(async args => await ExportCsv(GridComponent, EXPORT_FILE_NAME))"
       OnExportExcel="@(async args => await ExportExcel(GridComponent, EXPORT_FILE_NAME))"
-      ShowActionsColumns=false
-      RowRender="@RowRender"
-      Render="OnCustomersDataGridRender"
-      @ref="GridComponent">
-    <Template Context="cousin">
-        <Grid Data=@_disciplinas
-              ColumnsDeclared=@GetColumns()
-              IsLoading=@IsLoading
-              IsExportingCsv=@IsExportingCsv
-              IsExportingExcel=@IsExportingExcel
-              OnExportCSV="@(async args => await ExportCsv(GridComponent, EXPORT_FILE_NAME))"
-              OnExportExcel="@(async args => await ExportExcel(GridComponent, EXPORT_FILE_NAME))"
-              ShowActionsColumns=false
-              Render="@OnOrdersDataGridRender"
-              RowRender="@RowRender"
-              @ref="GridComponent">
-              <Template Context="ant">
-                  <RadzenText Text="Hello"></RadzenText>
-              </Template>
-        </Grid>
-    </Template>
-</Grid>
+      ShowActionsColumns=false/>
 @code {
     private IEnumerable<DISCIPLINAS> _disciplinas;
     private IEnumerable<GridColumn> _gridColumns;

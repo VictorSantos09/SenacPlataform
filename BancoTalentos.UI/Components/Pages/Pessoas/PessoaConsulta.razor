@@ -6,19 +6,20 @@
 @using QuickKit.Blazor.Components.Grid.Export
 @using QuickKit.Blazor.Services.Notification
 @using SenacPlataform.Shared.Controllers
+@using SenacPlataform.Shared.Extensions
+@using static BancoTalentos.Domain.Repositories.PESSOAS_REPOSITORY
 
 @inherits Page
 @inject IPESSOAS_REPOSITORY PessoasRepository
 
 <Grid Data=@_pessoas
       ColumnsDeclared=@GetColumns()
-      AllowManipulation=false
       IsLoading=@IsLoading
       IsExportingCsv=@IsExportingCsv
       IsExportingExcel=@IsExportingExcel
       CustomActionButton=@CustomButtons
-      OnExportCSV="@(async args => await ExportCsv())"
-      OnExportExcel="@(async args => await ExportExcel())"
+      OnExportCSV="@(async args => await ExportCsv(GridComponent, EXPORT_FILE_NAME))"
+      OnExportExcel="@(async args => await ExportExcel(GridComponent, EXPORT_FILE_NAME))"
       @ref="GridComponent" />
 
 @code {
@@ -53,20 +54,6 @@
     private void ConfigureCustomButtons()
     {
         CustomButtons = GetCustomButtons();
-    }
-
-    private async Task ExportCsv()
-    {
-        ToggleExportingCsv();
-        await GridExportProvider.ExportAsync(GridComponent, JsRuntime, ExportEndpoint.CSV, EXPORT_FILE_NAME);
-        ToggleExportingCsv();
-    }
-
-    private async Task ExportExcel()
-    {
-        ToggleExportingExcel();
-        await GridExportProvider.ExportAsync(GridComponent, JsRuntime, ExportEndpoint.EXCEL, EXPORT_FILE_NAME);
-        ToggleExportingExcel();
     }
 
     private IEnumerable<GridColumn> GetColumns()
@@ -116,7 +103,6 @@
             {
                 ButtonStyle = ButtonStyle.Primary,
                 Icon = "delete",
-                Variant = Variant.Filled,
                 OnClick =EventCallback.Factory.Create<PESSOAS>(this, async (data) => await NotificarCliqueLinha(data))
             },
 
