@@ -1,4 +1,6 @@
-﻿namespace SenacPlataform.Shared.Extensions;
+﻿using System.Text.RegularExpressions;
+
+namespace SenacPlataform.Shared.Extensions;
 public static class StringExtensions
 {
     public static bool IsEmpty(this string value)
@@ -26,4 +28,16 @@ public static class StringExtensions
         return (firstName, lastName);
     }
 
+    public static bool IsEmail(this string input)
+    {
+        string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+        return Regex.IsMatch(input, emailPattern);
+    }
+
+    public static bool IsPhoneNumber(this string input)
+    {
+        // Aceita formatos de telefone: (XX) XXXXX-XXXX, (XX) XXXX-XXXX, XXXXXXXXXX, etc.
+        string phonePattern = @"^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$";
+        return Regex.IsMatch(input, phonePattern);
+    }
 }

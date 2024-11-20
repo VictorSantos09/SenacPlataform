@@ -9,6 +9,7 @@
 @using BancoTalentos.Domain.Entity;
 @using BancoTalentos.Domain.Services.Pessoas.Base.Dto
 @using BancoTalentos.UI.Components.Pages.Pessoas.dto
+@using QuickKit.Blazor.Services.Notification
 @using SenacPlataform.Shared.Converter
 @using SenacPlataform.Shared.Extensions
 @using Radzen
@@ -16,9 +17,7 @@
 @inject IPessoaMediatorService service
 @inject IConsultarDisciplinaService consultarDisciplinaService
 @inject IJSRuntime JSRuntime
-@inject Radzen.NotificationService NotificationService
-
-<RadzenNotification /> 
+@inject INotifierService NotifierService
 
 <RadzenTemplateForm Data="@Dto" Submit="@(async (PessoaCadastroDto dto) => { await Gravar(); })">
     <RadzenRow Gap="1.5rem" Style="background: #f9f9f9; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);">
@@ -107,14 +106,12 @@
                                            @bind-Value="@_contatoInformado"
                                            Placeholder="Digite o email ou telefone"
                                            Style="width: 100%;" />
-                            <RadzenRequiredValidator Component="Contato" Text="Este campo é obrigatório" />
                         </RadzenColumn>
-                        <RadzenColumn Size="3" Style="display: flex; align-items: center; justify-content: center; margin-top: 23px;"> 
+                        <RadzenColumn Size="3" Style="display: flex; align-items: center; justify-content: center; margin-top: 23px;">
                             <RadzenButton Icon="add"
                                           Text="Adicionar"
                                           Click="@AdicionarContato"
-                                          Disabled="@IsSaving"
-                                          Style="background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 4px;" />
+                                          Disabled="@IsSaving" />
                         </RadzenColumn>
                     </RadzenRow>
                     <!-- Lista de Contatos -->
@@ -149,7 +146,6 @@
     private string _contatoInformado;
     private bool IsSaving = false;
     private List<ContatoDto> _contatosSelecionados = new();
-    private HashSet<string> _mensagensAtivas = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -161,22 +157,15 @@
         await base.OnInitializedAsync();
     }
 
-    async Task ExibirAlerta(string mensagem)
+    async Task ExibirAlerta(string mensagem, string summary = "Alerta")
     {
-        if (_mensagensAtivas.Contains(mensagem)) return; 
-
-        _mensagensAtivas.Add(mensagem);
-
-        NotificationService.Notify(new NotificationMessage
+        NotifierService.Notify(new NotificationMessage
             {
                 Severity = NotificationSeverity.Error,
-                Summary = "Alerta",
+                Summary = summary,
                 Detail = mensagem,
                 Duration = 4000
             });
-
-        await Task.Delay(4000);
-        _mensagensAtivas.Remove(mensagem);
     }
 
     async Task AdicionarContato()
@@ -202,12 +191,9 @@
             Dto.Contatos.Add(new ContatoDto
                 {
                     Contato = _contatoInformado,
-                    Id = Random.Shared.Next()
                 });
 
             _contatoInformado = string.Empty;
-
-            await ExibirAlerta("Contato adicionado com sucesso!");
         }
         finally
         {
@@ -279,6 +265,22 @@
         finally
         {
             IsSaving = false;
+        }
+    }
+
+    static string VerifyContact(string input)
+    {
+        if (input.IsEmail())
+        {
+            return "Email";
+        }
+        else if (input.IsPhoneNumber())
+        {
+            return "Telefone";
+        }
+        else
+        {
+            return "Inválido";
         }
     }
 }
