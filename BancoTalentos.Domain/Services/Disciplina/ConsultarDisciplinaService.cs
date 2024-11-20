@@ -57,10 +57,10 @@ internal class ConsultarDisciplinaService(IDISCIPLINAS_REPOSITORY disciplinas_re
         {
             try
             {
-                if (detalhe.CAMINHO_FOTO_PESSOA is not null)
-                {
-                    detalhe.CAMINHO_FOTO_PESSOA = imagemService.GetImagemOnDisk(detalhe.CAMINHO_FOTO_PESSOA).Result?.Imagem;
-                }
+                //if (detalhe.CAMINHO_FOTO_PESSOA is not null)
+                //{
+                //    detalhe.CAMINHO_FOTO_PESSOA = imagemService.GetImagemOnDisk(detalhe.CAMINHO_FOTO_PESSOA).Result?.Imagem;
+                //}
             }
             catch (AggregateException ex)
             {
@@ -68,7 +68,7 @@ internal class ConsultarDisciplinaService(IDISCIPLINAS_REPOSITORY disciplinas_re
                 {
                     if (innerException is ImageNotFoundException)
                     {
-                        detalhe.CAMINHO_FOTO_PESSOA = null;
+                        //detalhe.CAMINHO_FOTO_PESSOA = null;
                     }
                     else
                     {
@@ -76,7 +76,7 @@ internal class ConsultarDisciplinaService(IDISCIPLINAS_REPOSITORY disciplinas_re
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
