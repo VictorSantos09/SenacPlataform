@@ -4,7 +4,7 @@ using QuickKit.Shared.Generator.Csv;
 using QuickKit.Shared.Generator.Excel;
 using System.Text;
 
-namespace RadzenBlazorDemos
+namespace SenacPlataform.API.Controllers.Exportar
 {
     [ApiController]
     [Route("api/[controller]")]

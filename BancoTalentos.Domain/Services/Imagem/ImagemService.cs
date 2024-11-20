@@ -16,6 +16,19 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
         return await ArmazenarFotoOnDiskAsync(dto, configuration.Profile.MaxSizeBytes, cancellationToken);
     }
 
+    public string GetPath(string fileName)
+    {
+        var path = GetPath();
+        path = Path.Combine(path, fileName);
+        return path;
+    }
+
+    public string GetPath()
+    {
+        var path = GetPathOnEnvironment();
+        return path;
+    }
+
     public async Task<Result<string>> ArmazenarFotoOnDiskAsync(ImagemBase64DTO dto, int maxSizeBytes, CancellationToken cancellationToken = default)
     {
         var resultadoValidacao = ValidarEntrada(dto, maxSizeBytes);
@@ -25,7 +38,7 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
             return resultadoValidacao;
         }
 
-        var filePath = GetPathOnEnvironment();
+        var filePath = GetPath();
         Directory.CreateDirectory(filePath);
         filePath = Path.Combine(filePath, dto.FileName);
 
@@ -50,12 +63,11 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
     /// <returns>Objeto Image representando a imagem.</returns>
     public async Task<ImagemDTO> GetImagemOnDisk(string fileName, CancellationToken cancellationToken = default)
     {
-        var path = GetPathOnEnvironment();
-        path = Path.Combine(path, fileName);
+        var path = GetPath(fileName);
 
         if (!File.Exists(path))
         {
-            throw new FileNotFoundException("O arquivo da imagem não foi encontrado.", path);
+            throw new ImageNotFoundException("O arquivo da imagem não foi encontrado.", path);
         }
 
         // Lê o arquivo de imagem diretamente como array de bytes
