@@ -101,14 +101,26 @@
     private IEnumerable<ButtonComponent<PESSOAS>> GetCustomButtons()
     {
         return new List<ButtonComponent<PESSOAS>>
-    {
-        new ()
         {
-            ButtonStyle = ButtonStyle.Danger,
-            Icon = "delete",
-            OnClick = EventCallback.Factory.Create<PESSOAS>(this, async (data) => await ConfirmarExcluir(data))
-        },
-    };
+            new ButtonComponent<PESSOAS>()
+            {
+                ButtonStyle = ButtonStyle.Info,
+                Icon = "visibility",
+                OnClick = EventCallback.Factory.Create<PESSOAS>(this, (data) => { /* Função para visualizar pode ser adicionada aqui */ })
+            },
+            new ButtonComponent<PESSOAS>()
+            {
+                ButtonStyle = ButtonStyle.Primary,
+                Icon = "edit",
+                OnClick = EventCallback.Factory.Create<PESSOAS>(this, (data) => { /* Função para editar pode ser adicionada aqui */ })
+            },
+            new ButtonComponent<PESSOAS>()
+            {
+                ButtonStyle = ButtonStyle.Danger,
+                Icon = "delete",
+                OnClick = EventCallback.Factory.Create<PESSOAS>(this, async (data) => await ConfirmarExcluir(data))
+            }
+        };
     }
 
     private async Task ConfirmarExcluir(PESSOAS pessoa)
