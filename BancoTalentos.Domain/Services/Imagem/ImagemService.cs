@@ -3,6 +3,7 @@ using FluentResults;
 using SenacPlataform.Shared.Config;
 using SenacPlataform.Shared.Converter;
 using SenacPlataform.Shared.Enviroment.Interfaces;
+using SenacPlataform.Shared.Exceptions;
 using SenacPlataform.Shared.Extensions;
 using System.Net.Mime;
 
@@ -16,6 +17,19 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
         return await ArmazenarFotoOnDiskAsync(dto, configuration.Profile.MaxSizeBytes, cancellationToken);
     }
 
+    public string GetPath(string fileName)
+    {
+        var path = GetPath();
+        path = Path.Combine(path, fileName);
+        return path;
+    }
+
+    public string GetPath()
+    {
+        var path = GetPathOnEnvironment();
+        return path;
+    }
+
     public async Task<Result<string>> ArmazenarFotoOnDiskAsync(ImagemBase64DTO dto, int maxSizeBytes, CancellationToken cancellationToken = default)
     {
         var resultadoValidacao = ValidarEntrada(dto, maxSizeBytes);
@@ -25,7 +39,7 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
             return resultadoValidacao;
         }
 
-        var filePath = GetPathOnEnvironment();
+        var filePath = GetPath();
         Directory.CreateDirectory(filePath);
         filePath = Path.Combine(filePath, dto.FileName);
 
@@ -50,19 +64,31 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
     /// <returns>Objeto Image representando a imagem.</returns>
     public async Task<ImagemDTO> GetImagemOnDisk(string fileName, CancellationToken cancellationToken = default)
     {
-        var path = GetPathOnEnvironment();
-        path = Path.Combine(path, fileName);
+        var path = GetPath(fileName);
 
         if (!File.Exists(path))
         {
-            throw new FileNotFoundException("O arquivo da imagem não foi encontrado.", path);
+            throw new ImageNotFoundException("O arquivo da imagem não foi encontrado.", path);
+        }
+
+        // Load file meta data with FileInfo
+        FileInfo fileInfo = new FileInfo(path);
+
+        // The byte[] to save the data in
+        byte[] data = new byte[fileInfo.Length];
+
+        // Load a filestream and put its content into the byte[]
+        using (FileStream fs = fileInfo.OpenRead())
+        {
+            fs.Read(data, 0, data.Length);
         }
 
         // Lê o arquivo de imagem diretamente como array de bytes
-        var imageBytes = await File.ReadAllBytesAsync(path, cancellationToken);
+        //var imageBytes = await File.ReadAllBytesAsync(path, cancellationToken);
+
 
         // Converte os bytes da imagem para Base64
-        string base64String = Convert.ToBase64String(imageBytes);
+        string base64String = Convert.ToBase64String(data);
 
         // Determina o tipo MIME com base na extensão do arquivo
         string mimeType = fileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ? "image/png" :
@@ -88,7 +114,7 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
         if (applicationEnviroment.IsDevelopment())
         {
             var devConfig = configuration.Enviroment.Development;
-            return devConfig.UseTempPath ? $@"{Path.GetTempPath()}\\{devConfig.PathTempFolderName}" : devConfig.Path;
+            return devConfig.UseTempPath ? Path.Combine(Path.GetTempPath(), devConfig.PathTempFolderName) : devConfig.Path;
         }
 
         return configuration.Enviroment.Production.Path;

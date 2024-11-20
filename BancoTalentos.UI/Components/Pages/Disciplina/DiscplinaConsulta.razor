@@ -6,25 +6,28 @@
 @inherits Page
 @inject IDISCIPLINAS_REPOSITORY DisciplinaRepository
 
- <Grid Data=@_disciplinas
+<Grid Data=@_disciplinas
       ColumnsDeclared=@GetColumns()
       IsLoading=@IsLoading
       IsExportingCsv=@IsExportingCsv
       IsExportingExcel=@IsExportingExcel
       OnExportCSV="@(async args => await ExportCsv(GridComponent, EXPORT_FILE_NAME))"
       OnExportExcel="@(async args => await ExportExcel(GridComponent, EXPORT_FILE_NAME))"
-      ShowActionsColumns=false/>
+      CustomActionButton="@_customButtons" />
+
 @code {
     private IEnumerable<DISCIPLINAS> _disciplinas;
     private IEnumerable<GridColumn> _gridColumns;
     private Grid<DISCIPLINAS> GridComponent;
     private const string EXPORT_FILE_NAME = "Disciplinas";
+    private IEnumerable<ButtonComponent<DISCIPLINAS>> _customButtons;
 
     protected override async Task OnInitializedAsync()
     {
         ToogleLoading();
         try
         {
+            _customButtons = GetCustomButtons();
             _disciplinas = await DisciplinaRepository.GetAll_DetalhadoAsync();
         }
         catch (Exception ex)
@@ -67,5 +70,27 @@
             }));
 
         return output;
+    }
+
+
+    private IEnumerable<ButtonComponent<DISCIPLINAS>> GetCustomButtons()
+    {
+        return new List<ButtonComponent<DISCIPLINAS>>
+        {
+            new ()
+            {
+                ButtonStyle = ButtonStyle.Primary,
+                Icon = "visibility",
+                OnClick =EventCallback.Factory.Create<DISCIPLINAS>(this, async (data) => await VerDetalhes(data))
+            },
+
+        };
+    }
+
+    async Task VerDetalhes(DISCIPLINAS disciplina)
+    {
+        await DialogService.OpenAsync<DisciplinaDetalhes>($"Pessoas habilitadas em {disciplina.NOME}",
+              new Dictionary<string, object>() { { "Id", disciplina.ID } },
+              new DialogOptions() { Width = "80%", Height = "80%" });
     }
 }

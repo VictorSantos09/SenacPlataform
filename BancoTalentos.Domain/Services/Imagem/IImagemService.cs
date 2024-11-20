@@ -9,4 +9,6 @@ public interface IImagemService
     Task<Result<string>> ArmazenarFotoPerfilOnDiskAsync(ImagemBase64DTO dto, CancellationToken cancellationToken = default);
     void DeletarImagemOnDisk(string fileName);
     Task<ImagemDTO> GetImagemOnDisk(string fileName, CancellationToken cancellationToken = default);
+    string GetPath(string fileName);
+    string GetPath();
 }

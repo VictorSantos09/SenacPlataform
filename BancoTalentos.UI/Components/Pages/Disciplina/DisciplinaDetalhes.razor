@@ -1,0 +1,60 @@
+﻿@using BancoTalentos.Domain.Entity
+@using BancoTalentos.Domain.Repositories.Contracts.Interfaces
+@using BancoTalentos.Domain.Repositories.Dto
+@using BancoTalentos.Domain.Services.Disciplina.Interfaces
+@using BancoTalentos.Domain.Services.Imagem
+@using BancoTalentos.UI.Components.Pages.Common
+@inherits Page
+@inject IDISCIPLINAS_REPOSITORY disciplina_repository
+@inject IConsultarDisciplinaService consultarDisciplinaService
+
+<Grid Data=@_detalhes
+      ColumnsDeclared=@GetColumns()
+      IsLoading=@IsLoading
+      Density="Density.Compact"
+      IsExportingCsv=@IsExportingCsv
+      IsExportingExcel=@IsExportingExcel
+      OnExportCSV="@(async args => await ExportCsv(GridComponent, EXPORT_FILE_NAME))"
+      OnExportExcel="@(async args => await ExportExcel(GridComponent, EXPORT_FILE_NAME))"
+      ShowActionsColumns=false/>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private IEnumerable<DisciplinaDetalhesDTO> _detalhes;
+    private Grid<DisciplinaDetalhesDTO> GridComponent;
+    private const string EXPORT_FILE_NAME = "Detalhes disciplina";
+    private IEnumerable<GridColumn> _columns;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ToogleLoading();
+        try
+        {
+            _detalhes = await consultarDisciplinaService.GetDetalhesPessoasHabilitadasAsync(Id);
+        }
+        catch (Exception ex)
+        {
+            NotificarErroCarregarDados(ex);
+        }
+        finally
+        {
+            ToogleLoading();
+        }
+    }
+
+    private IEnumerable<GridColumn> GetColumns()
+    {
+        var output = new List<GridColumn>();
+
+        output.Add(new GridColumn("Nome", nameof(DisciplinaDetalhesDTO.NOME_PESSOA), new GridColumnOptions<IRadzenComponent>()));
+        output.Add(new GridColumn("Cargo", nameof(DisciplinaDetalhesDTO.CARGO_PESSOA), new GridColumnOptions<IRadzenComponent>()));
+        output.Add(new GridColumn("Contato", nameof(DisciplinaDetalhesDTO.CONTATO), new GridColumnOptions<IRadzenComponent>()));
+        output.Add(new GridColumn("Tipo contato", nameof(DisciplinaDetalhesDTO.TIPO), new GridColumnOptions<IRadzenComponent>()));
+        output.Add(new GridColumn("Carga horária", nameof(DisciplinaDetalhesDTO.CARGA_HORARIA_PESSOA), new GridColumnOptions<IRadzenComponent>()));
+        output.Add(new GridColumn("Cadastrada em", nameof(DisciplinaDetalhesDTO.DATA_CADASTRO), new GridColumnOptions<IRadzenComponent>()));
+
+        return output;
+    }
+}

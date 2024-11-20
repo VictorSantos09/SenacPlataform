@@ -1,22 +1,19 @@
 ﻿using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
+using BancoTalentos.Domain.Repositories.Dto;
 using BancoTalentos.Domain.Services.Disciplina.Dto;
 using BancoTalentos.Domain.Services.Disciplina.Interfaces;
+using BancoTalentos.Domain.Services.Imagem;
 using FluentResults;
+using SenacPlataform.Shared.Exceptions;
 
 namespace BancoTalentos.Domain.Services.Disciplina;
-internal class ConsultarDisciplinaService : IConsultarDisciplinaService
+internal class ConsultarDisciplinaService(IDISCIPLINAS_REPOSITORY disciplinas_repository, IImagemService imagemService) : IConsultarDisciplinaService
 {
-    private readonly IDISCIPLINAS_REPOSITORY _disciplinas_repository;
     private const string MESSAGE_NAO_ENCONTRADO = "Disciplina não encontrada.";
-
-    public ConsultarDisciplinaService(IDISCIPLINAS_REPOSITORY disciplinas_repository)
-    {
-        _disciplinas_repository = disciplinas_repository;
-    }
 
     public async Task<Result<IEnumerable<DisciplinaDto>>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var result = await _disciplinas_repository.GetAllAsync(cancellationToken);
+        var result = await disciplinas_repository.GetAllAsync(cancellationToken);
 
         if (result is null)
         {
@@ -30,7 +27,7 @@ internal class ConsultarDisciplinaService : IConsultarDisciplinaService
 
     public async Task<Result<DisciplinaDto>> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
-        var result = await _disciplinas_repository.GetByIdAsync(id, cancellationToken);
+        var result = await disciplinas_repository.GetByIdAsync(id, cancellationToken);
 
         if (result is null)
         {
@@ -42,7 +39,7 @@ internal class ConsultarDisciplinaService : IConsultarDisciplinaService
 
     public async Task<Result<DisciplinaDto>> GetByNameAsync(string name, CancellationToken cancellationToken)
     {
-        var result = await _disciplinas_repository.GetByNameAsync(name, cancellationToken);
+        var result = await disciplinas_repository.GetByNameAsync(name, cancellationToken);
 
         if (result is null)
         {
@@ -50,5 +47,41 @@ internal class ConsultarDisciplinaService : IConsultarDisciplinaService
         }
 
         return Result.Ok(DisciplinaDto.Create(result));
+    }
+
+    public async Task<IEnumerable<DisciplinaDetalhesDTO>> GetDetalhesPessoasHabilitadasAsync(int id)
+    {
+        var detalhes = await disciplinas_repository.GetDetalhesPessoasHabilitadas(id);
+
+        foreach (var detalhe in detalhes)
+        {
+            try
+            {
+                //if (detalhe.CAMINHO_FOTO_PESSOA is not null)
+                //{
+                //    detalhe.CAMINHO_FOTO_PESSOA = imagemService.GetImagemOnDisk(detalhe.CAMINHO_FOTO_PESSOA).Result?.Imagem;
+                //}
+            }
+            catch (AggregateException ex)
+            {
+                foreach (var innerException in ex.InnerExceptions)
+                {
+                    if (innerException is ImageNotFoundException)
+                    {
+                        //detalhe.CAMINHO_FOTO_PESSOA = null;
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        return detalhes;
     }
 }

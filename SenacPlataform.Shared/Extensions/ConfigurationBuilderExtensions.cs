@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace SenacPlataform.Shared.Config;
+namespace SenacPlataform.Shared.Extensions;
 
 public static class ConfigurationBuilderExtensions
 {
@@ -9,7 +9,7 @@ public static class ConfigurationBuilderExtensions
     private static readonly string APPSETTINGS_PATH = $"{TryGetSolutionDirectory()}/appsettings.json";
     private static readonly string APPSETTINGS_DEVELOPMENT_PATH = $"{TryGetSolutionDirectory()}/appsettings.development.json";
     private const string NOME_PROJETO_SHARED = "SenacPlataform.Shared";
-    
+
     public static IConfigurationBuilder SNConfigureAppSettings(this IConfigurationBuilder builder)
     {
         builder.AddJsonFile(APPSETTINGS_PATH, optional: false, reloadOnChange: false);

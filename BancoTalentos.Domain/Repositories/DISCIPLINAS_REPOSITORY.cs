@@ -1,10 +1,9 @@
 using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Base;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
+using BancoTalentos.Domain.Repositories.Dto;
 using Dapper;
-using Radzen;
 using System.Data;
-using System.Threading;
 
 namespace BancoTalentos.Domain.Repositories;
 
@@ -40,5 +39,24 @@ public class DISCIPLINAS_REPOSITORY : DISCIPLINAS_REPOSITORY_BASE, IDISCIPLINAS_
 
         CommandDefinition command = new(sql);
         return await _connection.QueryAsync<DISCIPLINAS>(command);
+    }
+
+    public async Task<IEnumerable<DisciplinaDetalhesDTO>> GetDetalhesPessoasHabilitadas(int id)
+    {
+        var sql = @"select p.CARGA_HORARIA CARGA_HORARIA_PESSOA
+		                    , p.CARGO CARGO_PESSOA
+                            , p.FOTO CAMINHO_FOTO_PESSOA
+                            , p.NOME NOME_PESSOA
+                            , phd.DATA_CADASTRO
+                            , pc.CONTATO
+                            , tc.TIPO
+                    from disciplinas d
+                    join pessoas_habilidades_disciplinas phd on phd.ID_DISCIPLINA = d.ID
+                    join pessoas p on p.ID = phd.ID_PESSOA
+                    join pessoas_contatos pc on pc.ID_PESSOA = p.ID
+                    join tipos_contatos tc on tc.ID = pc.ID_TIPO_CONTATO
+                    where d.ID = @id";
+
+        return await _connection.QueryAsync<DisciplinaDetalhesDTO>(sql, new { id });
     }
 }
