@@ -4,6 +4,7 @@ using BancoTalentos.Domain.Services.Disciplina.Dto;
 using BancoTalentos.Domain.Services.Disciplina.Interfaces;
 using BancoTalentos.Domain.Services.Imagem;
 using FluentResults;
+using SenacPlataform.Shared.Exceptions;
 
 namespace BancoTalentos.Domain.Services.Disciplina;
 internal class ConsultarDisciplinaService(IDISCIPLINAS_REPOSITORY disciplinas_repository, IImagemService imagemService) : IConsultarDisciplinaService

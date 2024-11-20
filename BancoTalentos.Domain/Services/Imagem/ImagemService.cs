@@ -3,6 +3,7 @@ using FluentResults;
 using SenacPlataform.Shared.Config;
 using SenacPlataform.Shared.Converter;
 using SenacPlataform.Shared.Enviroment.Interfaces;
+using SenacPlataform.Shared.Exceptions;
 using SenacPlataform.Shared.Extensions;
 using System.Net.Mime;
 
