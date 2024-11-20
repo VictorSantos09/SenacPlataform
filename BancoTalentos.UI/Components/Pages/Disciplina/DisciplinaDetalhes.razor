@@ -16,7 +16,8 @@
       IsExportingExcel=@IsExportingExcel
       OnExportCSV="@(async args => await ExportCsv(GridComponent, EXPORT_FILE_NAME))"
       OnExportExcel="@(async args => await ExportExcel(GridComponent, EXPORT_FILE_NAME))"
-      ShowActionsColumns=false/>
+      ShowActionsColumns=false
+      @ref="GridComponent"/>
 
 @code {
     [Parameter]

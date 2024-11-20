@@ -13,7 +13,8 @@
       IsExportingExcel=@IsExportingExcel
       OnExportCSV="@(async args => await ExportCsv(GridComponent, EXPORT_FILE_NAME))"
       OnExportExcel="@(async args => await ExportExcel(GridComponent, EXPORT_FILE_NAME))"
-      CustomActionButton="@_customButtons" />
+      CustomActionButton="@_customButtons"
+      @ref="GridComponent"/>
 
 @code {
     private IEnumerable<DISCIPLINAS> _disciplinas;
