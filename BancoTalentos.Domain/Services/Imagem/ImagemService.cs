@@ -71,11 +71,24 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
             throw new ImageNotFoundException("O arquivo da imagem não foi encontrado.", path);
         }
 
+        // Load file meta data with FileInfo
+        FileInfo fileInfo = new FileInfo(path);
+
+        // The byte[] to save the data in
+        byte[] data = new byte[fileInfo.Length];
+
+        // Load a filestream and put its content into the byte[]
+        using (FileStream fs = fileInfo.OpenRead())
+        {
+            fs.Read(data, 0, data.Length);
+        }
+
         // Lê o arquivo de imagem diretamente como array de bytes
-        var imageBytes = await File.ReadAllBytesAsync(path, cancellationToken);
+        //var imageBytes = await File.ReadAllBytesAsync(path, cancellationToken);
+
 
         // Converte os bytes da imagem para Base64
-        string base64String = Convert.ToBase64String(imageBytes);
+        string base64String = Convert.ToBase64String(data);
 
         // Determina o tipo MIME com base na extensão do arquivo
         string mimeType = fileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ? "image/png" :
@@ -101,7 +114,7 @@ internal class ImagemService(ImageConfig configuration, IApplicationEnviroment a
         if (applicationEnviroment.IsDevelopment())
         {
             var devConfig = configuration.Enviroment.Development;
-            return devConfig.UseTempPath ? $@"{Path.GetTempPath()}\\{devConfig.PathTempFolderName}" : devConfig.Path;
+            return devConfig.UseTempPath ? Path.Combine(Path.GetTempPath(), devConfig.PathTempFolderName) : devConfig.Path;
         }
 
         return configuration.Enviroment.Production.Path;
