@@ -15,7 +15,7 @@ builder.Configuration.SNConfigureAppSettings();
 // Add services to the container.
 builder.Services.SNConfigureBancoTalentos(builder.Configuration);
 
-builder.Services.AddRazorComponents()
+builder.Services.AddRazorComponents(options => options.DetailedErrors = builder.Environment.IsDevelopment())
     .AddInteractiveServerComponents();
 
 builder.Services.AddRadzenCookieThemeService(options =>
