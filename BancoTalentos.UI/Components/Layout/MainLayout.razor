@@ -4,24 +4,52 @@
 <RadzenComponents @rendermode="SenacPlataformConfig.ComponentRenderMode" />
 
 <RadzenLayout style="position: relative">
-        <RadzenHeader>
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
-                <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
-                <RadzenLabel Text="@SystemConfig.SYSTEM_NAME" />
-            </RadzenStack>
-        </RadzenHeader>
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+            <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+            <RadzenLabel Text="@SystemConfig.SYSTEM_NAME" />
+        </RadzenStack>
+    </RadzenHeader>
     <RadzenSidebar Responsive="false" @bind-Expanded="@sidebarExpanded" Style="width: 15rem">
-                <NavMenu/>
-        </RadzenSidebar>
-        <RadzenBody>
-            <div class="rz-p-4">
+        <NavMenu />
+    </RadzenSidebar>
+    <RadzenBody>
+        <ErrorBoundary @ref="errorBoundary">
+            <ChildContent>
                 @Body
-            </div>
-        </RadzenBody>
-        @* <RadzenFooter>
-            Footer
-        </RadzenFooter> *@
-    </RadzenLayout>
+            </ChildContent>
+            <ErrorContent>
+                <RadzenStack class="rz-background-color-danger rz-p-5 rz-shadow-md">
+                    <RadzenStack Gap="0.1rem">
+                        <RadzenText Text="Oops, algo deu errado!" TextStyle="TextStyle.H3"/>
+                        <RadzenText Text="Message" TextStyle="TextStyle.H5" />
+                        <RadzenText Text="@context.Message" TextStyle="TextStyle.Body1" />
+
+                        @if (showStackTrace)
+                        {
+                            <RadzenStack Gap="0.1rem">
+                                <RadzenText Text="Source" TextStyle="TextStyle.H5"/>
+                                <RadzenText Text="@context.Source" TextStyle="TextStyle.Body1" />
+                                <RadzenText Text="StackTrace" TextStyle="TextStyle.H5" />
+                                <RadzenText Text="@context.StackTrace" TextStyle="TextStyle.Body1" />
+                            </RadzenStack>
+                        }
+
+                        <RadzenStack Orientation="Orientation.Horizontal">
+                            <RadzenButton Text="@(showStackTrace ? "Ocultar Detalhes" : "Mostrar Detalhes")"
+                                          ButtonStyle="ButtonStyle.Secondary"
+                                          Click="@(() => showStackTrace = !showStackTrace)" />
+                            <RadzenButton Text="Tentar novamente" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Reset" Icon="sync_problem" Click="@(() => errorBoundary?.Recover())" />
+                        </RadzenStack>
+                    </RadzenStack>
+                </RadzenStack>
+            </ErrorContent>
+        </ErrorBoundary>
+    </RadzenBody>
+    @* <RadzenFooter>
+    Footer
+    </RadzenFooter> *@
+</RadzenLayout>
 
 @code {
     bool sidebarExpanded = true;
@@ -31,6 +59,15 @@
 
     [Inject]
     private ThemeService ThemeService { get; set; }
+
+    private ErrorBoundary? errorBoundary;
+
+    private bool showStackTrace = false;
+
+    protected override void OnParametersSet()
+    {
+        errorBoundary?.Recover();
+    }
 
     protected override void OnInitialized()
     {
