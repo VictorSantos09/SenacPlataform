@@ -1,4 +1,4 @@
-﻿@page "/pessoas/cadastro"
+﻿@page "/pessoas/cadastro/{Id:int?}"
 @using BancoTalentos.Domain.Entity.Enums
 @using BancoTalentos.Domain.Services.Contato.Dto
 @using BancoTalentos.Domain.Services.Disciplina.Dto
@@ -18,7 +18,7 @@
 @inject IJSRuntime JSRuntime
 @inject Radzen.NotificationService NotificationService
 
-<RadzenNotification /> 
+<RadzenNotification />
 
 <RadzenTemplateForm Data="@Dto" Submit="@(async (PessoaCadastroDto dto) => { await Gravar(); })">
     <RadzenRow Gap="1.5rem" Style="background: #f9f9f9; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);">
@@ -107,9 +107,8 @@
                                            @bind-Value="@_contatoInformado"
                                            Placeholder="Digite o email ou telefone"
                                            Style="width: 100%;" />
-                            <RadzenRequiredValidator Component="Contato" Text="Este campo é obrigatório" />
                         </RadzenColumn>
-                        <RadzenColumn Size="3" Style="display: flex; align-items: center; justify-content: center; margin-top: 23px;"> 
+                        <RadzenColumn Size="3" Style="display: flex; align-items: center; justify-content: center; margin-top: 23px;">
                             <RadzenButton Icon="add"
                                           Text="Adicionar"
                                           Click="@AdicionarContato"
@@ -137,7 +136,11 @@
 
     <!-- Botões de Ação -->
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Style="margin-top: 20px;">
-        <RadzenButton ButtonType="ButtonType.Submit" Text="Salvar" Icon="save" Disabled="@IsSaving" Style="background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 8px;" />
+        <RadzenButton ButtonType="ButtonType.Submit"
+                      Text="@(Id.HasValue ? "Atualizar" : "Salvar")"
+                      Icon="@(Id.HasValue ? "edit" : "save")"
+                      Disabled="@IsSaving"
+                      Style="background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 8px;" />
         <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Text="Cancelar" Icon="cancel" Style="padding: 10px 20px; border-radius: 8px;" />
     </RadzenStack>
 </RadzenTemplateForm>
@@ -151,19 +154,40 @@
     private List<ContatoDto> _contatosSelecionados = new();
     private HashSet<string> _mensagensAtivas = new();
 
+    [Parameter] public int? Id { get; set; }
+    private string TituloPagina => Id.HasValue ? "Editar Pessoa" : "Nova Pessoa";
+
     protected override async Task OnInitializedAsync()
     {
-        var result = await consultarDisciplinaService.GetAllAsync(default);
-        _disciplinasExistentes = result.ValueOrDefault;
-
-        _contatosSelecionados = Dto.Contatos.ToList();
-
-        await base.OnInitializedAsync();
+        if (Id.HasValue)
+        {
+            var pessoa = await service.GetByIdAsync(Id.Value);
+            if (pessoa is not null)
+            {
+                Dto = new PessoaCadastroDto
+                    {
+                        Id = pessoa.Id,
+                        Nome = pessoa.Nome,
+                        Cargo = pessoa.Cargo,
+                        CargaHoraria = pessoa.CargaHorariaSemanal,
+                        Contatos = pessoa.Contatos?.ToList() ?? new List<ContatoDto>(),
+                        HabilidadesDisciplinas = pessoa.IdsDisciplinas?
+                            .Select(id => new DisciplinaDto
+                            {
+                                Id = id,
+                                Nome = _disciplinasExistentes.FirstOrDefault(d => d.Id == id)?.Nome ?? "Nome Padrão",
+                                CargaHoraria = _disciplinasExistentes.FirstOrDefault(d => d.Id == id)?.CargaHoraria ?? 0
+                            })
+                            .ToList() ?? new List<DisciplinaDto>(), 
+                        Foto = pessoa.Foto
+                    };
+            }
+        }
     }
 
     async Task ExibirAlerta(string mensagem)
     {
-        if (_mensagensAtivas.Contains(mensagem)) return; 
+        if (_mensagensAtivas.Contains(mensagem)) return;
 
         _mensagensAtivas.Add(mensagem);
 
@@ -231,7 +255,7 @@
                 await stream.CopyToAsync(memoryStream);
                 string base64String = Convert.ToBase64String(memoryStream.ToArray());
 
-                Dto.Foto = new ImagemBase64DTO()
+                Dto.Foto = new ImagemBase64DTO
                     {
                         ContentType = file.ContentType,
                         FileName = file.Name,
@@ -257,20 +281,51 @@
         IsSaving = true;
         try
         {
-            var contatosSelecionados = _contatosSelecionados;
-
-            var dto = new PessoaDto
+            var pessoaDto = new PessoaDto
                 {
-                    CargaHorariaSemanal = Dto.CargaHoraria,
+                    Id = Dto.Id,
                     Nome = Dto.Nome,
                     Cargo = Dto.Cargo,
-                    Contatos = contatosSelecionados,
-                    IdsDisciplinas = Dto.HabilidadesDisciplinas.Select(x => x.Id).ToList(),
-                    Foto = Dto.Foto,
-                    Id = Dto.Id,
+                    CargaHorariaSemanal = Dto.CargaHoraria,
+                    Contatos = Dto.Contatos,
+                    IdsDisciplinas = Dto.HabilidadesDisciplinas?.Select(d => d.Id).ToList(),
+                    Foto = Dto.Foto
                 };
 
-            await service.CadastrarAsync(dto);
+            if (Id.HasValue)
+            {
+                var result = await service.AtualizarAsync(pessoaDto.Id, pessoaDto);
+                if (result.IsFailed)
+                {
+                    await ExibirAlerta($"Erro ao atualizar: {string.Join(", ", result.Errors)}");
+                    return;
+                }
+
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Sucesso",
+                        Detail = "Pessoa atualizada com sucesso!",
+                        Duration = 4000
+                    });
+            }
+            else
+            {
+                var result = await service.CadastrarAsync(pessoaDto, CancellationToken.None);
+                if (result.IsFailed)
+                {
+                    await ExibirAlerta($"Erro ao cadastrar: {string.Join(", ", result.Errors)}");
+                    return;
+                }
+
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Sucesso",
+                        Detail = "Pessoa cadastrada com sucesso!",
+                        Duration = 4000
+                    });
+            }
         }
         catch (Exception ex)
         {
