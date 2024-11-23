@@ -6,4 +6,6 @@ public interface ITipoContatoConsultaService
 {
     Task<Result<IEnumerable<TIPOS_CONTATOS>>> GetAllAsync(CancellationToken cancellationToken);
     Task<Result<TIPOS_CONTATOS>> GetByIdAsync(int id, CancellationToken cancellationToken);
+    Task<Result<TIPOS_CONTATOS>> GetEmailAsync();
+    Task<Result<TIPOS_CONTATOS>> GetTelefoneAsync();
 }

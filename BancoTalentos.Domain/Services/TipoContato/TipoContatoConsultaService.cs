@@ -26,4 +26,18 @@ internal class TipoContatoConsultaService : ITipoContatoConsultaService
 
         return data is null ? Result.Fail($"Tipo de contato com código {id} não encontrado.") : Result.Ok(data);
     }
+
+    public async Task<Result<TIPOS_CONTATOS>> GetEmailAsync()
+    {
+        var data = await _tipos_contatos_repository.GetEmailAsync();
+
+        return data is null ? Result.Fail($"Tipo de contato email não encontrado.") : Result.Ok(data);
+    }
+
+    public async Task<Result<TIPOS_CONTATOS>> GetTelefoneAsync()
+    {
+        var data = await _tipos_contatos_repository.GetTelefoneAsync();
+
+        return data is null ? Result.Fail($"Tipo de contato telefone não encontrado.") : Result.Ok(data);
+    }
 }
