@@ -17,6 +17,8 @@
     protected bool IsLoading { get; set; }
     protected bool IsExportingCsv { get; set; }
     protected bool IsExportingExcel { get; set; }
+    protected bool HasInvalidSubmit { get; set; } = false;
+    protected bool HasValidSubmit { get; set; } = false;
 
     protected void ToogleLoading()
     {

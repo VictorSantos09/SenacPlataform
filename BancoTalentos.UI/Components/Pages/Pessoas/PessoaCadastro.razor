@@ -23,68 +23,74 @@
 @inject ITipoContatoConsultaService TipoContatoConsultaService
 @inherits Page
 
-<RadzenTemplateForm Data="@Dto" Submit="@(async (PessoaCadastroDto dto) => { await Gravar(); })">
+<RadzenTemplateForm Data="@Dto" Submit="@(async (PessoaCadastroDto dto) => { await Gravar(); })" InvalidSubmit="@( () => HasInvalidSubmit = true)">
     <RadzenRow>
-        <!-- Informações Pessoais -->
-        <RadzenColumn Size="12" SizeMD="6">
+        <!--Informações pessoais-->
+        <RadzenColumn>
             <RadzenFieldset Text="Informações pessoais" Icon="person">
                 <RadzenStack Gap="1rem">
-                    <!-- Nome -->
-                    <RadzenRow>
-                        <RadzenColumn Size="12">
-                            <RadzenLabel Text="Nome" />
-                        </RadzenColumn>
-                        <RadzenColumn Size="12">
+                    <!--Nome-->
+                    <RadzenFormField Text="Nome" AllowFloatingLabel=true>
+                        <ChildContent>
                             <RadzenTextBox Name="Nome" @bind-Value="@Dto.Nome" Placeholder="Digite o nome completo" Style="width: 100%;" />
-                            <RadzenRequiredValidator Component="Nome" Text="Campo obrigatório" />
-                        </RadzenColumn>
-                    </RadzenRow>
-                    <!-- Carga Horária -->
-                    <RadzenRow>
-                        <RadzenColumn Size="12">
-                            <RadzenLabel Text="Carga horária" />
-                        </RadzenColumn>
-                        <RadzenColumn Size="12">
-                            <RadzenNumeric Name="CargaHoraria" TValue="int" @bind-Value="@Dto.CargaHoraria" Placeholder="Digite a carga horária semanal" Style="width: 100%;" />
-                            <RadzenRequiredValidator Component="CargaHoraria" Text="Campo obrigatório" />
-                        </RadzenColumn>
-                    </RadzenRow>
+                        </ChildContent>
+                        <Helper>
+                            <RadzenRequiredValidator Component="Nome" Text="@REQUIRED_FIELD" />
+                            <RequiredWarning InvalidSubmit=@HasInvalidSubmit />
+                        </Helper>
+                    </RadzenFormField>
+
+                    <!--Carga Horária-->
+                    <RadzenFormField Text="CargaHoraria" AllowFloatingLabel=true>
+                        <ChildContent>
+                            <RadzenNumeric Max="44" ShowUpDown="true" Name="CargaHoraria" TValue="int" @bind-Value="@Dto.CargaHoraria" Placeholder="Digite a carga horária semanal" Style="width: 100%;" />
+                        </ChildContent>
+                        <Helper>
+                            <RadzenRequiredValidator Component="CargaHoraria" Text="@REQUIRED_FIELD" />
+                            <RequiredWarning InvalidSubmit=@HasInvalidSubmit />
+                        </Helper>
+                    </RadzenFormField>
+
                     <!-- Cargo -->
-                    <RadzenRow>
-                        <RadzenColumn Size="12">
-                            <RadzenLabel Text="Cargo" />
-                        </RadzenColumn>
-                        <RadzenColumn Size="12">
+                    <RadzenFormField Text="Cargo" AllowFloatingLabel=true>
+                        <ChildContent>
                             <RadzenDropDown Data="@(EnumConverter.SNToList<CARGO>())"
                                             @bind-Value="@Dto.Cargo"
                                             Placeholder="Selecione o cargo"
                                             Style="width: 100%;"
                                             Name="Cargo"
                                             AllowClear="true" />
-                            <RadzenRequiredValidator Component="Cargo" Text="Campo obrigatório" />
-                        </RadzenColumn>
-                    </RadzenRow>
+                        </ChildContent>
+                        <Helper>
+                            <RadzenRequiredValidator Component="Cargo" Text="@REQUIRED_FIELD" />
+                            <RequiredWarning InvalidSubmit=@HasInvalidSubmit />
+                        </Helper>
+                    </RadzenFormField>
+
                     <!-- Habilidades -->
-                    <RadzenRow>
-                        <RadzenColumn Size="12">
-                            <RadzenLabel Text="Habilidades" />
-                        </RadzenColumn>
-                        <RadzenColumn Size="12">
-                            <RadzenListBox Data="@_disciplinasExistentes"
-                                           @bind-Value="@Dto.HabilidadesDisciplinas"
-                                           TextProperty="@nameof(DisciplinaDto.Descricao)"
-                                           Multiple="true"
-                                           Style="width: 100%; max-height: 200"
-                                           AllowClear="true"
-                                           Placeholder="Selecione as habilidades" />
-                        </RadzenColumn>
-                    </RadzenRow>
+                    <RadzenFormField Text="Habilidades" AllowFloatingLabel=true>
+                        <ChildContent>
+                            <RadzenDropDown Multiple=true
+                                            Data="@_disciplinasExistentes"
+                                            AllowClear="true"
+                                            TextProperty="@nameof(DisciplinaDto.Descricao)"
+                                            @bind-Value="@Dto.HabilidadesDisciplinas"
+                                            Placeholder="Selecione as habilidades"
+                                            Chips="true"
+                                            AllowSelectAll="true"
+                                            AllowFiltering="true"
+                                            Name="Habilidades"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            RemoveChipTitle="Deselecionar" />
+                        </ChildContent>
+                        <Helper>
+                            <RadzenRequiredValidator Component="Habilidades" Text="@REQUIRED_FIELD" />
+                        </Helper>
+                    </RadzenFormField>
+
                     <!-- Foto de Perfil -->
-                    <RadzenRow>
-                        <RadzenColumn Size="12">
-                            <RadzenLabel Text="Foto de perfil" />
-                        </RadzenColumn>
-                        <RadzenColumn Size="12">
+                    <RadzenFormField Text="Foto de perfil" AllowFloatingLabel=true>
+                        <ChildContent>
                             <RadzenUpload Multiple="false"
                                           Style="width: 100%;"
                                           Accept="image/*"
@@ -94,85 +100,82 @@
                                          AlternateText="Foto de perfil"
                                          Visible="@(Dto.Foto is not null)"
                                          Style="width: 100%; max-height: 200px;" />
-                        </RadzenColumn>
-                    </RadzenRow>
+                        </ChildContent>
+                    </RadzenFormField>
                 </RadzenStack>
             </RadzenFieldset>
         </RadzenColumn>
 
-        <!-- Informações de Contato -->
-        <RadzenColumn Size="12" SizeMD="6">
+        <!--Informações de contato-->
+        <RadzenColumn>
             <RadzenFieldset Text="Informações de contato" Icon="email">
                 <RadzenStack Gap="1rem">
                     <!-- Email ou Telefone -->
-                    <RadzenRow>
-                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
-                        <RadzenColumn Size="9">
-                            <RadzenLabel Text="Email ou Telefone" />
+                    <RadzenFormField Text="Contato" AllowFloatingLabel=true>
+                        <ChildContent>
                             <RadzenTextBox Name="Contato"
                                            @bind-Value="@_contatoInformado"
                                            Placeholder="Digite o email ou telefone"
                                            Style="width: 100%;" />
-                        </RadzenColumn>
-                        <RadzenColumn Size="3" Style="display: flex; align-items: center; justify-content: center; margin-top: 23px;">
+
                             <RadzenButton Icon="add"
                                           Text="Adicionar"
                                           Click="@AdicionarContato"
                                           Disabled="@IsSaving" />
-                        </RadzenColumn>
-                        </RadzenStack>
-                    </RadzenRow>
-                    <!-- Lista de Contatos -->
-                    <RadzenRow>
-                        <RadzenColumn Size="12">
-                            @if (Dto.Contatos.Count > 0)
-                            {
 
-                                <RadzenPanel AllowCollapse="true">
-                                    <HeaderTemplate>
-                                        <RadzenText TextStyle="TextStyle.H6" class="rz-display-flex rz-align-items-center rz-m-0">
-                                            <RadzenText Text="Contatos" TextStyle="TextStyle.H6" />
-                                        </RadzenText>
-                                    </HeaderTemplate>
-                                    <ChildContent>
-                                        @foreach (var item in Dto.Contatos)
-                                        {
-                                            <RadzenRow class="rz-py-2">
-                                                <RadzenColumn Size="2">
-                                                    <RadzenText Text="@item.Contato" />
-                                                </RadzenColumn>
-                                                <RadzenColumn Size="2" class="rz-px-5">
-                                                    <RadzenButton Icon="remove" Size="ButtonSize.Small" Click="@(() => RemoverContato(item))" />
-                                                </RadzenColumn>
-                                            </RadzenRow>
-                                        }
-                                    </ChildContent>
-                                </RadzenPanel>
-                            }
-                        </RadzenColumn>
-                    </RadzenRow>
+                        </ChildContent>
+                        <Helper>
+                            <RadzenStack Gap="1px">
+                                <RadzenText TextStyle="TextStyle.Caption">Email ou telefone.</RadzenText>
+                            </RadzenStack>
+                        </Helper>
+                    </RadzenFormField>
+
+                    @if (Dto.Contatos.Count > 0)
+                    {
+                        <RadzenPanel AllowCollapse="true">
+                            <HeaderTemplate>
+                                <RadzenText TextStyle="TextStyle.H6" class="rz-display-flex rz-align-items-center rz-m-0">
+                                    <RadzenText Text="Contatos" TextStyle="TextStyle.H6" />
+                                </RadzenText>
+                            </HeaderTemplate>
+                            <ChildContent>
+                                @foreach (var item in Dto.Contatos)
+                                {
+                                    <RadzenRow class="rz-py-2">
+                                        <RadzenColumn Size="2">
+                                            <RadzenText Text="@item.Contato" />
+                                        </RadzenColumn>
+                                        <RadzenColumn Size="2" class="rz-px-5">
+                                            <RadzenButton Icon="remove" Size="ButtonSize.Small" Click="@(() => RemoverContato(item))" />
+                                        </RadzenColumn>
+                                    </RadzenRow>
+                                }
+                            </ChildContent>
+                        </RadzenPanel>
+                    }
                 </RadzenStack>
             </RadzenFieldset>
         </RadzenColumn>
     </RadzenRow>
 
     <!-- Botões de Ação -->
-    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem">
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" class="rz-pt-5">
         <RadzenButton ButtonType="ButtonType.Submit"
                       Text="@(Id.HasValue ? "Atualizar" : "Salvar")"
                       Icon="@(Id.HasValue ? "edit" : "save")"
                       Disabled="@IsSaving"
                       Style="background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 8px;" />
-        <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Text="Cancelar" Icon="cancel" Style="padding: 10px 20px; border-radius: 8px;" />
+        <RadzenButton Disabled="@IsSaving" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Text="Cancelar" Icon="cancel" Style="padding: 10px 20px; border-radius: 8px;" />
     </RadzenStack>
 </RadzenTemplateForm>
 
 @code {
-    Variant variant = Variant.Outlined;
     public PessoaCadastroDto Dto { get; set; } = new();
     private IEnumerable<DisciplinaDto> _disciplinasExistentes = [];
-    private string _contatoInformado;
+    private string? _contatoInformado;
     private bool IsSaving = false;
+    private const string REQUIRED_FIELD = "Campo obrigatório";
 
     [Parameter] public int? Id { get; set; }
     private string TituloPagina => Id.HasValue ? "Editar Pessoa" : "Nova Pessoa";
@@ -192,13 +195,13 @@
                         CargaHoraria = pessoa.CargaHorariaSemanal,
                         Contatos = pessoa.Contatos?.ToList() ?? new List<ContatoDto>(),
                         HabilidadesDisciplinas = pessoa.IdsDisciplinas?
-                            .Select(id => new DisciplinaDto
-                            {
-                                Id = id,
-                                Nome = _disciplinasExistentes.FirstOrDefault(d => d.Id == id)?.Nome ?? "Nome Padrão",
-                                CargaHoraria = _disciplinasExistentes.FirstOrDefault(d => d.Id == id)?.CargaHoraria ?? 0
-                            })
-                            .ToList() ?? new List<DisciplinaDto>(), 
+                                                        .Select(id => new DisciplinaDto
+                                                        {
+                                                            Id = id,
+                                                            Nome = _disciplinasExistentes.FirstOrDefault(d => d.Id == id)?.Nome ?? "Nome Padrão",
+                                                            CargaHoraria = _disciplinasExistentes.FirstOrDefault(d => d.Id == id)?.CargaHoraria ?? 0
+                                                        })
+                                                        .ToList() ?? new List<DisciplinaDto>(),
                         Foto = pessoa.Foto
                     };
             }
@@ -292,8 +295,13 @@
 
             var file = args.Files.FirstOrDefault();
 
-            long maxFileSize = 10 * 1024 * 1024;
+            if (file is null)
+            {
+                Dto.Foto = null;
+                return;
+            }
 
+            long maxFileSize = 10 * 1024 * 1024;
             using (var stream = file.OpenReadStream(maxFileSize))
             using (var memoryStream = new MemoryStream())
             {
@@ -307,11 +315,6 @@
                         Image = base64String,
                         Size = file.Size
                     };
-
-                if (file is null)
-                {
-                    Dto.Foto = null;
-                }
             }
         }
         catch (Exception ex)
@@ -324,6 +327,7 @@
     async Task Gravar()
     {
         IsSaving = true;
+        HasValidSubmit = true;
         try
         {
             var pessoaDto = new PessoaDto
