@@ -203,6 +203,11 @@
                     };
             }
         }
+        else
+        {
+            var result = await consultarDisciplinaService.GetAllAsync(default);
+            _disciplinasExistentes = result.ValueOrDefault;
+        }
     }
 
     async Task ExibirAlerta(string mensagem, string summary = "Alerta")
@@ -341,7 +346,7 @@
                     return;
                 }
 
-                NotificationService.Notify(new NotificationMessage
+                NotifierService.Notify(new NotificationMessage
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Sucesso",
@@ -358,7 +363,7 @@
                     return;
                 }
 
-                NotificationService.Notify(new NotificationMessage
+                NotifierService.Notify(new NotificationMessage
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Sucesso",
