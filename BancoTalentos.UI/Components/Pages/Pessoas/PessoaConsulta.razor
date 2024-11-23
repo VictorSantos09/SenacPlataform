@@ -112,7 +112,10 @@
             {
                 ButtonStyle = ButtonStyle.Primary,
                 Icon = "edit",
-                OnClick = EventCallback.Factory.Create<PESSOAS>(this, (data) => { /* Função para editar pode ser adicionada aqui */ })
+                OnClick = EventCallback.Factory.Create<PESSOAS>(this, (data) =>
+                    {
+                        NavigationManager.NavigateTo($"/pessoas/cadastro/{data.ID}");
+                    })
             },
             new ButtonComponent<PESSOAS>()
             {
@@ -125,7 +128,7 @@
 
     private async Task ConfirmarExcluir(PESSOAS pessoa)
     {
-        bool confirmacao = await JSRuntime.InvokeAsync<bool>("confirm", $"Você tem certeza que deseja excluir {pessoa.NOME}?");
+        bool confirmacao = await JSRuntime.InvokeAsync<bool>("confirm", $"Você tem certeza que deseja excluir?");
 
         if (confirmacao)
         {
