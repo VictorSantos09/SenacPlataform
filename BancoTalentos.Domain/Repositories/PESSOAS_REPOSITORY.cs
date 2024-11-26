@@ -3,6 +3,7 @@ using BancoTalentos.Domain.Entity.Enums;
 using BancoTalentos.Domain.Repositories.Base;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using BancoTalentos.Domain.Repositories.Dto;
+using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using Dapper;
 using System.Data;
 
@@ -51,36 +52,5 @@ public class PESSOAS_REPOSITORY : PESSOAS_REPOSITORY_BASE, IPESSOAS_REPOSITORY
 
         CommandDefinition command = new(sql, new { idPessoa });
         return await _connection.QueryAsync<HabilidadeInfo>(command);
-    }
-
-    public async Task<PESSOAS?> GetByIdAsync(int idPessoa, CancellationToken cancellationToken = default)
-    {
-        var sql = "SELECT * FROM PESSOAS WHERE ID = @IdPessoa"; 
-
-        CommandDefinition command = new(sql, new { IdPessoa = idPessoa }, cancellationToken: cancellationToken);
-        var pessoa = await _connection.QueryFirstOrDefaultAsync<PESSOAS>(command);
-        return pessoa;
-    }
-
-    public async Task<bool> AtualizarAsync(PESSOAS pessoa, CancellationToken cancellationToken = default)
-    {
-        var sql = @"UPDATE PESSOAS
-                        SET NOME = @Nome,
-                            FOTO = @Foto,
-                            CARGO = @Cargo,
-                            CARGA_HORARIA = @CargaHoraria
-                        WHERE ID = @IdPessoa"; 
-
-        CommandDefinition command = new(sql, new
-        {
-            pessoa.NOME,
-            pessoa.FOTO,
-            pessoa.CARGO,
-            pessoa.CARGA_HORARIA,
-            pessoa.ID // Utiliza o ID para a cláusula WHERE
-        }, cancellationToken: cancellationToken);
-
-        var result = await _connection.ExecuteAsync(command); // ExecuteAsync retorna o número de linhas afetadas
-        return result > 0; // Se o número de linhas afetadas for maior que 0, a atualização foi bem-sucedida
     }
 }

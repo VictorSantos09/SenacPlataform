@@ -17,13 +17,20 @@
 @using Radzen
 
 @inject IPessoaMediatorService service
+@inject IConsultaPessoaService consultaPessoaService
 @inject IConsultarDisciplinaService consultarDisciplinaService
 @inject IJSRuntime JSRuntime
 @inject INotifierService NotifierService
 @inject ITipoContatoConsultaService TipoContatoConsultaService
 @inherits Page
 
-<RadzenTemplateForm Data="@Dto" Submit="@(async (PessoaCadastroDto dto) => { await Gravar(); })" InvalidSubmit="@( () => HasInvalidSubmit = true)">
+<LoadingIndicador
+    IsLoading="@IsLoading"
+    LoadingMode="@LoadingMode"
+    LoadingValue="@LoadingValue" 
+    ShowLoadingValue="@ShowLoadingValue"/>
+
+<RadzenTemplateForm loa Data="@Dto" Submit="@(async (PessoaCadastroDto dto) => { await Gravar(); })" InvalidSubmit="@( () => HasInvalidSubmit = true)" Visible=@(!IsLoading)>
     <RadzenRow>
         <!--Informações pessoais-->
         <RadzenColumn>
@@ -73,7 +80,7 @@
                             <RadzenDropDown Multiple=true
                                             Data="@_disciplinasExistentes"
                                             AllowClear="true"
-                                            TextProperty="@nameof(DisciplinaDto.Descricao)"
+                                            TextProperty="@nameof(DisciplinaDto.Nome)"
                                             @bind-Value="@Dto.HabilidadesDisciplinas"
                                             Placeholder="Selecione as habilidades"
                                             Chips="true"
@@ -172,7 +179,7 @@
 
 @code {
     public PessoaCadastroDto Dto { get; set; } = new();
-    private IEnumerable<DisciplinaDto> _disciplinasExistentes = [];
+    private List<DisciplinaDto> _disciplinasExistentes = [];
     private string? _contatoInformado;
     private bool IsSaving = false;
     private const string REQUIRED_FIELD = "Campo obrigatório";
@@ -182,34 +189,44 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (Id.HasValue)
+        try
         {
-            var pessoa = await service.GetByIdAsync(Id.Value);
-            if (pessoa is not null)
+            ToggleLoading();
+            var result = await consultarDisciplinaService.GetAllAsync(default);
+            _disciplinasExistentes = result.ValueOrDefault.ToList();
+
+            if (Id.HasValue)
             {
-                Dto = new PessoaCadastroDto
-                    {
-                        Id = pessoa.Id,
-                        Nome = pessoa.Nome,
-                        Cargo = pessoa.Cargo,
-                        CargaHoraria = pessoa.CargaHorariaSemanal,
-                        Contatos = pessoa.Contatos?.ToList() ?? new List<ContatoDto>(),
-                        HabilidadesDisciplinas = pessoa.IdsDisciplinas?
-                                                        .Select(id => new DisciplinaDto
-                                                        {
-                                                            Id = id,
-                                                            Nome = _disciplinasExistentes.FirstOrDefault(d => d.Id == id)?.Nome ?? "Nome Padrão",
-                                                            CargaHoraria = _disciplinasExistentes.FirstOrDefault(d => d.Id == id)?.CargaHoraria ?? 0
-                                                        })
-                                                        .ToList() ?? new List<DisciplinaDto>(),
-                        Foto = pessoa.Foto
-                    };
+                var pessoa = await consultaPessoaService.GetById_Detalhado(Id.Value);
+                if (pessoa is not null)
+                {
+                    Dto = new PessoaCadastroDto
+                        {
+                            Id = pessoa.Id,
+                            Nome = pessoa.Nome,
+                            Cargo = pessoa.Cargo,
+                            CargaHoraria = pessoa.CargaHorariaSemanal,
+                            Contatos = pessoa.Contatos?.ToList() ?? [],
+                            HabilidadesDisciplinas = pessoa.IdsDisciplinas?
+                                                                    .Select(id => new DisciplinaDto
+                                                                    {
+                                                                        Id = id,
+                                                                        Nome = _disciplinasExistentes.Find(x => x.Id == id).Descricao,
+                                                                        CargaHoraria = _disciplinasExistentes.Find(x => x.Id == id).CargaHoraria
+                                                                    })
+                                                                    .ToList() ?? new List<DisciplinaDto>(),
+                            Foto = pessoa.Foto
+                        };
+                }
             }
         }
-        else
+        catch (Exception)
         {
-            var result = await consultarDisciplinaService.GetAllAsync(default);
-            _disciplinasExistentes = result.ValueOrDefault;
+            throw;
+        }
+        finally
+        {
+            ToggleLoading();
         }
     }
 
@@ -343,7 +360,7 @@
 
             if (Id.HasValue)
             {
-                var result = await service.AtualizarAsync(pessoaDto.Id, pessoaDto);
+                var result = await service.AtualizarAsync(pessoaDto);
                 if (result.IsFailed)
                 {
                     await ExibirAlerta($"Erro ao atualizar: {string.Join(", ", result.Errors)}");

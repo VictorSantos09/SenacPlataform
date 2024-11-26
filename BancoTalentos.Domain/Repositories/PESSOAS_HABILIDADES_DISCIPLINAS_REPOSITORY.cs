@@ -16,7 +16,7 @@ public class PESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY
 
     public async Task<IEnumerable<PESSOAS_HABILIDADES_DISCIPLINAS>> GetByIdPessoaAsync(int idPessoa, CancellationToken cancellationToken = default)
     {
-        var sql = @$"SELECT * 
+        var sql = @$"SELECT *
                     FROM PESSOAS_HABILIDADES_DISCIPLINAS
                     WHERE ID_PESSOA = @idPessoa";
 

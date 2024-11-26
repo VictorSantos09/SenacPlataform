@@ -30,7 +30,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ToogleLoading();
+        ToggleLoading();
         try
         {
             _detalhes = await consultarDisciplinaService.GetDetalhesPessoasHabilitadasAsync(Id);
@@ -41,7 +41,7 @@
         }
         finally
         {
-            ToogleLoading();
+            ToggleLoading();
         }
     }
 

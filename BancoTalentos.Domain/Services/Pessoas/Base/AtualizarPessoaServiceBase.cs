@@ -114,7 +114,14 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
 
             if (contatoEncontrado is null)
             {
-                return Result.Fail($"Não foi possível encontrar o contato com código {c.Id}.");
+                await pessoas_contatos_repository.InsertAsync(new PESSOAS_CONTATOS()
+                {
+                    CONTATO = c.Contato,
+                   ID_PESSOA = idProfessor,
+                   ID_TIPO_CONTATO = c.IdTipo
+                });
+
+                return Result.Ok();
             }
 
             contatoEncontrado.CONTATO = c.Contato;

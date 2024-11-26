@@ -1,0 +1,14 @@
+﻿@if (IsLoading)
+{
+    <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+        <RadzenProgressBarCircular Value="@LoadingValue" ShowValue="@ShowLoadingValue" Mode="@LoadingMode" />
+    </RadzenStack>
+}
+
+
+@code {
+    [Parameter, EditorRequired] public bool IsLoading { get; set; }
+    [Parameter] public bool ShowLoadingValue { get; set; }
+    [Parameter] public int LoadingValue { get; set; } = 100;
+    [Parameter] public ProgressBarMode LoadingMode { get; set; } = ProgressBarMode.Indeterminate;
+}
