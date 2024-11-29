@@ -15,6 +15,7 @@
     [Inject]
     public Radzen.DialogService DialogService { get; set; }
     protected bool IsLoading { get; set; }
+    protected bool IsEditing { get; set; }
     protected bool ShowLoadingValue { get; set; }
     protected int LoadingValue { get; set; } = 100;
     protected ProgressBarMode LoadingMode { get; set; } = ProgressBarMode.Indeterminate;

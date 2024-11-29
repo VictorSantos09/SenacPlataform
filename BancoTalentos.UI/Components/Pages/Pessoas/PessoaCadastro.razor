@@ -1,5 +1,6 @@
 ﻿@page "/pessoas/cadastro/{Id:int?}"
 @using BancoTalentos.Domain.Entity.Enums
+@using BancoTalentos.Domain.Repositories.Contracts.Interfaces
 @using BancoTalentos.Domain.Services.Contato.Dto
 @using BancoTalentos.Domain.Services.Disciplina.Dto
 @using BancoTalentos.Domain.Services.Disciplina.Interfaces
@@ -22,13 +23,13 @@
 @inject IJSRuntime JSRuntime
 @inject INotifierService NotifierService
 @inject ITipoContatoConsultaService TipoContatoConsultaService
+@inject IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY pessoasHabilidadesDisciplinasRepository
 @inherits Page
 
-<LoadingIndicador
-    IsLoading="@IsLoading"
-    LoadingMode="@LoadingMode"
-    LoadingValue="@LoadingValue" 
-    ShowLoadingValue="@ShowLoadingValue"/>
+<LoadingIndicador IsLoading="@IsLoading"
+                  LoadingMode="@LoadingMode"
+                  LoadingValue="@LoadingValue"
+                  ShowLoadingValue="@ShowLoadingValue" />
 
 <RadzenTemplateForm loa Data="@Dto" Submit="@(async (PessoaCadastroDto dto) => { await Gravar(); })" InvalidSubmit="@( () => HasInvalidSubmit = true)" Visible=@(!IsLoading)>
     <RadzenRow>
@@ -36,10 +37,14 @@
         <RadzenColumn>
             <RadzenFieldset Text="Informações pessoais" Icon="person">
                 <RadzenStack Gap="1rem">
-                    <!--Nome-->
-                    <RadzenFormField Text="Nome" AllowFloatingLabel=true>
+                    <RadzenFormField Text="@(IsEditing ? "Código - Nome" : "Nome")" AllowFloatingLabel=true>
                         <ChildContent>
-                            <RadzenTextBox Name="Nome" @bind-Value="@Dto.Nome" Placeholder="Digite o nome completo" Style="width: 100%;" />
+                            <RadzenStack Orientation="Orientation.Horizontal">
+                                <!--ID-->
+                                <RadzenNumeric Name="Código" @bind-Value="@Dto.Id" ReadOnly="true" Style="width: 10%;" ShowUpDown=false Visible="@IsEditing" />
+                                <!--Nome-->
+                                <RadzenTextBox Name="Nome" @bind-Value="@Dto.Nome" Placeholder="Digite o nome completo" Style="width: 100%;" />
+                            </RadzenStack>
                         </ChildContent>
                         <Helper>
                             <RadzenRequiredValidator Component="Nome" Text="@REQUIRED_FIELD" />
@@ -75,12 +80,13 @@
                     </RadzenFormField>
 
                     <!-- Habilidades -->
-                    <RadzenFormField Text="Habilidades" AllowFloatingLabel=true>
+                    <RadzenFormField Text="Habilidades" AllowFloatingLabel="true">
                         <ChildContent>
-                            <RadzenDropDown Multiple=true
+                            <RadzenDropDown Multiple="true"
                                             Data="@_disciplinasExistentes"
                                             AllowClear="true"
                                             TextProperty="@nameof(DisciplinaDto.Nome)"
+                                            ValueProperty="@nameof(DisciplinaDto.Id)"
                                             @bind-Value="@Dto.HabilidadesDisciplinas"
                                             Placeholder="Selecione as habilidades"
                                             Chips="true"
@@ -88,11 +94,9 @@
                                             AllowFiltering="true"
                                             Name="Habilidades"
                                             FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            SelectedItemsText="Itens selecionados"
                                             RemoveChipTitle="Deselecionar" />
                         </ChildContent>
-                        <Helper>
-                            <RadzenRequiredValidator Component="Habilidades" Text="@REQUIRED_FIELD" />
-                        </Helper>
                     </RadzenFormField>
 
                     <!-- Foto de Perfil -->
@@ -149,14 +153,10 @@
                             <ChildContent>
                                 @foreach (var item in Dto.Contatos)
                                 {
-                                    <RadzenRow class="rz-py-2">
-                                        <RadzenColumn Size="2">
-                                            <RadzenText Text="@item.Contato" />
-                                        </RadzenColumn>
-                                        <RadzenColumn Size="2" class="rz-px-5">
-                                            <RadzenButton Icon="remove" Size="ButtonSize.Small" Click="@(() => RemoverContato(item))" />
-                                        </RadzenColumn>
-                                    </RadzenRow>
+                                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                                        <RadzenText Text="@item.Contato" TextStyle="TextStyle.Body1" />
+                                        <RadzenButton Icon="delete" Size="ButtonSize.Small" Click="@(() => RemoverContato(item))" />
+                                    </RadzenStack>
                                 }
                             </ChildContent>
                         </RadzenPanel>
@@ -192,6 +192,8 @@
         try
         {
             ToggleLoading();
+            IsEditing = Id.HasValue;
+
             var result = await consultarDisciplinaService.GetAllAsync(default);
             _disciplinasExistentes = result.ValueOrDefault.ToList();
 
@@ -206,23 +208,16 @@
                             Nome = pessoa.Nome,
                             Cargo = pessoa.Cargo,
                             CargaHoraria = pessoa.CargaHorariaSemanal,
-                            Contatos = pessoa.Contatos?.ToList() ?? [],
-                            HabilidadesDisciplinas = pessoa.IdsDisciplinas?
-                                                                    .Select(id => new DisciplinaDto
-                                                                    {
-                                                                        Id = id,
-                                                                        Nome = _disciplinasExistentes.Find(x => x.Id == id).Descricao,
-                                                                        CargaHoraria = _disciplinasExistentes.Find(x => x.Id == id).CargaHoraria
-                                                                    })
-                                                                    .ToList() ?? new List<DisciplinaDto>(),
+                            Contatos = pessoa.Contatos?.ToList() ?? new List<ContatoDto>(),
+                            HabilidadesDisciplinas = pessoa.IdsDisciplinas ?? [],
                             Foto = pessoa.Foto
                         };
                 }
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw;
+            Console.WriteLine($"Erro ao carregar os dados: {ex.Message}");
         }
         finally
         {
@@ -243,12 +238,12 @@
 
     async Task AdicionarContato()
     {
-        if (IsSaving) return;
-
-        IsSaving = true;
-
         try
         {
+            if (IsSaving) return;
+            ToggleLoading();
+
+            IsSaving = true;
             if (string.IsNullOrWhiteSpace(_contatoInformado))
             {
                 await ExibirAlerta("Contato inválido ou vazio.");
@@ -296,18 +291,53 @@
         finally
         {
             IsSaving = false;
+            ToggleLoading();
         }
     }
 
     void RemoverContato(ContatoDto contato)
     {
-        Dto.Contatos.Remove(contato);
+        try
+        {
+            ToggleLoading();
+            Dto.Contatos.Remove(contato);
+
+        }
+        finally
+        {
+            ToggleLoading();
+        }
+    }
+
+    async Task RemoverHabilidade(DisciplinaDto dto)
+    {
+        try
+        {
+            ToggleLoading();
+            if (await pessoasHabilidadesDisciplinasRepository.HasHabilidadeCadastrada(dto.Id, Dto.Id))
+            {
+                var pessoaHabilidade = await pessoasHabilidadesDisciplinasRepository.GetBy_IDX_PESSOAS_HABILIDADES_DISCIPLINAS_002(Dto.Id, dto.Id);
+
+                if (pessoaHabilidade is null) throw new Exception("Não encontrada habilidade");
+                await pessoasHabilidadesDisciplinasRepository.DeleteAsync(pessoaHabilidade);
+            }
+        }
+        catch (Exception ex)
+        {
+            await ExibirAlerta(ex.Message);
+            throw;
+        }
+        finally
+        {
+            ToggleLoading();
+        }
     }
 
     async Task OnImagemPerfilChanged(UploadChangeEventArgs args)
     {
         try
         {
+            ToggleLoading();
             if (args.Files.Count() > 1) throw new Exception("Mais de um arquivo fornecido");
 
             var file = args.Files.FirstOrDefault();
@@ -339,14 +369,19 @@
             Console.WriteLine($"Erro ao processar o arquivo: {ex.Message}");
             Dto.Foto = null;
         }
+        finally
+        {
+            ToggleLoading();
+        }
     }
 
     async Task Gravar()
     {
-        IsSaving = true;
-        HasValidSubmit = true;
         try
         {
+            ToggleLoading();
+            IsSaving = true;
+            HasValidSubmit = true;
             var pessoaDto = new PessoaDto
                 {
                     Id = Dto.Id,
@@ -354,7 +389,7 @@
                     Cargo = Dto.Cargo,
                     CargaHorariaSemanal = Dto.CargaHoraria,
                     Contatos = Dto.Contatos,
-                    IdsDisciplinas = Dto.HabilidadesDisciplinas?.Select(d => d.Id).ToList(),
+                    IdsDisciplinas = Dto.HabilidadesDisciplinas,
                     Foto = Dto.Foto
                 };
 
@@ -400,22 +435,7 @@
         finally
         {
             IsSaving = false;
-        }
-    }
-
-    static string VerifyContact(string input)
-    {
-        if (input.IsEmail())
-        {
-            return "Email";
-        }
-        else if (input.IsPhoneNumber())
-        {
-            return "Telefone";
-        }
-        else
-        {
-            return "Inválido";
+            ToggleLoading();
         }
     }
 }
