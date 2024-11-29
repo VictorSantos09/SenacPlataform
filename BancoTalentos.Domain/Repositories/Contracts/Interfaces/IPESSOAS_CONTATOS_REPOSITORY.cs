@@ -8,4 +8,6 @@ public interface IPESSOAS_CONTATOS_REPOSITORY : IPESSOAS_CONTATOS_REPOSITORY_BAS
     Task<bool> HasContatoCadadastradoAsync(string contato, int idPessoa, CancellationToken cancellationToken = default);
     Task<IEnumerable<PESSOAS_CONTATOS>> GetByIdPessoaAsync(int idPessoa, CancellationToken cancellationToken = default);
     Task<bool> HasPessoaComTipoContatoAsync(int idTipo, CancellationToken cancellationToken);
+    Task DeleteByIdPessoa(int idPessoa);
+    Task DeleteById(int idPessoa);
 }

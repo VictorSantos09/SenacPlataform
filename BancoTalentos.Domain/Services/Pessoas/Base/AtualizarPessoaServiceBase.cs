@@ -103,41 +103,72 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
         return Result.Ok();
     }
 
-    private async Task<Result> AtualizarContatosAsync(PessoaDto dto, int idProfessor, CancellationToken cancellationToken)
+    private async Task<Result> AtualizarContatosAsync(PessoaDto dto, int idPessoa, CancellationToken cancellationToken)
     {
-        PESSOAS_CONTATOS? contatoEncontrado;
-        int resultadoContato;
-
-        foreach (var c in dto.Contatos)
+        if (dto.Contatos is null || !dto.Contatos.Any())
         {
-            contatoEncontrado = await pessoas_contatos_repository.GetByIdAsync(c.Id, cancellationToken);
-
-            if (contatoEncontrado is null)
-            {
-                await pessoas_contatos_repository.InsertAsync(new PESSOAS_CONTATOS()
-                {
-                    CONTATO = c.Contato,
-                    ID_PESSOA = idProfessor,
-                    ID_TIPO_CONTATO = c.IdTipo
-                });
-
-                break;
-            }
-
-            contatoEncontrado.CONTATO = c.Contato;
-            contatoEncontrado.ID_PESSOA = idProfessor;
-            contatoEncontrado.ID_TIPO_CONTATO = c.IdTipo;
-
-            resultadoContato = await pessoas_contatos_repository.UpdateAsync(contatoEncontrado, cancellationToken);
-
-            if (resultadoContato == 0)
-            {
-                return Result.Fail($"Não foi possível atualizar o contato {c.Contato}.");
-            }
+            await pessoas_contatos_repository.DeleteByIdPessoa(idPessoa);
+            return Result.Ok();
         }
+
+        var contatosPessoa = await pessoas_contatos_repository.GetByIdPessoaAsync(idPessoa, cancellationToken);
+        
+        var idsExistentes = contatosPessoa.Select(c => c.ID).ToHashSet();
+        var idsNoDto = ExtrairRegistroParaComparar(dto);
+        var contatosParaAdicionar = ExtrairContatosParaAdicionar(dto, idsExistentes);
+        var idsParaRemover = ExtrairContatosParaRemover(idsExistentes, idsNoDto);
+
+        await GravarNovosContatos(idPessoa, contatosParaAdicionar, cancellationToken);
+        await RemoverContatosAntigos(idsParaRemover);
 
         return Result.Ok();
     }
+
+    private async Task RemoverContatosAntigos(List<int> idsParaRemover)
+    {
+        foreach (var idContato in idsParaRemover)
+        {
+            await pessoas_contatos_repository.DeleteById(idContato);
+        }
+    }
+
+    private async Task GravarNovosContatos(int idPessoa, List<Contato.Dto.ContatoDto> contatosParaAdicionar, CancellationToken cancellationToken)
+    {
+        foreach (var contato in contatosParaAdicionar)
+        {
+            var novoContato = new PESSOAS_CONTATOS
+            {
+                ID_PESSOA = idPessoa,
+                ID_TIPO_CONTATO = contato.IdTipo,
+                CONTATO = contato.Contato,
+            };
+
+            await pessoas_contatos_repository.InsertAsync(novoContato, cancellationToken);
+        }
+    }
+
+    private static HashSet<int> ExtrairRegistroParaComparar(PessoaDto dto)
+    {
+        return dto.Contatos.Select(c => c.Id).ToHashSet();
+    }
+
+    private static List<Contato.Dto.ContatoDto> ExtrairContatosParaAdicionar(PessoaDto dto, HashSet<int> idsExistentes)
+    {
+
+        // Contatos para adicionar
+        return dto.Contatos
+            .Where(c => !idsExistentes.Contains(c.Id))
+            .ToList();
+    }
+
+    private static List<int> ExtrairContatosParaRemover(HashSet<int> idsExistentes, HashSet<int> idsNoDto)
+    {
+        var idsParaRemover = idsExistentes
+                    .Where(id => !idsNoDto.Contains(id)) // Apenas IDs que não estão no DTO
+                    .ToList();
+        return idsParaRemover;
+    }
+
 
     private async Task AtualizarDisciplinasAsync(PessoaDto dto, int idPessoa, CancellationToken cancellationToken)
     {
