@@ -4,7 +4,6 @@ using BancoTalentos.Domain.Services.Imagem;
 using BancoTalentos.Domain.Services.Imagem.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
 using SenacPlataform.Shared.Exceptions.ImagemConfig;
 
 namespace BancoTalentos.Domain.Services.Pessoas.Base;

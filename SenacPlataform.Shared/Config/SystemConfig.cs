@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
+using QuickKit.Blazor.Configuration;
 using Scrutor;
 using SenacPlataform.Shared.DependencyInjection;
 using SenacPlataform.Shared.Enviroment;
@@ -10,7 +11,6 @@ using SenacPlataform.Shared.Exceptions.ImagemConfig;
 using SenacPlataform.Shared.Extensions;
 using System.Data;
 using System.Reflection;
-using QuickKit.Blazor.Configuration;
 
 namespace SenacPlataform.Shared.Config;
 

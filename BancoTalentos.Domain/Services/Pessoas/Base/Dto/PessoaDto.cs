@@ -19,7 +19,7 @@ public record PessoaDto
 
     public PessoaDto()
     {
-            
+
     }
 
     public ProfessorDto ToProfessor()

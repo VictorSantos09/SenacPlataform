@@ -3,7 +3,6 @@ using BancoTalentos.Domain.Entity.Enums;
 using BancoTalentos.Domain.Repositories.Base;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using BancoTalentos.Domain.Repositories.Dto;
-using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using Dapper;
 using System.Data;
 
@@ -34,7 +33,7 @@ public class PESSOAS_REPOSITORY : PESSOAS_REPOSITORY_BASE, IPESSOAS_REPOSITORY
                     join tipos_contatos tc on tc.ID = pc.ID_TIPO_CONTATO
                     where p.ID = @{idPessoa}";
 
-        CommandDefinition command = new(sql, new {idPessoa});
+        CommandDefinition command = new(sql, new { idPessoa });
         return await _connection.QueryAsync<ContatoInfo>(command);
     }
 

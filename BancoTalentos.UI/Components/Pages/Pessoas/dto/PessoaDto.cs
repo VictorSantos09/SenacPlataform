@@ -1,6 +1,5 @@
 ﻿using BancoTalentos.Domain.Entity.Enums;
 using BancoTalentos.Domain.Services.Contato.Dto;
-using BancoTalentos.Domain.Services.Disciplina.Dto;
 using BancoTalentos.Domain.Services.Imagem.Dto;
 
 namespace BancoTalentos.UI.Components.Pages.Pessoas.dto;

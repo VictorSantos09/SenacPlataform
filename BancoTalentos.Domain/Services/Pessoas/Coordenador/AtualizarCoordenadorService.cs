@@ -5,7 +5,6 @@ using BancoTalentos.Domain.Services.Pessoas.Base;
 using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Coordenador.Interfaces;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
 
 namespace BancoTalentos.Domain.Services.Pessoas.Coordenador;
 

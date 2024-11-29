@@ -1,7 +1,6 @@
 ﻿using BancoTalentos.Domain.Services.Imagem.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
 
 namespace BancoTalentos.Domain.Services.Pessoas.Professores.Interfaces;
 

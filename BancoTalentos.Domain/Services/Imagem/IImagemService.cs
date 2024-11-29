@@ -1,6 +1,5 @@
 ﻿using BancoTalentos.Domain.Services.Imagem.Dto;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
 
 namespace BancoTalentos.Domain.Services.Imagem;
 public interface IImagemService
