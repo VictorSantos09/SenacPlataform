@@ -1,0 +1,58 @@
+﻿@page "/pessoas/contato/tipo-contato"
+
+@using BancoTalentos.Domain.Entity
+@using BancoTalentos.Domain.Repositories.Contracts.Interfaces
+@using BancoTalentos.UI.Components.Pages.Common
+@inherits Page
+@inject ITIPOS_CONTATOS_REPOSITORY _tipos_contatos_repository;
+@inject NotificationService NotifierService
+@inject IJSRuntime JSRuntime
+
+<Grid Data=@_tiposContatos
+      ColumnsDeclared=@GetColumns()
+      IsLoading=@IsLoading
+      IsExportingCsv=@IsExportingCsv
+      IsExportingExcel=@IsExportingExcel
+      OnExportCSV="@(async args => await ExportCsv(GridComponent, EXPORT_FILE_NAME))"
+      OnExportExcel="@(async args => await ExportExcel(GridComponent, EXPORT_FILE_NAME))"
+      ShowActionsColumns="false"
+      @ref="GridComponent" />
+
+@code {
+    private Grid<TIPOS_CONTATOS> GridComponent;
+    private const string EXPORT_FILE_NAME = "TiposContatos";
+    private IEnumerable<TIPOS_CONTATOS> _tiposContatos = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        ToggleLoading();
+        try
+        {
+            await InitializeDataAsync();
+        }
+        catch (Exception ex)
+        {
+            NotificarErroCarregarDados(ex);
+        }
+        finally
+        {
+            ToggleLoading();
+        }
+    }
+
+    private async Task InitializeDataAsync()
+    {
+        _tiposContatos = await _tipos_contatos_repository.GetAllAsync();
+    }
+
+    private IEnumerable<GridColumn> GetColumns()
+    {
+        var output = new List<GridColumn>();
+
+        output.Add(new GridColumn("Código", nameof(TIPOS_CONTATOS.ID), new GridColumnOptions<IRadzenComponent>()));
+        output.Add(new GridColumn("Tipo", nameof(TIPOS_CONTATOS.TIPO), new GridColumnOptions<IRadzenComponent>()));
+        output.Add(new GridColumn("Cargo", nameof(TIPOS_CONTATOS.DATA_CADASTRO), new GridColumnOptions<IRadzenComponent>()));
+        output.Add(new GridColumn("Carga Horária", nameof(TIPOS_CONTATOS.DATA_INATIVACAO), new GridColumnOptions<IRadzenComponent>()));
+        return output;
+    }
+}
