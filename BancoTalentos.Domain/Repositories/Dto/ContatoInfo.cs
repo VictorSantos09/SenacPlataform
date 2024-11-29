@@ -1,5 +1,5 @@
-﻿using BancoTalentos.Domain.Extensions;
-using BancoTalentos.Domain.Enums;
+﻿using BancoTalentos.Domain.Enums;
+using BancoTalentos.Domain.Extensions;
 
 namespace BancoTalentos.Domain.Repositories.Dto;
 

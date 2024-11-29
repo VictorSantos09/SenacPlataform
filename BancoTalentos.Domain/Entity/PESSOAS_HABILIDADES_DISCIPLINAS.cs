@@ -1,5 +1,4 @@
 using BancoTalentos.Domain.Entity.Base;
-using System.Data;
 
 namespace BancoTalentos.Domain.Entity;
 

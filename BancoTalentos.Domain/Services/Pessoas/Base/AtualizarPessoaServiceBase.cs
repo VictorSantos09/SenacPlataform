@@ -4,7 +4,6 @@ using BancoTalentos.Domain.Services.Imagem;
 using BancoTalentos.Domain.Services.Imagem.Dto;
 using BancoTalentos.Domain.Services.Pessoas.Base.Dto;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
 using SenacPlataform.Shared.Exceptions.ImagemConfig;
 
 namespace BancoTalentos.Domain.Services.Pessoas.Base;
@@ -47,7 +46,7 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
 
             if (dto.Foto is not null)
             {
-                var resultadoFoto = await AtualizarFotoPerfilAsync(dto.Foto, pessoaEncontrada, cancellationToken);
+                var resultadoFoto = await AtualizarFotoPerfilAsync(dto.Foto, cancellationToken);
                 if (resultadoFoto.IsSuccess)
                 {
                     pessoaEncontrada.FOTO = resultadoFoto.Value;
@@ -68,6 +67,7 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
                                                                                 nomeFotoAntiga,
                                                                                 pessoaEncontrada.FOTO);
                 }
+
                 imagemService.DeletarImagemOnDisk(pessoaEncontrada.FOTO);
                 return Result.Fail(PessoaMessages.NAO_FOI_POSSIVEL_ATUALIZAR);
             }
@@ -98,7 +98,7 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
             return Result.Fail($"O professor com o código {id} não foi encontrado.");
         }
 
-        //_ = await ArmazenarFotoPerfilOnDiskAsync(fotoPerfil, cancellationToken: cancellationToken);
+        await imagemService.ArmazenarFotoPerfilOnDiskAsync(fotoPerfil, cancellationToken);
 
         return Result.Ok();
     }
@@ -114,7 +114,14 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
 
             if (contatoEncontrado is null)
             {
-                return Result.Fail($"Não foi possível encontrar o contato com código {c.Id}.");
+                await pessoas_contatos_repository.InsertAsync(new PESSOAS_CONTATOS()
+                {
+                    CONTATO = c.Contato,
+                    ID_PESSOA = idProfessor,
+                    ID_TIPO_CONTATO = c.IdTipo
+                });
+
+                break;
             }
 
             contatoEncontrado.CONTATO = c.Contato;
@@ -132,25 +139,35 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
         return Result.Ok();
     }
 
-    private async Task AtualizarDisciplinasAsync(PessoaDto dto, int idProfessor, CancellationToken cancellationToken)
+    private async Task AtualizarDisciplinasAsync(PessoaDto dto, int idPessoa, CancellationToken cancellationToken)
     {
-        PESSOAS_HABILIDADES_DISCIPLINAS? pessoaHabilidadeEncontrada;
-        PESSOAS_HABILIDADES_DISCIPLINAS novaHabilidade;
-
-        foreach (var i in dto.IdsDisciplinas)
+        if (dto.IdsDisciplinas is null || !dto.IdsDisciplinas.Any())
         {
-            pessoaHabilidadeEncontrada = await pessoas_habilidades_disciplinas_repository.GetBy_IDX_PESSOAS_HABILIDADES_DISCIPLINAS_002(idProfessor, i, cancellationToken);
+            await pessoas_habilidades_disciplinas_repository.DeletarHabilidadesPessoa(idPessoa);
+            return;
+        }
 
-            if (pessoaHabilidadeEncontrada is not null)
-            {
-                await pessoas_habilidades_disciplinas_repository.DeleteAsync(pessoaHabilidadeEncontrada, cancellationToken);
-            }
-            else
-            {
-                novaHabilidade = new PESSOAS_HABILIDADES_DISCIPLINAS { ID_PESSOA = idProfessor, ID_DISCIPLINA = i, DATA_CADASTRO = DateTime.Now };
+        var habilidadesPessoa = await pessoas_habilidades_disciplinas_repository.GetByIdPessoaAsync(idPessoa, cancellationToken);
+        var idsExistentes = habilidadesPessoa.Select(h => h.ID_DISCIPLINA).ToHashSet();
 
-                await pessoas_habilidades_disciplinas_repository.InsertAsync(novaHabilidade, cancellationToken);
-            }
+        var idsParaAdicionar = dto.IdsDisciplinas.Except(idsExistentes);
+        var idsParaRemover = idsExistentes.Except(dto.IdsDisciplinas);
+
+        foreach (var idDisciplina in idsParaAdicionar)
+        {
+            var novaHabilidade = new PESSOAS_HABILIDADES_DISCIPLINAS
+            {
+                ID_PESSOA = idPessoa,
+                ID_DISCIPLINA = idDisciplina,
+                DATA_CADASTRO = DateTime.Now
+            };
+
+            await pessoas_habilidades_disciplinas_repository.InsertAsync(novaHabilidade, cancellationToken);
+        }
+
+        foreach (var idDisciplina in idsParaRemover)
+        {
+            await pessoas_habilidades_disciplinas_repository.DeleteBy_IDX_PESSOAS_HABILIDADES_DISCIPLINAS_002(idPessoa, idDisciplina);
         }
     }
 
@@ -162,9 +179,9 @@ internal abstract class AtualizarPessoaServiceBase(IPESSOAS_REPOSITORY pessoas_r
     }
     #endregion
 
-    private async Task<Result<string>> AtualizarFotoPerfilAsync(ImagemBase64DTO novaFoto, PESSOAS pessoa, CancellationToken cancellationToken = default)
+    private async Task<Result<string>> AtualizarFotoPerfilAsync(ImagemBase64DTO novaFoto, CancellationToken cancellationToken = default)
     {
-        if (pessoa.FOTO is null)
+        if (novaFoto is null)
         {
             throw new ImagemNaoInformadaException("A foto de perfil para ser atualizada deve ser informada.");
         }

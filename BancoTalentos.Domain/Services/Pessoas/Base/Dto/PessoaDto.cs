@@ -15,11 +15,11 @@ public record PessoaDto
     public required int CargaHorariaSemanal { get; set; }
     public IEnumerable<ContatoDto> Contatos { get; set; }
     public int Id { get; set; }
-    public IEnumerable<int> IdsDisciplinas { get; set; }
+    public IEnumerable<int>? IdsDisciplinas { get; set; }
 
     public PessoaDto()
     {
-            
+
     }
 
     public ProfessorDto ToProfessor()

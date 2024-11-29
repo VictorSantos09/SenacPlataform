@@ -1,7 +1,5 @@
 using BancoTalentos.Domain.Entity;
-using BancoTalentos.Domain.Entity.Base;
 using BancoTalentos.Domain.Repositories.Contracts.Shared;
-using Dapper;
 
 namespace BancoTalentos.Domain.Repositories.Contracts.Base.Interfaces;
 

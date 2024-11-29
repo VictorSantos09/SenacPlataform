@@ -1,6 +1,5 @@
 using BancoTalentos.Domain.Repositories.Contracts.Shared;
 using Dapper;
-using MySql.Data.MySqlClient;
 using System.Data;
 
 /*

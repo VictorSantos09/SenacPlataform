@@ -1,0 +1,14 @@
+﻿@using FluentResults
+
+@if (Result.IsFailed)
+{
+    @foreach (var erro in Result.Errors)
+    {
+        <RadzenText Text="@erro.Message" TextStyle="TextStyle.H6" class="rz-p-2"/>
+    }
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public Result Result { get; set; }
+}

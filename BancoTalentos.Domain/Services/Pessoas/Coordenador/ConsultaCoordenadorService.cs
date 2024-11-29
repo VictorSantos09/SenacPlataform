@@ -27,7 +27,7 @@ internal class ConsultaCoordenadorService(IPESSOAS_REPOSITORY pessoas_repository
             ? Result.Ok(result)
             : Result.Fail(PessoaMessages.NAO_ENCONTRADO);
     }
-    
+
     public async Task<Result<ImagemDTO>> GetFotoPerfilAsync(int id, CancellationToken cancellationToken = default)
     {
         return await consultaPessoaService.GetFotoPerfilAsync(id, "Não foi encontrado o coordenador", "O coordenador não tem foto de perfil", cancellationToken);

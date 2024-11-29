@@ -1,0 +1,9 @@
+﻿@if (!InvalidSubmit)
+{
+    <RadzenText TextStyle="TextStyle.Caption">* obrigatório</RadzenText>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public bool InvalidSubmit { get; set; }
+}

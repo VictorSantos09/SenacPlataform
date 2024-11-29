@@ -1,5 +1,4 @@
 using System.Data;
-using System.Transactions;
 
 namespace BancoTalentos.Domain.Repositories.Contracts.Shared;
 

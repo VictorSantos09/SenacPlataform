@@ -33,7 +33,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ToogleLoading();
+        ToggleLoading();
         try
         {
             await InitializeDataAsync();
@@ -45,7 +45,7 @@
         }
         finally
         {
-            ToogleLoading();
+            ToggleLoading();
         }
     }
 
@@ -128,9 +128,9 @@
 
     private async Task ConfirmarExcluir(PESSOAS pessoa)
     {
-        bool confirmacao = await JSRuntime.InvokeAsync<bool>("confirm", $"Você tem certeza que deseja excluir?");
+        bool? confirmacao = await DialogService.Alert("Tem certeza que deseja deletar esse registro?", "Deletar", new AlertOptions() { OkButtonText = "Sim" });
 
-        if (confirmacao)
+        if (confirmacao.GetValueOrDefault())
         {
             var resultado = await PessoasRepository.DeleteAsync(pessoa);
             if (resultado == 0)

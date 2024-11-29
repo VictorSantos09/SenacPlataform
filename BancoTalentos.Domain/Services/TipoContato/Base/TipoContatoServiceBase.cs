@@ -1,6 +1,5 @@
 ﻿using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using FluentResults;
-using System.Configuration;
 
 namespace BancoTalentos.Domain.Services.TipoContato.Base;
 internal abstract class TipoContatoServiceBase

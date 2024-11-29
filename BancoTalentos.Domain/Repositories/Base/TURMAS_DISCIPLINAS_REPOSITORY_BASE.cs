@@ -1,5 +1,4 @@
 using BancoTalentos.Domain.Entity;
-using BancoTalentos.Domain.Entity.Base;
 using BancoTalentos.Domain.Repositories.Base.Shared;
 using BancoTalentos.Domain.Repositories.Contracts.Base.Interfaces;
 using Dapper;
@@ -26,7 +25,7 @@ public class TURMAS_DISCIPLINAS_REPOSITORY_BASE : Repository, ITURMAS_DISCIPLINA
                 @"DELETE FROM turmas_disciplinas
 WHERE ID = @idParam
 ";
-            
+
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 
@@ -71,7 +70,7 @@ WHERE ID = @idParam
 					,@iddisciplinaParam
 					)
 ";
-            
+
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 
@@ -90,7 +89,7 @@ WHERE ID = @idParam
         try
         {
             var sql = @"SELECT * FROM turmas_disciplinas";
-            
+
             CommandDefinition command = new(sql, cancellationToken: cancellationToken);
             return await _connection.QueryAsync<TURMAS_DISCIPLINAS>(command);
         }
@@ -109,7 +108,7 @@ WHERE ID = @idParam
         {
             object parameters = new { idParam = id };
             var sql = @"SELECT * FROM turmas_disciplinas WHERE ID = @idParam";
-            
+
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             return await _connection.QuerySingleOrDefaultAsync<TURMAS_DISCIPLINAS>(command);
         }
@@ -144,7 +143,7 @@ WHERE ID = @idParam
                     ,ID_DISCIPLINA = @iddisciplinaParam
                      WHERE ID = @idParam;
 ";
-            
+
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 

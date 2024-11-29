@@ -1,3 +1,4 @@
+using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Base;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using Dapper;
@@ -23,5 +24,19 @@ public class TIPOS_CONTATOS_REPOSITORY
         }, cancellationToken: cancellationToken);
 
         return await _connection.ExecuteScalarAsync<bool>(command);
+    }
+
+    public async Task<TIPOS_CONTATOS> GetEmailAsync()
+    {
+        var sql = "SELECT * FROM TIPOS_CONTATOS WHERE TIPO = 'Email'";
+
+        return await _connection.QuerySingleAsync<TIPOS_CONTATOS>(sql);
+    }
+
+    public async Task<TIPOS_CONTATOS> GetTelefoneAsync()
+    {
+        var sql = "SELECT * FROM TIPOS_CONTATOS WHERE TIPO = 'Telefone'";
+
+        return await _connection.QuerySingleAsync<TIPOS_CONTATOS>(sql);
     }
 }

@@ -1,5 +1,4 @@
 using BancoTalentos.Domain.Entity;
-using BancoTalentos.Domain.Entity.Base;
 using BancoTalentos.Domain.Repositories.Base.Shared;
 using BancoTalentos.Domain.Repositories.Contracts.Base.Interfaces;
 using Dapper;
@@ -85,7 +84,7 @@ WHERE ID = @idParam
         try
         {
             var sql = @"SELECT * FROM pessoas";
-            
+
             CommandDefinition command = new(sql, cancellationToken: cancellationToken);
             return await _connection.QueryAsync<PESSOAS>(command);
         }
@@ -137,7 +136,7 @@ WHERE ID = @idParam
                     ,CARGA_HORARIA = @cargahorariaParam
                      WHERE ID = @idParam;
 ";
-            
+
             CommandDefinition command = new(sql, parameters, cancellationToken: cancellationToken);
             var affectedRows = await _connection.ExecuteAsync(command);
 

@@ -8,7 +8,7 @@ public static class ConfigurationExtensions
 {
     private const string CNT_EXCEPTION_CONFIG_JSON_SECTION = "exceptionConfig";
     private const string CNT_NOME_CONNECTION_STRING = "Default";
-    
+
     public static ExceptionConfig SNGetExceptionConfig(this IConfiguration configuration)
     {
         return configuration.GetSection(CNT_EXCEPTION_CONFIG_JSON_SECTION).Get<ExceptionConfig>()
@@ -17,7 +17,7 @@ public static class ConfigurationExtensions
 
     public static string? SNGetConnectionString(this IConfiguration configuration)
     {
-        return configuration.GetConnectionString(CNT_NOME_CONNECTION_STRING) 
+        return configuration.GetConnectionString(CNT_NOME_CONNECTION_STRING)
             ?? throw new InvalidOperationException($"string de conexão (ConnecionString) com o nome '{CNT_NOME_CONNECTION_STRING}' não foi encontrada.");
     }
 }

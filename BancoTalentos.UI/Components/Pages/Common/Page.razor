@@ -13,12 +13,18 @@
     [Inject]
     protected IGridExportProvider GridExportProvider { get; set; }
     [Inject]
-    public  Radzen.DialogService DialogService { get; set; }
+    public Radzen.DialogService DialogService { get; set; }
     protected bool IsLoading { get; set; }
+    protected bool IsEditing { get; set; }
+    protected bool ShowLoadingValue { get; set; }
+    protected int LoadingValue { get; set; } = 100;
+    protected ProgressBarMode LoadingMode { get; set; } = ProgressBarMode.Indeterminate;
     protected bool IsExportingCsv { get; set; }
     protected bool IsExportingExcel { get; set; }
+    protected bool HasInvalidSubmit { get; set; } = false;
+    protected bool HasValidSubmit { get; set; } = false;
 
-    protected void ToogleLoading()
+    protected void ToggleLoading()
     {
         IsLoading = !IsLoading;
     }
@@ -44,6 +50,14 @@
                 CloseOnClick = true,
             });
     }
+
+    #region NOTIFICACOES
+    public void ExibirSucesso(string summary, string detail, int duration = 3000)
+    {
+        NotifierService.Notify(severity: NotificationSeverity.Success, summary: summary, detail: detail, duration: duration);
+    }
+
+    #endregion
 
     #region EXPORT
     protected async Task ExportCsv<T>(Grid<T> grid, string fileName)
