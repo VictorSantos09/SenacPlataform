@@ -1,0 +1,62 @@
+﻿@page "/disciplina/cadastro"
+
+@using BancoTalentos.UI.Components.Pages.Common
+@using BancoTalentos.Domain.Services.Disciplina.Dto
+@using BancoTalentos.Domain.Services.Disciplina.Interfaces
+@inherits Page
+
+<h3>DisciplinaCadastro</h3>
+
+<LoadingIndicador IsLoading="@IsLoading"
+                  LoadingMode="@LoadingMode"
+                  LoadingValue="@LoadingValue"
+                  ShowLoadingValue="@ShowLoadingValue" />
+
+
+<RadzenTemplateForm loa Data="@Dto" Submit="@(async (DisciplinaDto dto) => { await Gravar(); })" InvalidSubmit="@( () => HasInvalidSubmit = true)" Visible=@(!IsLoading)>
+    <RadzenRow>
+        <!--Informações pessoais-->
+        <RadzenColumn>
+            <RadzenFieldset Text="Disciplina" Icon="auto_stories">
+                <RadzenStack Gap="1rem">
+                    <RadzenFormField Text="@(IsEditing ? "Código - Nome" : "Nome")" AllowFloatingLabel=true>
+                        <ChildContent>
+                            <RadzenStack Orientation="Orientation.Horizontal">
+                                <!--ID-->
+                                <RadzenNumeric Name="Código" @bind-Value="@Dto.Id" ReadOnly="true" Style="width: 10%;" ShowUpDown=false Visible="@IsEditing" />
+                                <!--Nome-->
+                                <RadzenTextBox Name="Nome" @bind-Value="@Dto.Nome" Placeholder="Digite o nome completo" Style="width: 100%;" />
+                            </RadzenStack>
+                        </ChildContent>
+                        <Helper>
+                            <RadzenRequiredValidator Component="Nome" Text="@REQUIRED_FIELD" />
+                            <RequiredWarning InvalidSubmit=@HasInvalidSubmit />
+                        </Helper>
+                    </RadzenFormField>
+
+                    <!--Carga Horária-->
+                    <RadzenFormField Text="CargaHoraria" AllowFloatingLabel=true>
+                        <ChildContent>
+                            <RadzenNumeric Max="44" ShowUpDown="true" Name="CargaHoraria" TValue="int" @bind-Value="@Dto.CargaHoraria" Placeholder="Digite a carga horária semanal" Style="width: 100%;" />
+                        </ChildContent>
+                        <Helper>
+                            <RadzenRequiredValidator Component="CargaHoraria" Text="@REQUIRED_FIELD" />
+                            <RequiredWarning InvalidSubmit=@HasInvalidSubmit />
+                        </Helper>
+                    </RadzenFormField>
+                </RadzenStack>
+            </RadzenFieldset>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenTemplateForm>
+@code {
+    public DisciplinaDto Dto { get; set; } = new();
+
+    private const string REQUIRED_FIELD = "Campo obrigatório";
+    private bool IsSaving = false;
+
+    async Task Gravar()
+    {
+        
+    }
+}
