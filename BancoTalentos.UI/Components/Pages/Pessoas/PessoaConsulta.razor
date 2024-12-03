@@ -1,6 +1,7 @@
 ﻿@page "/pessoas/consulta"
 @using BancoTalentos.Domain.Entity
 @using BancoTalentos.Domain.Repositories.Contracts.Interfaces
+@using BancoTalentos.Domain.Services.Pessoas
 @using BancoTalentos.UI.Components.Pages.Common
 @using QuickKit.Blazor.Components.Grid
 @using QuickKit.Blazor.Components.Grid.Export
@@ -12,6 +13,7 @@
 
 @inherits Page
 @inject IPESSOAS_REPOSITORY PessoasRepository
+@inject IPessoaMediatorService PessoasService
 @inject NotificationService NotifierService
 @inject IJSRuntime JSRuntime
 
@@ -132,14 +134,15 @@
 
         if (confirmacao.GetValueOrDefault())
         {
-            var resultado = await PessoasRepository.DeleteAsync(pessoa);
-            if (resultado == 0)
+            var resultado = await PessoasService.DeletarAsync(pessoa.ID, pessoa.CARGO);
+            if (resultado.IsFailed)
             {
+                var mensagemErro = resultado.Errors.FirstOrDefault()?.Message ?? "Erro ao deletar";
                 NotifierService.Notify(new()
                     {
-                        Severity = NotificationSeverity.Error,
-                        Summary = "Erro",
-                        Detail = $"Erro ao excluir a pessoa {pessoa.NOME}.",
+                        Severity = NotificationSeverity.Warning,
+                        Summary = "Aviso",
+                        Detail = mensagemErro,
                         CloseOnClick = true
                     });
             }
