@@ -48,7 +48,7 @@ public class PESSOAS_CONTATOS_REPOSITORY
     {
         var sql = "DELETE FROM PESSOAS_CONTATOS WHERE ID_PESSOA = @idPessoa";
 
-        await _connection.ExecuteAsync(sql, new {idPessoa});
+        await _connection.ExecuteAsync(sql, new { idPessoa });
     }
 
     public async Task DeleteById(int id)

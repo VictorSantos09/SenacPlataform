@@ -1,9 +1,8 @@
 using BancoTalentos.Domain.Entity;
-using BancoTalentos.Domain.Repositories.Contracts.Shared;
 
-namespace BancoTalentos.Domain.Repositories.Contracts.Base.Interfaces;
+namespace BancoTalentos.Domain.Repositories.Base.Interfaces;
 
-public interface ITIPOS_CONTATOS_REPOSITORY_BASE : IRepository
+public interface ITIPOS_CONTATOS_REPOSITORY_BASE
 {
     public Task<IEnumerable<TIPOS_CONTATOS>> GetAllAsync(
         CancellationToken cancellationToken = default

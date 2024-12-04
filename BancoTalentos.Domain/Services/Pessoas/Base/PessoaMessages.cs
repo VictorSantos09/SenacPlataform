@@ -25,6 +25,7 @@ public static class PessoaMessages
     public const string NAO_FOI_POSSIVEL_DELETAR = "Não foi possível deletar.";
     public const string NAO_FOI_POSSIVEL_ATUALIZAR = "Não foi possível atualizar.";
     public const string JA_TEM_HABILIDADE = "A habilidade já está informada.";
+    public const string JA_TEM_FORMACAO = "A pessoa já tem essa formação.";
     public const string NAO_FOI_POSSIVEL_CADASTRAR_HABILIDADE = "Não foi possível cadastrar a habilidade.";
     public const string CARGA_HORARIA_EXCEDE_LIMITE = "A carga horária semanal não pode ser maior que 44 horas.";
 

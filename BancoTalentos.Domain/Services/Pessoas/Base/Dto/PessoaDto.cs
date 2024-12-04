@@ -1,4 +1,5 @@
-﻿using BancoTalentos.Domain.Entity.Enums;
+﻿using BancoTalentos.Domain.Entities;
+using BancoTalentos.Domain.Entity.Enums;
 using BancoTalentos.Domain.Services.Contato.Dto;
 using BancoTalentos.Domain.Services.Imagem.Dto;
 
@@ -16,6 +17,7 @@ public record PessoaDto
     public IEnumerable<ContatoDto> Contatos { get; set; }
     public int Id { get; set; }
     public IEnumerable<int>? IdsDisciplinas { get; set; }
+    public IEnumerable<FORMACOES> Formacoes { get; set; }
 
     public PessoaDto()
     {
@@ -32,7 +34,8 @@ public record PessoaDto
             Foto = Foto,
             Id = Id,
             IdsDisciplinas = IdsDisciplinas,
-            Nome = Nome
+            Nome = Nome,
+            Formacoes = Formacoes,
         };
     }
 
@@ -46,7 +49,8 @@ public record PessoaDto
             Foto = Foto,
             Id = Id,
             IdsDisciplinas = IdsDisciplinas,
-            Nome = Nome
+            Nome = Nome,
+            Formacoes = Formacoes,
         };
     }
 }

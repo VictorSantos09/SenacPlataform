@@ -1,5 +1,7 @@
 ﻿@page "/pessoas/cadastro/{Id:int?}"
+@using BancoTalentos.Domain.Entities
 @using BancoTalentos.Domain.Entity.Enums
+@using BancoTalentos.Domain.Repositories
 @using BancoTalentos.Domain.Repositories.Contracts.Interfaces
 @using BancoTalentos.Domain.Services.Contato.Dto
 @using BancoTalentos.Domain.Services.Disciplina.Dto
@@ -24,6 +26,7 @@
 @inject INotifierService NotifierService
 @inject ITipoContatoConsultaService TipoContatoConsultaService
 @inject IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY pessoasHabilidadesDisciplinasRepository
+@inject IFORMACOES_REPOSITORY formacoesRepository
 @inherits Page
 
 <LoadingIndicador IsLoading="@IsLoading"
@@ -31,7 +34,7 @@
                   LoadingValue="@LoadingValue"
                   ShowLoadingValue="@ShowLoadingValue" />
 
-<RadzenTemplateForm loa Data="@Dto" Submit="@(async (PessoaCadastroDto dto) => { await Gravar(); })" InvalidSubmit="@( () => HasInvalidSubmit = true)" Visible=@(!IsLoading)>
+<RadzenTemplateForm Data="@Dto" Submit="@(async (PessoaCadastroDto dto) => { await Gravar(); })" InvalidSubmit="@( () => HasInvalidSubmit = true)" Visible=@(!IsLoading)>
     <RadzenRow>
         <!--Informações pessoais-->
         <RadzenColumn>
@@ -93,6 +96,26 @@
                                             AllowSelectAll="true"
                                             AllowFiltering="true"
                                             Name="Habilidades"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            SelectedItemsText="Itens selecionados"
+                                            RemoveChipTitle="Deselecionar" />
+                        </ChildContent>
+                    </RadzenFormField>
+
+                    <!-- Formações -->
+                    <RadzenFormField Text="Formações" AllowFloatingLabel="true">
+                        <ChildContent>
+                            <RadzenDropDown Multiple="true"
+                                            Data="@_formacoesExistentes"
+                                            AllowClear="true"
+                                            TextProperty="@nameof(FORMACOES.NOME)"
+                                            ValueProperty="@nameof(FORMACOES.ID)"
+                                            @bind-Value="@Dto.HabilidadesDisciplinas"
+                                            Placeholder="Selecione as formações"
+                                            Chips="true"
+                                            AllowSelectAll="true"
+                                            AllowFiltering="true"
+                                            Name="Formações"
                                             FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                             SelectedItemsText="Itens selecionados"
                                             RemoveChipTitle="Deselecionar" />
@@ -180,6 +203,7 @@
 @code {
     public PessoaCadastroDto Dto { get; set; } = new();
     private List<DisciplinaDto> _disciplinasExistentes = [];
+    private IEnumerable<FORMACOES> _formacoesExistentes = [];
     private string? _contatoInformado;
     private bool IsSaving = false;
     private const string REQUIRED_FIELD = "Campo obrigatório";
@@ -196,6 +220,7 @@
 
             var result = await consultarDisciplinaService.GetAllAsync(default);
             _disciplinasExistentes = result.ValueOrDefault.ToList();
+            _formacoesExistentes = await formacoesRepository.GetAllAsync();
 
             if (Id.HasValue)
             {

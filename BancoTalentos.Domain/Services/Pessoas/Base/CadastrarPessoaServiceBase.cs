@@ -1,4 +1,5 @@
-﻿using BancoTalentos.Domain.Entity;
+﻿using BancoTalentos.Domain.Entities;
+using BancoTalentos.Domain.Entity;
 using BancoTalentos.Domain.Repositories.Contracts.Interfaces;
 using BancoTalentos.Domain.Services.Imagem;
 using BancoTalentos.Domain.Services.Imagem.Dto;
@@ -14,6 +15,7 @@ public abstract class CadastrarPessoaServiceBase(IDISCIPLINAS_REPOSITORY discipl
                                   IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY pessoas_habilidades_disciplinas_repository,
                                   IPESSOAS_REPOSITORY pessoas_repository,
                                   ITIPOS_CONTATOS_REPOSITORY tipos_contatos_repository,
+                                  IPESSOAS_FORMACOES_REPOSITORY pessoas_formacoes_repository,
                                   IValidator<PESSOAS> validator,
                                   IImagemService imagemService)
 {
@@ -72,7 +74,7 @@ public abstract class CadastrarPessoaServiceBase(IDISCIPLINAS_REPOSITORY discipl
     {
         PESSOAS_CONTATOS entity = new()
         {
-            ID_PESSOA = idProfessor
+            ID_PESSOA = idProfessor,
         };
 
         int rowsAffected;
@@ -111,16 +113,23 @@ public abstract class CadastrarPessoaServiceBase(IDISCIPLINAS_REPOSITORY discipl
             return Result.Fail(PessoaMessages.NAO_FOI_POSSIVEL_CADASTRAR);
         }
 
-        var idProfessor = await pessoas_repository.GetMaxIdAsync();
+        var idPessoa = await pessoas_repository.GetMaxIdAsync();
 
-        var resultContato = await CadastrarContatosAsync(dto, idProfessor, cancellationToken);
+        var resultadoFormacoes = await CadastrarFormacoes(dto, idPessoa);
+
+        if (resultadoFormacoes.IsFailed)
+        {
+            return resultadoFormacoes;
+        }
+
+        var resultContato = await CadastrarContatosAsync(dto, idPessoa, cancellationToken);
 
         if (resultContato.IsFailed)
         {
             return resultContato;
         }
 
-        var resultHabilidades = await CadastrarHabilidadesAsync(dto, idProfessor, cancellationToken);
+        var resultHabilidades = await CadastrarHabilidadesAsync(dto, idPessoa, cancellationToken);
 
         if (resultHabilidades.IsFailed)
         {
@@ -176,6 +185,42 @@ public abstract class CadastrarPessoaServiceBase(IDISCIPLINAS_REPOSITORY discipl
         }
 
         return null;
+    }
+    #endregion
+
+    #region Cadastrar Formação
+    private async Task<Result> CadastrarFormacoes(PessoaDto dto, int idPessoa)
+    {
+        PESSOAS_FORMACOES entity = new()
+        {
+            DATA_CADASTRO = DateTime.Now,
+            ID_PESSOA = idPessoa,
+            DATA_INATIVACAO = null,
+            
+        };
+
+        foreach (var i in dto.Formacoes)
+        {
+            if (!await disciplinas_repository.ExistsAsync("PESSOAS_FORMACOES", i, default))
+            {
+                return Result.Fail("Não existe a formação para a pessoa informada.");
+            }
+
+            if (await pessoas_formacoes_repository.TemFormacaoCadastrada(idPessoa, i.ID))
+            {
+                return Result.Fail(PessoaMessages.JA_TEM_FORMACAO);
+            }
+
+            entity.ID_PESSOA = idPessoa;
+            var result = await pessoas_formacoes_repository.InsertAsync(entity, default);
+
+            if (result == 0)
+            {
+                return Result.Fail(PessoaMessages.NAO_FOI_POSSIVEL_CADASTRAR_HABILIDADE);
+            }
+        }
+
+        return Result.Ok();
     }
     #endregion
 }

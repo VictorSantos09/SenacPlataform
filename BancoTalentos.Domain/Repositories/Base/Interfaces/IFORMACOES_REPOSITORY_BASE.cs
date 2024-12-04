@@ -1,27 +1,26 @@
-using BancoTalentos.Domain.Entity;
-using BancoTalentos.Domain.Repositories.Contracts.Shared;
+using BancoTalentos.Domain.Entities;
 
-namespace BancoTalentos.Domain.Repositories.Contracts.Base.Interfaces;
+namespace BancoTalentos.Domain.Repositories.Base.Interfaces;
 
-public interface ITIPOS_CONTATOS_REPOSITORY_BASE : IRepository
+public interface IFORMACOES_REPOSITORY_BASE
 {
-    public Task<IEnumerable<TIPOS_CONTATOS>> GetAllAsync(
+    public Task<IEnumerable<FORMACOES>> GetAllAsync(
         CancellationToken cancellationToken = default
     );
-    public Task<TIPOS_CONTATOS?> GetByIdAsync(
+    public Task<FORMACOES?> GetByIdAsync(
         int id,
         CancellationToken cancellationToken = default
     );
     public Task<int> InsertAsync(
-        TIPOS_CONTATOS entity,
+        FORMACOES entity,
         CancellationToken cancellationToken = default
     );
     public Task<int> UpdateAsync(
-        TIPOS_CONTATOS entity,
+        FORMACOES entity,
         CancellationToken cancellationToken = default
     );
     public Task<int> DeleteAsync(
-        TIPOS_CONTATOS entity,
+        FORMACOES entity,
         CancellationToken cancellationToken = default
     );
 }

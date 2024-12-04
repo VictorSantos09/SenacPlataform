@@ -14,12 +14,14 @@ internal class CadastrarCoordenadorService(IDISCIPLINAS_REPOSITORY disciplinas_r
                               IPESSOAS_HABILIDADES_DISCIPLINAS_REPOSITORY pessoas_habilidades_disciplinas_repository,
                               IPESSOAS_REPOSITORY pessoas_repository,
                               ITIPOS_CONTATOS_REPOSITORY tipos_contatos_repository,
+                              IPESSOAS_FORMACOES_REPOSITORY pessoas_formacoes_repository,
                               IValidator<PESSOAS> validator,
                               IImagemService imagemService) : CadastrarPessoaServiceBase(disciplinas_repository,
                                                                     pessoas_contatos_repository,
                                                                     pessoas_habilidades_disciplinas_repository,
                                                                     pessoas_repository,
                                                                     tipos_contatos_repository,
+                                                                    pessoas_formacoes_repository,
                                                                     validator,
                                                                     imagemService), ICadastrarCoordenadorService
 {
