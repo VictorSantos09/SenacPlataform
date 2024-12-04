@@ -12,8 +12,8 @@ internal class DeletarCoordenadorService(IPESSOAS_REPOSITORY pessoas_repository,
                                 pessoas_contatos_repository,
                                 pessoas_habilidades_disciplinas_repository), IDeletarCoordenadorService
 {
-    public async Task<Result> DeletarCoordenadorAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result> DeletarAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await DeletarAsync(id, cancellationToken);
+        return await base.DeletarAsync(id, cancellationToken);
     }
 }

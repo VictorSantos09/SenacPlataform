@@ -4,8 +4,8 @@ namespace BancoTalentos.Domain.Services.Disciplina.Dto;
 public sealed record DisciplinaDto
 {
     public int Id { get; set; }
-    public required string Nome { get; set; }
-    public required int CargaHoraria { get; set; }
+    public string Nome { get; set; }
+    public int CargaHoraria { get; set; }
     public string? Descricao { get; set; }
 
     public static DisciplinaDto Create(DISCIPLINAS disciplinas)
@@ -18,4 +18,10 @@ public sealed record DisciplinaDto
             Descricao = disciplinas.DESCRICAO
         };
     }
+
+    public DisciplinaDto()
+    {
+
+    }
+
 }

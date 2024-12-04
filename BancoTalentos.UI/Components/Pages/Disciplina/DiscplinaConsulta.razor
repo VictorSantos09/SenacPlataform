@@ -1,10 +1,12 @@
 ﻿@page "/disciplina/consulta"
 @using BancoTalentos.Domain.Entity
 @using BancoTalentos.Domain.Repositories.Contracts.Interfaces
+@using BancoTalentos.Domain.Services.Disciplina.Interfaces
 @using BancoTalentos.UI.Components.Pages.Common
 
 @inherits Page
 @inject IDISCIPLINAS_REPOSITORY DisciplinaRepository
+@inject IDeletarDisciplinaService DisciplinaService
 
 <Grid Data=@_disciplinas
       ColumnsDeclared=@GetColumns()
@@ -84,8 +86,55 @@
                 Icon = "visibility",
                 OnClick =EventCallback.Factory.Create<DISCIPLINAS>(this, async (data) => await VerDetalhes(data))
             },
+            new ButtonComponent<DISCIPLINAS>()
+            {
+                ButtonStyle = ButtonStyle.Primary,
+                Icon = "edit",
+                OnClick = EventCallback.Factory.Create<DISCIPLINAS>(this, (data) =>
+                    {
+                        NavigationManager.NavigateTo($"/disciplina/cadastro/{data.ID}");
+                    })
+            },
+            new ButtonComponent<DISCIPLINAS>()
+            {
+                ButtonStyle = ButtonStyle.Danger,
+                Icon = "delete",
+                OnClick = EventCallback.Factory.Create<DISCIPLINAS>(this, async (data) => await ConfirmarExcluir(data))
+            }
 
         };
+    }
+
+    private async Task ConfirmarExcluir(DISCIPLINAS disciplina)
+    {
+        bool? confirmacao = await DialogService.Alert("Tem certeza que deseja deletar esse registro?", "Deletar", new AlertOptions() { OkButtonText = "Sim" });
+
+        if (confirmacao.GetValueOrDefault())
+        {
+            var resultado = await DisciplinaService.DeletarAsync(disciplina.ID, default);
+            if (resultado.IsFailed)
+            {
+                var mensagemErro = resultado.Errors.FirstOrDefault()?.Message ?? "Erro ao deletar";
+                NotifierService.Notify(new()
+                    {
+                        Severity = NotificationSeverity.Warning,
+                        Summary = "Aviso",
+                        Detail = mensagemErro,
+                        CloseOnClick = true
+                    });
+            }
+            else
+            {
+                _disciplinas = _disciplinas.Where(p => p.ID != disciplina.ID);
+                NotifierService.Notify(new()
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Sucesso",
+                        Detail = $"Excluído com sucesso.",
+                        CloseOnClick = true
+                    });
+            }
+        }
     }
 
     async Task VerDetalhes(DISCIPLINAS disciplina)
