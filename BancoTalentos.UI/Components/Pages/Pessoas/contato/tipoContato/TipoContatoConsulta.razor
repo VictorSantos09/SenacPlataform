@@ -3,12 +3,13 @@
 @using BancoTalentos.Domain.Entity
 @using BancoTalentos.Domain.Repositories.Contracts.Interfaces
 @using BancoTalentos.UI.Components.Pages.Common
+@using QuickKit.Blazor.Components.Grid.Types
 @inherits Page
 @inject ITIPOS_CONTATOS_REPOSITORY _tipos_contatos_repository;
 @inject NotificationService NotifierService
 @inject IJSRuntime JSRuntime
 
-<Grid Data=@_tiposContatos
+<GridManipulator Data=@_tiposContatos
       ColumnsDeclared=@GetColumns()
       IsLoading=@IsLoading
       IsExportingCsv=@IsExportingCsv
@@ -51,8 +52,9 @@
 
         output.Add(new GridColumn("Código", nameof(TIPOS_CONTATOS.ID), new GridColumnOptions<IRadzenComponent>()));
         output.Add(new GridColumn("Tipo", nameof(TIPOS_CONTATOS.TIPO), new GridColumnOptions<IRadzenComponent>()));
-        output.Add(new GridColumn("Cargo", nameof(TIPOS_CONTATOS.DATA_CADASTRO), new GridColumnOptions<IRadzenComponent>()));
-        output.Add(new GridColumn("Carga Horária", nameof(TIPOS_CONTATOS.DATA_INATIVACAO), new GridColumnOptions<IRadzenComponent>()));
+        output.Add(new GridColumn("Data Cadastro", nameof(TIPOS_CONTATOS.DATA_CADASTRO), new GridColumnOptions<IRadzenComponent>()));
+        output.Add(new GridColumn("Data Inativação", nameof(TIPOS_CONTATOS.DATA_INATIVACAO), new GridColumnOptions<IRadzenComponent>()));
+
         return output;
     }
 }

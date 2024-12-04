@@ -1,0 +1,195 @@
+﻿@page "/disciplina/cadastro/{Id:int?}"
+
+@using BancoTalentos.UI.Components.Pages.Common
+@using BancoTalentos.Domain.Services.Disciplina.Dto
+@using BancoTalentos.Domain.Services.Disciplina.Interfaces
+
+@inject ICadastrarDisciplinaService cadastrarDisciplinaService;
+@inject IConsultarDisciplinaService consultarDisciplinaService;
+@inject IAtualizarDisciplinaService atualizarDisciplinaService;
+
+@inherits Page
+
+<LoadingIndicador IsLoading="@IsLoading"
+                  LoadingMode="@LoadingMode"
+                  LoadingValue="@LoadingValue"
+                  ShowLoadingValue="@ShowLoadingValue" />
+
+<RadzenStack Gap="1rem" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Style="height:calc(100vh - 100px);">
+
+    <RadzenTemplateForm Data="@Dto" Style="width:50%" Submit="@(async (DisciplinaDto dto) => { await Gravar(); })" InvalidSubmit="@( () => HasInvalidSubmit = true)" Visible=@(!IsLoading)>
+        <RadzenRow>
+            <RadzenColumn>
+                <RadzenFieldset Text="Disciplina" Icon="auto_stories">
+                    <RadzenStack Gap="1rem" >
+
+                        <!--Nome-->
+                        <RadzenFormField Text="@(IsEditing ? "Código - Nome" : "Nome")" AllowFloatingLabel=true>
+                            <ChildContent>
+                                <RadzenStack Orientation="Orientation.Horizontal">
+                                    <RadzenNumeric Name="Código" @bind-Value="@Dto.Id" ReadOnly="true" ShowUpDown=false Visible="@IsEditing" />
+                                    <RadzenTextBox Name="Nome" @bind-Value="@Dto.Nome" Placeholder="Digite o nome da disciplina" Style="width: 100%;" />
+                                </RadzenStack>
+                            </ChildContent>
+                            <Helper>
+                                <RadzenRequiredValidator Component="Nome" Text="@REQUIRED_FIELD" />
+                                <RequiredWarning InvalidSubmit=@HasInvalidSubmit />
+                            </Helper>
+                        </RadzenFormField>
+
+                        <!--Carga Horária-->
+                        <RadzenFormField Text="Carga Horaria" AllowFloatingLabel=true>
+                            <ChildContent>
+                                <RadzenNumeric Min="0" ShowUpDown="true" Name="CargaHoraria" TValue="int" @bind-Value="@Dto.CargaHoraria" Placeholder="Digite a carga horária da disciplina"/>
+                            </ChildContent>
+                            <Helper>
+                                <RadzenRequiredValidator Component="CargaHoraria" Text="@REQUIRED_FIELD" />
+                                <RequiredWarning InvalidSubmit=@HasInvalidSubmit />
+                            </Helper>
+                        </RadzenFormField>
+
+                        <!--Descrição-->
+                        <RadzenFormField Text="Descrição" AllowFloatingLabel=true>
+                            <ChildContent>
+                                <RadzenStack Orientation="Orientation.Horizontal">
+                                    <RadzenNumeric Name="Código" @bind-Value="@Dto.Id" ReadOnly="true" ShowUpDown=false Visible="@IsEditing" />
+                                    <RadzenTextBox Name="Descrição" @bind-Value="@Dto.Descricao" Placeholder="Digite uma descrição, se houver" Style="width: 100%;" />
+                                </RadzenStack>
+                            </ChildContent>
+                        </RadzenFormField>
+
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenColumn>
+        </RadzenRow>
+
+        <!-- Botões de Ação -->
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" class="rz-pt-5">
+            <RadzenButton ButtonType="ButtonType.Submit"
+                          Text="@(Id.HasValue ? "Atualizar" : "Salvar")"
+                          Icon="@(Id.HasValue ? "edit" : "save")"
+                          Disabled="@IsSaving"
+                          Style="background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 8px;" />
+            <RadzenButton Disabled="@IsSaving" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Text="Cancelar" Icon="cancel" Style="padding: 10px 20px; border-radius: 8px;" Click="LimparCampos" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenStack>
+@code {
+    public DisciplinaDto Dto { get; set; } = new();
+
+    private const string REQUIRED_FIELD = "Campo obrigatório";
+    private bool IsSaving = false;
+
+    [Parameter] public int? Id { get; set; }
+    private string TituloPagina => Id.HasValue ? "Editar Disciplina" : "Cadastrar Disciplina";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            ToggleLoading();
+            IsEditing = Id.HasValue;
+
+            if (Id.HasValue)
+            {
+                var disciplina = await consultarDisciplinaService.GetByIdAsync(Id.Value, default);
+                if (disciplina.IsSuccess)
+                {
+                    Dto = new DisciplinaDto
+                        {
+                            Id = disciplina.ValueOrDefault.Id,
+                            Nome = disciplina.ValueOrDefault.Nome,
+                            CargaHoraria = disciplina.ValueOrDefault.CargaHoraria,
+                            Descricao = disciplina.ValueOrDefault.Descricao
+                        };
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao carregar os dados: {ex.Message}");
+        }
+        finally
+        {
+            ToggleLoading();
+        }
+    }
+
+    async Task ExibirAlerta(string mensagem, string summary = "Alerta")
+    {
+        NotifierService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = summary,
+                Detail = mensagem,
+                Duration = 4000
+            });
+    }
+
+    async Task Gravar()
+    {
+        try
+        {
+            ToggleLoading();
+            IsSaving = true;
+            HasValidSubmit = true;
+            var disciplinaDto = new DisciplinaDto
+                {
+                    Id = Dto.Id,
+                    Nome = Dto.Nome,
+                    CargaHoraria = Dto.CargaHoraria,
+                    Descricao = Dto.Descricao
+                };
+
+            if (Id.HasValue)
+            {
+                var result = await atualizarDisciplinaService.AtualizarAsync(disciplinaDto, default);
+                if (result.IsFailed)
+                {
+                    await ExibirAlerta($"Erro ao atualizar: {string.Join(", ", result.Errors)}");
+                    return;
+                }
+
+                NotifierService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Sucesso",
+                        Detail = "Disciplina atualizada com sucesso!",
+                        Duration = 4000
+                    });
+            }
+            else
+            {
+                var result = await cadastrarDisciplinaService.CadastrarAsync(disciplinaDto, CancellationToken.None);
+                if (result.IsFailed)
+                {
+                    await ExibirAlerta($"Erro ao cadastrar: {string.Join(", ", result.Errors)}");
+                    return;
+                }
+
+                NotifierService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Sucesso",
+                        Detail = "Disciplina cadastrada com sucesso!",
+                        Duration = 4000
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao salvar: {ex.Message}");
+        }
+        finally
+        {
+            IsSaving = false;
+            ToggleLoading();
+        }
+    }
+
+    private void LimparCampos()
+    {
+        Dto = new();
+    }
+
+}

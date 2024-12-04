@@ -8,7 +8,9 @@ namespace BancoTalentos.Domain.Services.Pessoas;
 
 internal class PessoaMediatorService(
     ICadastrarCoordenadorService cadastrarCoordenadorService,
-    ICadastrarProfessorService cadastrarProfessorService,
+    ICadastrarProfessorService cadastrarProfessorService, 
+    IDeletarCoordenadorService deletarCoordenadorService,
+    IDeletarProfessorService deletarProfessorService,
     IAtualizarProfessorService atualizarProfessorService,
     IAtualizarCoordenadorService atualizarCoordenadorService) : IPessoaMediatorService
 {
@@ -33,6 +35,19 @@ internal class PessoaMediatorService(
                 return await atualizarProfessorService.AtualizarAsync(dto.ToProfessor(), cancellationToken);
             case CARGO.COORDENADOR:
                 return await atualizarCoordenadorService.AtualizarCoordenadorAsync(dto.ToCoodenador(), cancellationToken);
+            default:
+                throw new ArgumentException("Cargo informado é inválido");
+        }
+    }
+
+    public async Task<Result> DeletarAsync(int id, CARGO cargo, CancellationToken cancellationToken = default)
+    {
+        switch (cargo)
+        {
+            case CARGO.PROFESSOR:
+                return await deletarProfessorService.DeletarAsync(id, cancellationToken);
+            case CARGO.COORDENADOR:
+                return await deletarCoordenadorService.DeletarAsync(id, cancellationToken);
             default:
                 throw new ArgumentException("Cargo informado é inválido");
         }

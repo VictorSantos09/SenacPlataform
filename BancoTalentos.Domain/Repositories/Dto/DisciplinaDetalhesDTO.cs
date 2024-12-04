@@ -9,6 +9,4 @@ public class DisciplinaDetalhesDTO
     //public string? CAMINHO_FOTO_PESSOA { get; set; }
     public string NOME_PESSOA { get; set; }
     public DateTime DATA_CADASTRO { get; set; }
-    public string CONTATO { get; set; }
-    public string TIPO { get; set; }
 }
