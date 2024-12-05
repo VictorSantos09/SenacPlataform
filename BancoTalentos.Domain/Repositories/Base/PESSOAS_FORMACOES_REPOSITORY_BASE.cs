@@ -57,7 +57,7 @@ WHERE ID = @idParam
                 modeloensinoParam = pessoas_formacoes.MODELO_ENSINO,
             };
             var sql =
-                @"					INSERT INTO pessoas_formacoes
+                @"INSERT INTO pessoas_formacoes
 					(
 					ID_PESSOA
 					,ID_FORMACAO

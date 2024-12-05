@@ -102,26 +102,6 @@
                         </ChildContent>
                     </RadzenFormField>
 
-                    <!-- Formações -->
-                    <RadzenFormField Text="Formações" AllowFloatingLabel="true">
-                        <ChildContent>
-                            <RadzenDropDown Multiple="true"
-                                            Data="@_formacoesExistentes"
-                                            AllowClear="true"
-                                            TextProperty="@nameof(FORMACOES.NOME)"
-                                            ValueProperty="@nameof(FORMACOES.ID)"
-                                            @bind-Value="@Dto.HabilidadesDisciplinas"
-                                            Placeholder="Selecione as formações"
-                                            Chips="true"
-                                            AllowSelectAll="true"
-                                            AllowFiltering="true"
-                                            Name="Formações"
-                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                            SelectedItemsText="Itens selecionados"
-                                            RemoveChipTitle="Deselecionar" />
-                        </ChildContent>
-                    </RadzenFormField>
-
                     <!-- Foto de Perfil -->
                     <RadzenFormField Text="Foto de perfil" AllowFloatingLabel=true>
                         <ChildContent>
@@ -186,6 +166,54 @@
                     }
                 </RadzenStack>
             </RadzenFieldset>
+
+            <RadzenFieldset Text="Informações da Formação" Icon="school">
+                <RadzenStack Gap="1rem">
+                    <!-- Formações -->
+                    <RadzenFormField Text="Formações" AllowFloatingLabel="true">
+                        <ChildContent>
+                            <RadzenDropDown Multiple="true"
+                                            Data="@_formacoesExistentes"
+                                            AllowClear="true"
+                                            TextProperty="@nameof(FORMACOES.NOME)"
+                                            ValueProperty="@nameof(FORMACOES.ID)"
+                                            @bind-Value="@Dto.Formacoes"
+                                            Placeholder="Selecione as formações"
+                                            Chips="true"
+                                            AllowSelectAll="true"
+                                            AllowFiltering="true"
+                                            Name="Formações"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            SelectedItemsText="Itens selecionados"
+                                            RemoveChipTitle="Deselecionar" />
+                        </ChildContent>
+                    </RadzenFormField>
+                    <!-- Data de início -->
+                    <RadzenFormField Text="Data de Início" AllowFloatingLabel=true>
+                        <ChildContent>
+                            <RadzenDatePicker @bind-Value=@value ShowDays=false DateFormat="yyyy/MM" CurrentDateChanged=@OnCurrentDateChanged Name="DataInicio" />
+                        </ChildContent>
+                        <Helper>
+                            <RadzenStack Gap="1px">
+                                <RadzenText TextStyle="TextStyle.Caption">Data de início da formação.</RadzenText>
+                            </RadzenStack>
+                        </Helper>
+                    </RadzenFormField>
+
+                    <RadzenFormField Text="Data de Conclusão" AllowFloatingLabel=true>
+                        <ChildContent>
+                            <RadzenDatePicker @bind-Value=@value ShowDays=false DateFormat="yyyy/MM" CurrentDateChanged=@OnCurrentDateChanged Name="DataInicio" />
+                        </ChildContent>
+                        <Helper>
+                            <RadzenStack Gap="1px">
+                                <RadzenText TextStyle="TextStyle.Caption">Data de fim da formação.</RadzenText>
+                            </RadzenStack>
+                        </Helper>
+                    </RadzenFormField>
+
+
+                </RadzenStack>
+            </RadzenFieldset>
         </RadzenColumn>
     </RadzenRow>
 
@@ -201,6 +229,13 @@
 </RadzenTemplateForm>
 
 @code {
+    DateTime value = DateTime.Now;
+
+    void OnCurrentDateChanged(DateTime args)
+    {
+        value = new DateTime(args.Year, args.Month, 1);
+    }
+
     public PessoaCadastroDto Dto { get; set; } = new();
     private List<DisciplinaDto> _disciplinasExistentes = [];
     private IEnumerable<FORMACOES> _formacoesExistentes = [];
