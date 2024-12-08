@@ -14,5 +14,5 @@ public record PessoaCadastroDto
     public int CargaHoraria { get; set; }
     public IList<ContatoDto> Contatos { get; set; } = [];
     public IEnumerable<int> HabilidadesDisciplinas { get; set; }
-    public IList<int> Formacoes { get; set; }
+    public IList<PessoaFormacoesDto> Formacoes { get; set; }
 }
