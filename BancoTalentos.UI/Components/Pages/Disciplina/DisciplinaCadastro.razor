@@ -52,7 +52,6 @@
                         <RadzenFormField Text="Descrição" AllowFloatingLabel=true>
                             <ChildContent>
                                 <RadzenStack Orientation="Orientation.Horizontal">
-                                    <RadzenNumeric Name="Código" @bind-Value="@Dto.Id" ReadOnly="true" ShowUpDown=false Visible="@IsEditing" />
                                     <RadzenTextBox Name="Descrição" @bind-Value="@Dto.Descricao" Placeholder="Digite uma descrição, se houver" Style="width: 100%;" />
                                 </RadzenStack>
                             </ChildContent>
