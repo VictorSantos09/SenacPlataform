@@ -175,7 +175,7 @@
                                             Data="@Dto.Formacoes"
                                             AllowClear="true"
                                             @bind-Value="@Dto.Formacoes"
-                                            Placeholder="Suas formações aparecerão aqui."
+                                            Placeholder="Suas formações aparecerão aqui"
                                             Chips="true"
                                             AllowSelectAll="true"
                                             AllowFiltering="true"
@@ -207,7 +207,7 @@
                     <!-- Data de início -->
                     <RadzenFormField Text="Data de Início" AllowFloatingLabel=true>
                         <ChildContent>
-                            <RadzenDatePicker @bind-Value=@dataInicio ShowDays=false DateFormat="yyyy/MM" CurrentDateChanged=@OnCurrentDateChanged Name="DataInicio" />
+                            <RadzenDatePicker @bind-Value=@FormacaoDto.DataInicio ShowDays=false DateFormat="yyyy/MM" CurrentDateChanged=@OnCurrentDateChanged Name="DataInicio" />
                         </ChildContent>
                         <Helper>
                             <RadzenStack Gap="1px">
@@ -218,7 +218,7 @@
 
                     <RadzenFormField Text="Data de Conclusão" AllowFloatingLabel=true>
                         <ChildContent>
-                            <RadzenDatePicker @bind-Value=@dataFim ShowDays=false DateFormat="yyyy/MM" CurrentDateChanged=@OnCurrentDateChanged Name="DataInicio" />
+                            <RadzenDatePicker @bind-Value=@FormacaoDto.DataFim ShowDays=false DateFormat="yyyy/MM" CurrentDateChanged=@OnCurrentDateChanged Name="DataInicio" />
                         </ChildContent>
                         <Helper>
                             <RadzenStack Gap="1px">
@@ -226,7 +226,8 @@
                             </RadzenStack>
                         </Helper>
                     </RadzenFormField>
-
+                    
+                    <RadzenButton Text="Salvar"></RadzenButton>
 
                 </RadzenStack>
             </RadzenFieldset>
@@ -245,16 +246,14 @@
 </RadzenTemplateForm>
 
 @code {
-    DateTime dataInicio = DateTime.Now;
-    DateTime dataFim = DateTime.Now;
-
     void OnCurrentDateChanged(DateTime args)
     {
-        dataInicio = new DateTime(args.Year, args.Month, 1);
-        dataFim = new DateTime(args.Year, args.Month, 1);
+        FormacaoDto.DataInicio = new DateTime(args.Year, args.Month, 1);
+        FormacaoDto.DataFim = new DateTime(args.Year, args.Month, 1);
     }
 
     public IList<int> Formacao { get; set; }
+    public PessoaFormacoesDto FormacaoDto { get; set; }
 
     public PessoaCadastroDto Dto { get; set; } = new();
     private List<DisciplinaDto> _disciplinasExistentes = [];

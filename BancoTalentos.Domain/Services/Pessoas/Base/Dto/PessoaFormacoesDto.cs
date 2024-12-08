@@ -11,8 +11,8 @@ namespace BancoTalentos.Domain.Services.Pessoas.Base.Dto
         public int Id { get; set; }
         public int Id_Pessoa {  get; set; }
         public int Id_Formacao {  get; set; }
-        public DateOnly DataInicio { get; set; }
-        public DateOnly DataFim { get; set; }
+        public DateTime DataInicio { get; set; }
+        public DateTime DataFim { get; set; }
         public TIPO_FORMACAO Tipo_Formacao { get; set; }
         public MODELO_ENSINO Modelo_Ensino {  get; set; }
     }
