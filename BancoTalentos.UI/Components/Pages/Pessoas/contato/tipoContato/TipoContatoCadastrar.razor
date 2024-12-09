@@ -1,0 +1,108 @@
+﻿@using BancoTalentos.Domain.Services.TipoContato.Dto
+@using BancoTalentos.Domain.Services.TipoContato.Interface
+@using BancoTalentos.UI.Components.Pages.Common
+
+@inherits Page
+@inject ITipoContatoAdicionarService tipoContatoAdicionarService
+@inject ITipoContatoAtualizarService tipoContatoAtualizarService
+
+<RadzenTemplateForm Data="@Dto" Style="width:50%" Submit="@(async (TipoContatoDto dto) => { await Gravar(); })" InvalidSubmit="@( () => HasInvalidSubmit = true)" Visible=@(!IsLoading)>
+    <RadzenFormField Text="@(IsEditing ? "Código - Nome" : "Nome")" AllowFloatingLabel=true>
+        <ChildContent>
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenNumeric Name="Código" @bind-Value="@Dto.Id" ReadOnly="true" ShowUpDown=false Visible="@IsEditing" />
+                <RadzenTextBox Name="Nome" @bind-Value="@Dto.Tipo" Placeholder="Digite o nome da disciplina" Style="width: 100%;" />
+            </RadzenStack>
+        </ChildContent>
+        <Helper>
+            <RadzenRequiredValidator Component="Nome" Text="@REQUIRED_FIELD" />
+            <RequiredWarning InvalidSubmit=@HasInvalidSubmit />
+        </Helper>
+    </RadzenFormField>
+
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" class="rz-pt-5">
+        <RadzenButton ButtonType="ButtonType.Submit"
+                      Text="@(Id.HasValue ? "Atualizar" : "Salvar")"
+                      Icon="@(Id.HasValue ? "edit" : "save")"
+                      Style="background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 8px;" />
+        <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Text="Cancelar" Icon="cancel" Style="padding: 10px 20px; border-radius: 8px;" Click="LimparCampos" />
+    </RadzenStack>
+</RadzenTemplateForm>
+
+@code {
+    public TipoContatoDto Dto { get; set; } = new();
+    [Parameter] public int? Id { get; set; }
+
+    async Task ExibirAlerta(string mensagem, string summary = "Alerta")
+    {
+        NotifierService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = summary,
+                Detail = mensagem,
+                Duration = 4000
+            });
+    }
+
+    private void LimparCampos()
+    {
+        Dto = new();
+    }
+
+    async Task Gravar()
+    {
+        try
+        {
+            ToggleLoading();
+            HasValidSubmit = true;
+            var tipoContatoDto = new TipoContatoDto
+                {
+                    Id = Dto.Id,
+                    Tipo = Dto.Tipo,
+                };
+
+            if (Id.HasValue)
+            {
+                var result = await tipoContatoAtualizarService.AtualizarAsync(tipoContatoDto, default);
+                if (result.IsFailed)
+                {
+                    await ExibirAlerta($"Erro ao atualizar: {string.Join(", ", result.Errors)}");
+                    return;
+                }
+
+                NotifierService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Sucesso",
+                        Detail = "Disciplina atualizada com sucesso!",
+                        Duration = 4000
+                    });
+            }
+            else
+            {
+                var result = await tipoContatoAdicionarService.AdicionarAsync(tipoContatoDto, CancellationToken.None);
+                if (result.IsFailed)
+                {
+                    await ExibirAlerta($"Erro ao cadastrar: {string.Join(", ", result.Errors)}");
+                    return;
+                }
+
+                NotifierService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Sucesso",
+                        Detail = "Tipo contato cadastrado com sucesso!",
+                        Duration = 4000
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao salvar: {ex.Message}");
+        }
+        finally
+        {
+            ToggleLoading();
+        }
+    }
+}

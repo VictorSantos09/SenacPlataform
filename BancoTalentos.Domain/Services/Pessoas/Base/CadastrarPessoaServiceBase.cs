@@ -201,17 +201,18 @@ public abstract class CadastrarPessoaServiceBase(IDISCIPLINAS_REPOSITORY discipl
 
         foreach (var i in dto.Formacoes)
         {
-            if (!await disciplinas_repository.ExistsAsync("PESSOAS_FORMACOES", i, default))
+            if (!await disciplinas_repository.ExistsAsync("FORMACOES", i.Id_Formacao, default))
             {
-                return Result.Fail("Não existe a formação para a pessoa informada.");
+                return Result.Fail("Não existe a formação informada.");
             }
 
-            if (await pessoas_formacoes_repository.TemFormacaoCadastrada(idPessoa, i.ID))
+            if (await pessoas_formacoes_repository.TemFormacaoCadastrada(idPessoa, i.Id_Formacao))
             {
                 return Result.Fail(PessoaMessages.JA_TEM_FORMACAO);
             }
 
             entity.ID_PESSOA = idPessoa;
+            entity.ID_FORMACAO = i.Id_Formacao;
             var result = await pessoas_formacoes_repository.InsertAsync(entity, default);
 
             if (result == 0)

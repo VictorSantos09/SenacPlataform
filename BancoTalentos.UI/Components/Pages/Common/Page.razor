@@ -23,6 +23,7 @@
     protected bool IsExportingExcel { get; set; }
     protected bool HasInvalidSubmit { get; set; } = false;
     protected bool HasValidSubmit { get; set; } = false;
+    protected const string REQUIRED_FIELD = "Campo obrigatório";
 
     protected void ToggleLoading()
     {

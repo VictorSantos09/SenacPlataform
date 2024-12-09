@@ -13,6 +13,6 @@ public record PessoaCadastroDto
     public CARGO Cargo { get; set; }
     public int CargaHoraria { get; set; }
     public IList<ContatoDto> Contatos { get; set; } = [];
-    public IEnumerable<int> HabilidadesDisciplinas { get; set; }
-    public IList<PessoaFormacoesDto> Formacoes { get; set; }
+    public IEnumerable<int> HabilidadesDisciplinas { get; set; } = [];
+    public IList<PessoaFormacoesDto> Formacoes { get; set; } = [];
 }

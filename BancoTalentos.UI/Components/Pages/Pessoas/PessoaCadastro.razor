@@ -172,9 +172,10 @@
                     <RadzenFormField Text="Formações" AllowFloatingLabel="true">
                         <ChildContent>
                             <RadzenDropDown Multiple="true"
-                                            Data="@Dto.Formacoes"
+                                            Data="@_formacoesCadastradas"
+                                            TextProperty="@nameof(FORMACOES.NOME)"
                                             AllowClear="true"
-                                            @bind-Value="@Dto.Formacoes"
+                                            TValue="IList<PessoaFormacoesDto>"
                                             Placeholder="Suas formações aparecerão aqui"
                                             Chips="true"
                                             AllowSelectAll="true"
@@ -193,7 +194,7 @@
                                             AllowClear="true"
                                             TextProperty="@nameof(FORMACOES.NOME)"
                                             ValueProperty="@nameof(FORMACOES.ID)"
-                                            @bind-Value="@Formacao"
+                                            @bind-Value="@FormacaoDto.Id_Formacao"
                                             Placeholder="Selecione as formações"
                                             Chips="true"
                                             AllowSelectAll="true"
@@ -211,20 +212,20 @@
                     <!-- Data de início -->
                     <RadzenFormField Text="Data de Início" AllowFloatingLabel=true>
                         <ChildContent>
-                            <RadzenDatePicker @bind-Value=@FormacaoDto.DataInicio ShowDays=false DateFormat="yyyy/MM" CurrentDateChanged=@OnCurrentDateChanged Name="DataInicio" />
+                            <RadzenDatePicker @bind-Value="@FormacaoDto.DataInicio" ShowDays=false DateFormat="MM/yyyy" CurrentDateChanged=@OnCurrentDateChanged Name="DataInicio" />
                         </ChildContent>
                         <Helper>
                             <RadzenStack Gap="1px">
                                 <RadzenText TextStyle="TextStyle.Caption">Data de início da formação.</RadzenText>
                             </RadzenStack>
-                            <RadzenRequiredValidator Component="DataInicio" Text="@REQUIRED_FIELD" />
                             <RequiredWarning InvalidSubmit=@HasInvalidSubmit />
                         </Helper>
                     </RadzenFormField>
 
+                    <!--Data de conclusão-->
                     <RadzenFormField Text="Data de Conclusão" AllowFloatingLabel=true>
                         <ChildContent>
-                            <RadzenDatePicker @bind-Value=@FormacaoDto.DataFim ShowDays=false DateFormat="yyyy/MM" CurrentDateChanged=@OnCurrentDateChanged Name="DataFim" />
+                            <RadzenDatePicker @bind-Value="@FormacaoDto.DataFim" ShowDays=false DateFormat="MM/yyyy" Name="DataFim" />
                         </ChildContent>
                         <Helper>
                             <RadzenStack Gap="1px">
@@ -232,8 +233,12 @@
                             </RadzenStack>
                         </Helper>
                     </RadzenFormField>
-                    
-                    <RadzenButton Text="Salvar"></RadzenButton>
+
+                    <RadzenButton Text="Salvar" Click="@(() => {
+                    FormacaoParaDto();
+                    LimparCamposFormacao();
+
+                    })"></RadzenButton>
 
                 </RadzenStack>
             </RadzenFieldset>
@@ -258,11 +263,10 @@
         FormacaoDto.DataFim = new DateTime(args.Year, args.Month, 1);
     }
 
-    public IList<int> Formacao { get; set; }
-    public PessoaFormacoesDto FormacaoDto { get; set; }
-
+    public PessoaFormacoesDto FormacaoDto { get; set; } = new();
     public PessoaCadastroDto Dto { get; set; } = new();
     private List<DisciplinaDto> _disciplinasExistentes = [];
+    private List<FORMACOES> _formacoesCadastradas = [];
     private IEnumerable<FORMACOES> _formacoesExistentes = [];
     private string? _contatoInformado;
     private bool IsSaving = false;
@@ -281,6 +285,14 @@
             var result = await consultarDisciplinaService.GetAllAsync(default);
             _disciplinasExistentes = result.ValueOrDefault.ToList();
             _formacoesExistentes = await formacoesRepository.GetAllAsync();
+
+            foreach (var formacaoList in Dto.Formacoes)
+            {
+                var formacao = await formacoesRepository.GetByIdAsync(formacaoList.Id_Formacao);
+
+                if (formacao is not null)
+                    _formacoesCadastradas.Add(formacao);
+            }
 
             if (Id.HasValue)
             {
@@ -462,7 +474,14 @@
 
     public void FormacaoParaDto()
     {
-        Dto.Formacoes.Add(this.FormacaoDto);
+        var formacoesList = _formacoesExistentes.ToList();
+        var formacaoEncontrada = formacoesList.Find(x => x.ID == FormacaoDto.Id_Formacao).NOME;
+
+        if (formacaoEncontrada is not null)
+        {
+            _formacoesCadastradas.Add(new FORMACOES() { NOME = formacaoEncontrada });
+            Dto.Formacoes.Add(FormacaoDto);
+        }
     }
 
     async Task Gravar()
@@ -480,7 +499,8 @@
                     CargaHorariaSemanal = Dto.CargaHoraria,
                     Contatos = Dto.Contatos,
                     IdsDisciplinas = Dto.HabilidadesDisciplinas,
-                    Foto = Dto.Foto
+                    Foto = Dto.Foto,
+                    Formacoes = Dto.Formacoes
                 };
 
             if (Id.HasValue)
@@ -529,8 +549,15 @@
         }
     }
 
+    #region LIMPAR CAMPOS
     private void LimparCampos()
     {
         Dto = new();
     }
+
+    private void LimparCamposFormacao()
+    {
+        FormacaoDto = new();
+    }
+    #endregion
 }

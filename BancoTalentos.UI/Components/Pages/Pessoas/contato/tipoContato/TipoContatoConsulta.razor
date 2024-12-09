@@ -9,7 +9,7 @@
 @inject NotificationService NotifierService
 @inject IJSRuntime JSRuntime
 
-<RadzenButton Text="Cadastrar" Icon="add_circle"></RadzenButton>
+<RadzenButton Click="@(() => Cadastrar())" Text="Cadastrar" Icon="add_circle" />
 
 <Grid Data=@_tiposContatos
       ColumnsDeclared=@GetColumns()
@@ -25,6 +25,11 @@
     private Grid<TIPOS_CONTATOS> GridComponent;
     private const string EXPORT_FILE_NAME = "TiposContatos";
     private IEnumerable<TIPOS_CONTATOS> _tiposContatos = [];
+
+    async Task Cadastrar()
+    {
+        await DialogService.OpenAsync<TipoContatoCadastrar>("Novo tipo contato", null, new DialogOptions() { Width = "10%", Height = "10%" });
+    }
 
     protected override async Task OnInitializedAsync()
     {

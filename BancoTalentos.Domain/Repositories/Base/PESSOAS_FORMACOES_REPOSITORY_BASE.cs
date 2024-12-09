@@ -53,8 +53,8 @@ WHERE ID = @idParam
                 datainativacaoParam = pessoas_formacoes.DATA_INATIVACAO,
                 inicioParam = pessoas_formacoes.INICIO,
                 fimParam = pessoas_formacoes.FIM,
-                tipoformacaoParam = pessoas_formacoes.TIPO_FORMACAO,
-                modeloensinoParam = pessoas_formacoes.MODELO_ENSINO,
+                tipoformacaoParam = pessoas_formacoes.TIPO_FORMACAO.ToString(),
+                modeloensinoParam = pessoas_formacoes.MODELO_ENSINO.ToString(),
             };
             var sql =
                 @"INSERT INTO pessoas_formacoes

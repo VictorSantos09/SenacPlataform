@@ -15,5 +15,6 @@ namespace BancoTalentos.Domain.Services.Pessoas.Base.Dto
         public DateTime DataFim { get; set; }
         public TIPO_FORMACAO Tipo_Formacao { get; set; }
         public MODELO_ENSINO Modelo_Ensino {  get; set; }
+        public string NomeFormacao { get; set; }
     }
 }

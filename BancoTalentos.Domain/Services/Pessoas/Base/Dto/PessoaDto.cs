@@ -17,7 +17,7 @@ public record PessoaDto
     public IEnumerable<ContatoDto> Contatos { get; set; }
     public int Id { get; set; }
     public IEnumerable<int>? IdsDisciplinas { get; set; }
-    public IEnumerable<FORMACOES> Formacoes { get; set; }
+    public IEnumerable<PessoaFormacoesDto> Formacoes { get; set; }
 
     public PessoaDto()
     {
