@@ -30,13 +30,15 @@ public class TIPOS_CONTATOS_REPOSITORY
     {
         var sql = "SELECT * FROM TIPOS_CONTATOS WHERE TIPO = 'Email'";
 
-        return await _connection.QuerySingleAsync<TIPOS_CONTATOS>(sql);
+        // Usando QuerySingleOrDefaultAsync para garantir que não haverá exceções se não houver resultados
+        return await _connection.QuerySingleOrDefaultAsync<TIPOS_CONTATOS>(sql);
     }
 
     public async Task<TIPOS_CONTATOS> GetTelefoneAsync()
     {
         var sql = "SELECT * FROM TIPOS_CONTATOS WHERE TIPO = 'Telefone'";
 
-        return await _connection.QuerySingleAsync<TIPOS_CONTATOS>(sql);
+        // Usando QuerySingleOrDefaultAsync para garantir que não haverá exceções se não houver resultados
+        return await _connection.QuerySingleOrDefaultAsync<TIPOS_CONTATOS>(sql);
     }
 }
