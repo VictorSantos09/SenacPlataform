@@ -24,17 +24,23 @@ public class PESSOAS_REPOSITORY : PESSOAS_REPOSITORY_BASE, IPESSOAS_REPOSITORY
 
     public async Task<IEnumerable<ContatoInfo>> BuscaContatosInfo(int idPessoa)
     {
-        var sql = @$"select pc.CONTATO {nameof(ContatoInfo.CONTATO)}
-		                    , tc.ID AS ID_TIPO_CONTATO {nameof(ContatoInfo.ID_TIPO_CONTATO)}
-                            , tc.TIPO AS DESCRICAO_TIPO_CONTATO {nameof(ContatoInfo.DESCRICAO_TIPO_CONTATO)}
-                            , tc.DATA_INATIVACAO {nameof(ContatoInfo.DATA_INATIVACAO)}
-                    from pessoas_contatos pc
-                    join pessoas p on p.ID = pc.ID_PESSOA
-                    join tipos_contatos tc on tc.ID = pc.ID_TIPO_CONTATO
-                    where p.ID = @{idPessoa}";
+        var sql = @$"SELECT pc.CONTATO {nameof(ContatoInfo.CONTATO)}
+                        , tc.ID AS {nameof(ContatoInfo.ID_TIPO_CONTATO)}
+                        , tc.TIPO AS {nameof(ContatoInfo.DESCRICAO_TIPO_CONTATO)}
+                        , tc.DATA_INATIVACAO {nameof(ContatoInfo.DATA_INATIVACAO)}
+                    FROM pessoas_contatos pc
+                    JOIN pessoas p ON p.ID = pc.ID_PESSOA
+                    JOIN tipos_contatos tc ON tc.ID = pc.ID_TIPO_CONTATO
+                    WHERE p.ID = @{nameof(idPessoa)}";
 
         CommandDefinition command = new(sql, new { idPessoa });
-        return await _connection.QueryAsync<ContatoInfo>(command);
+
+        var result = await _connection.QueryAsync<ContatoInfo>(command);
+        if (result == null || !result.Any())
+        {
+            Console.WriteLine($"Nenhum contato encontrado para o idPessoa: {idPessoa}");
+        }
+        return result;
     }
 
     public async Task<IEnumerable<HabilidadeInfo>> BuscaHabilidades(int idPessoa)
