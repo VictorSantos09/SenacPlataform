@@ -1,0 +1,71 @@
+﻿@using BancoTalentos.Domain.Entity
+@using BancoTalentos.Domain.Repositories.Contracts.Interfaces
+@using BancoTalentos.Domain.Repositories.Dto
+@using BancoTalentos.Domain.Services.Pessoa.Interfaces
+@using BancoTalentos.UI.Components.Pages.Common
+@using static BancoTalentos.Domain.Repositories.PESSOAS_REPOSITORY
+
+@inherits Page
+@inject IPESSOAS_REPOSITORY PessoasRepository
+@inject IConsultaPessoaService consultaPessoaService
+
+<RadzenStack Gap="1rem" Orientation="Orientation.Vertical" JustifyContent="JustifyContent.SpaceBetween" Style="height: 100%;">
+    <RadzenStack>
+        <RadzenRow>
+            <RadzenColumn Size="12" SizeMD="6" class="rz-p-4 rz-border-radius-1" Style="border: var(--rz-grid-cell-border)">
+                <RadzenText TextStyle="TextStyle.Subtitle1">Detalhes Pessoais</RadzenText>
+                <RadzenStack Gap="0" class="rz-text-truncate">
+                    <RadzenText TextStyle="TextStyle.Overline" Style="color: var(--rz-text-tertiary-color);">Nome</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1" class="rz-text-truncate"><b>@Pessoa?.NOME</b></RadzenText>
+
+                    <RadzenText TextStyle="TextStyle.Overline" Style="color: var(--rz-text-tertiary-color);">Cargo</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1" class="rz-text-truncate"><b>@Pessoa?.CARGO</b></RadzenText>
+
+                    <RadzenText TextStyle="TextStyle.Overline" Style="color: var(--rz-text-tertiary-color);">Carga Horária</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1" class="rz-text-truncate"><b>@Pessoa?.CARGA_HORARIA horas</b></RadzenText>
+                </RadzenStack>
+            </RadzenColumn>
+
+            <RadzenColumn Size="12" SizeMD="6" class="rz-p-4 rz-border-radius-1" Style="border: var(--rz-grid-cell-border)">
+                <RadzenText TextStyle="TextStyle.Subtitle1">Foto</RadzenText>
+                <RadzenImage Style="width: 150px; height: 150px; border-radius: 50%;" Path="@($"data:image/jpeg;base64,{Pessoa.FOTO}")"/>
+            </RadzenColumn>
+        </RadzenRow>
+
+             <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center"> 
+             <RadzenText TextStyle="TextStyle.Subtitle1">Contatos</RadzenText> 
+         </RadzenStack> 
+
+         <RadzenDataGrid AllowFiltering="true" AllowPaging="true" AllowSorting="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" 
+                         Data="@(Pessoa?.Contatos ?? new List<ContatoInfo>())" ColumnWidth="200px" Density="Density.Compact" AllowAlternatingRows="true"> 
+             <Columns> 
+                 <RadzenDataGridColumn Title="Contato" Property="@(nameof(ContatoInfo.CONTATO))" /> 
+                 <RadzenDataGridColumn Title="Tipo" Property="@(nameof(ContatoInfo.DESCRICAO_TIPO_CONTATO))" /> 
+                 <RadzenDataGridColumn Title="Status" Property="@(nameof(ContatoInfo.Status))" /> 
+             </Columns>
+         </RadzenDataGrid>
+    </RadzenStack>
+</RadzenStack>
+
+@code {
+    [Parameter] public PESSOAS Pessoa { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Pessoa is null)
+        {
+            return;
+        }
+
+        var result = await consultaPessoaService.GetFotoPerfilAsync(Pessoa.ID);
+
+        if (result.IsSuccess) Pessoa.FOTO = result.ValueOrDefault.Imagem;
+
+        Pessoa.Contatos = await PessoasRepository.BuscaContatosInfo(Pessoa.ID);
+
+        if (Pessoa.Contatos is null)
+        {
+            Console.WriteLine("Nenhum contato encontrado.");
+        }
+    }
+}

@@ -18,14 +18,14 @@
 @inject IJSRuntime JSRuntime
 
 <Grid Data=@_pessoas
-      ColumnsDeclared=@GetColumns()
-      IsLoading=@IsLoading
-      IsExportingCsv=@IsExportingCsv
-      IsExportingExcel=@IsExportingExcel
-      CustomActionButton=@CustomButtons
-      OnExportCSV="@(async args => await ExportCsv(GridComponent, EXPORT_FILE_NAME))"
-      OnExportExcel="@(async args => await ExportExcel(GridComponent, EXPORT_FILE_NAME))"
-      @ref="GridComponent" />
+ColumnsDeclared=@GetColumns()
+IsLoading=@IsLoading
+IsExportingCsv=@IsExportingCsv
+IsExportingExcel=@IsExportingExcel
+CustomActionButton=@CustomButtons
+OnExportCSV="@(async args => await ExportCsv(GridComponent, EXPORT_FILE_NAME))"
+OnExportExcel="@(async args => await ExportExcel(GridComponent, EXPORT_FILE_NAME))"
+@ref="GridComponent" />
 
 @code {
     private IEnumerable<ButtonComponent<PESSOAS>> CustomButtons = [];
@@ -108,7 +108,7 @@
             {
                 ButtonStyle = ButtonStyle.Info,
                 Icon = "visibility",
-                OnClick = EventCallback.Factory.Create<PESSOAS>(this, (data) => { /* Função para visualizar pode ser adicionada aqui */ })
+                OnClick = EventCallback.Factory.Create<PESSOAS>(this, async (data) => await VerDetalhesPessoa(data))
             },
             new ButtonComponent<PESSOAS>()
             {
@@ -126,6 +126,17 @@
                 OnClick = EventCallback.Factory.Create<PESSOAS>(this, async (data) => await ConfirmarExcluir(data))
             }
         };
+    }
+
+    private async Task VerDetalhesPessoa(PESSOAS pessoa)
+    {
+        var nomeSobrenome = pessoa.NOME.GetFirstAndLastName();
+
+        await DialogService.OpenAsync<PessoaDetalhes>($"Detalhes {string.Join(' ', nomeSobrenome.FirstName, nomeSobrenome.LastName)}",
+
+              new Dictionary<string, object>() { { "Pessoa", pessoa } },
+
+              new DialogOptions() { Width = "700px", Height = "520px" });
     }
 
     private async Task ConfirmarExcluir(PESSOAS pessoa)
