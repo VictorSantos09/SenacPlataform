@@ -179,7 +179,7 @@
                                             Chips="true"
                                             AllowSelectAll="true"
                                             AllowFiltering="true"
-                                            Name="Formações"
+                                            Name="FormacoesPreenchidas"
                                             FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                             SelectedItemsText="Itens selecionados"
                                             RemoveChipTitle="Deselecionar" />
@@ -198,11 +198,15 @@
                                             Chips="true"
                                             AllowSelectAll="true"
                                             AllowFiltering="true"
-                                            Name="Formações"
+                                            Name="Formacoes"
                                             FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                             SelectedItemsText="Itens selecionados"
                                             RemoveChipTitle="Deselecionar" />
                         </ChildContent>
+                        <Helper>
+                            <RadzenRequiredValidator Component="Formacoes" Text="@REQUIRED_FIELD" />
+                            <RequiredWarning InvalidSubmit=@HasInvalidSubmit />
+                        </Helper>
                     </RadzenFormField>
                     <!-- Data de início -->
                     <RadzenFormField Text="Data de Início" AllowFloatingLabel=true>
@@ -213,12 +217,14 @@
                             <RadzenStack Gap="1px">
                                 <RadzenText TextStyle="TextStyle.Caption">Data de início da formação.</RadzenText>
                             </RadzenStack>
+                            <RadzenRequiredValidator Component="DataInicio" Text="@REQUIRED_FIELD" />
+                            <RequiredWarning InvalidSubmit=@HasInvalidSubmit />
                         </Helper>
                     </RadzenFormField>
 
                     <RadzenFormField Text="Data de Conclusão" AllowFloatingLabel=true>
                         <ChildContent>
-                            <RadzenDatePicker @bind-Value=@FormacaoDto.DataFim ShowDays=false DateFormat="yyyy/MM" CurrentDateChanged=@OnCurrentDateChanged Name="DataInicio" />
+                            <RadzenDatePicker @bind-Value=@FormacaoDto.DataFim ShowDays=false DateFormat="yyyy/MM" CurrentDateChanged=@OnCurrentDateChanged Name="DataFim" />
                         </ChildContent>
                         <Helper>
                             <RadzenStack Gap="1px">
@@ -452,6 +458,11 @@
         {
             ToggleLoading();
         }
+    }
+
+    public void FormacaoParaDto()
+    {
+        Dto.Formacoes.Add(this.FormacaoDto);
     }
 
     async Task Gravar()
